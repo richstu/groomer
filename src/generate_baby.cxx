@@ -177,25 +177,19 @@ void WriteBaseHeader(const set<Variable> &all_vars,
   file << "#include <string>\n\n";
 
   file << "#include \"TTree.h\"\n";
-  file << "#include \"TChain.h\"\n\n";
+  file << "#include \"TFile.h\"\n\n";
   file << "#include \"TString.h\"\n\n";
   //  file << "#include \"TTreeFormula.h\"\n\n";
 
   file << "class baby_base{\n";
   file << "public:\n";
-  file << "  baby_base(); // Constructor to create tree\n";
-  file << "  baby_base(const TString &filename); // Constructor to read tree\n\n";
-
-  file << "  int Add(const TString &filename);\n";
+  file << "  baby_base(TString filename); // Constructor to read tree\n\n";
 
   file << "  long GetEntries() const;\n";
   file << "  void GetEntry(const long entry);\n";
-  file << "  bool PassString(const std::string cut);\n\n";
 
   file << "  void Fill();\n";
   file << "  void Write();\n\n";
-
-  file << "  std::string Type() const;\n\n";
 
   file << "  static const double bad_val_;\n\n";
 
@@ -204,8 +198,13 @@ void WriteBaseHeader(const set<Variable> &all_vars,
   for(set<Variable>::const_iterator var = com_vars.begin();
       var != com_vars.end();
       ++var){
-    file << "  " << var->type_ << " const & " << var->name_ << "() const;\n";
-    file << "  " << var->type_ << " & " << var->name_ << "();\n";
+    if(Contains(var->type_, "vector")){
+      file << "  std::" << var->type_ << " & " << var->name_ << "();\n";
+      file << "  std::" << var->type_ << " & new_" << var->name_ << "();\n";
+    } else {
+      file << "  " << var->type_ << " & " << var->name_ << "();\n";
+      file << "  " << var->type_ << " & new_" << var->name_ << "();\n";      
+    }
   }
   file << '\n';
 
@@ -214,12 +213,12 @@ void WriteBaseHeader(const set<Variable> &all_vars,
       ++var){
     if(com_vars.find(*var) != com_vars.end()) continue;
     file << "  __attribute__((noreturn)) "
-         << var->type_ << " const & " << var->name_ << "() const;\n";
-    file << "  __attribute__((noreturn)) "
          << var->type_ << " & " << var->name_ << "();\n";
   }
-  file << "  TChain chain_;\n";
-  file << "  TTree tree_;\n";
+  file << "  TFile* infile_;\n";
+  file << "  TFile* outfile_;\n";
+  file << "  TTree* intree_;\n";
+  file << "  TTree* outtree_;\n";
   file << "  long entry_;\n";
   file << '\n';
 
@@ -237,9 +236,14 @@ void WriteBaseHeader(const set<Variable> &all_vars,
   for(set<Variable>::const_iterator var = com_vars.begin();
       var != com_vars.end();
       ++var){
-    file << "  " << var->type_ << ' ' << var->name_ << "_;\n";
     if(Contains(var->type_, "vector")){
-      file << "  " << var->type_ << " *p_" << var->name_ << "_;\n";
+      file << "  std::" << var->type_ << ' ' << var->name_ << "_;\n";
+      file << "  std::" << var->type_ << " new_" << var->name_ << "_;\n";
+      file << "  std::" << var->type_ << " *p_" << var->name_ << "_;\n";
+      file << "  std::" << var->type_ << " *p_new_" << var->name_ << "_;\n";
+    } else { 
+      file << "  " << var->type_ << ' ' << var->name_ << "_;\n";
+      file << "  " << var->type_ << " new_" << var->name_ << "_;\n";
     }
     file << "  TBranch *b_" << var->name_ << "_;\n";
     file << "  mutable bool c_" << var->name_ << "_;\n";
@@ -274,6 +278,9 @@ void WriteBaseSource(const set<Variable> &all_vars,
 
   file << "using namespace std;\n\n";
 
+  file << "#define ERROR(x) do{throw std::runtime_error(string(\"Error in file \")+__FILE__+\" at line \"+to_string(__LINE__)+\" (in \"+__func__+\"): \"+x);}while(false)\n";
+  file << "#define DBG(x) do{std::cerr << \"In \" << __FILE__ << \" at line \" << __LINE__ << \" (in function \" << __func__ << \"): \" << x << std::endl;}while(false)\n\n";
+
   file << "bool baby_base::VectorLoader::loaded_ = false;\n\n";
 
   file << "baby_base::VectorLoader baby_base::vl_ = baby_base::VectorLoader();\n\n";
@@ -287,9 +294,7 @@ void WriteBaseSource(const set<Variable> &all_vars,
 
   file << "const double baby_base::bad_val_ = -999.;\n\n";
 
-  file << "baby_base::baby_base():\n";
-  file << "  chain_(\"junk\", \"junk\"),\n";
-  file << "  tree_(\"tree\", \"tree\"),\n";
+  file << "baby_base::baby_base(TString filename):\n";
   file << "  entry_(0),\n";
   if(com_vars.size()){
     const set<Variable>::const_iterator com_end_2 = --com_vars.end();
@@ -298,114 +303,94 @@ void WriteBaseSource(const set<Variable> &all_vars,
         ++var){
       if(Contains(var->type_, "vector")){
         file << "  " << var->name_ << "_(0),\n";
+        file << "  new_" << var->name_ << "_(0),\n";
       }else if(Contains(var->type_, "tring")){
         file << "  " << var->name_ << "_(\"\"),\n";
+        file << "  new_" << var->name_ << "_(\"\"),\n";
       }else{
         file << "  " << var->name_ << "_(static_cast<" << var->type_ << ">(bad_val_)),\n";
+        file << "  new_" << var->name_ << "_(static_cast<" << var->type_ << ">(bad_val_)),\n";
       }
       if(Contains(var->type_, "vector")){
         file << "  p_" << var->name_ << "_(&" << var->name_ << "_),\n";
-        file << "  b_" << var->name_ << "_(tree_.Branch(\"" << var->name_ << "\", &p_" << var->name_ << "_)),\n";
-      }else{
-        file << "  b_" << var->name_ << "_(tree_.Branch(\"" << var->name_ << "\", &" << var->name_ << "_)),\n";
-      }
-      file << "  c_" << var->name_ << "_(false),\n";
-    }
-    file << "  " << com_end_2->name_ << "_(0),\n";
-    file << "  b_" << com_end_2->name_ << "_(tree_.Branch(\"" << com_end_2->name_ << "\", &" << com_end_2->name_ << "_)),\n";
-    file << "  c_" << com_end_2->name_ << "_(false){\n";
-  }else{
-    file << " {\n";
-  }
-  file << "}\n\n";
-
-  file << "baby_base::baby_base(const TString &filename):\n";
-  file << "  chain_(\"tree\",\"tree\"),\n";
-  file << "  tree_(\"junk\",\"junk\"),\n";
-  file << "  entry_(0),\n";
-  if(com_vars.size()){
-    const set<Variable>::const_iterator com_end_2 = --com_vars.end();
-    for(set<Variable>::const_iterator var = com_vars.begin();
-        var != com_end_2;
-        ++var){
-      if(Contains(var->type_, "vector")){
-        file << "  " << var->name_ << "_(0),\n";
-      }else if(Contains(var->type_, "tring")){
-        file << "  " << var->name_ << "_(\"\"),\n";
-      }else{
-        file << "  " << var->name_ << "_(static_cast<" << var->type_ << ">(bad_val_)),\n";
-      }
-      if(Contains(var->type_, "vector")){
-        file << "  p_" << var->name_ << "_(&" << var->name_ << "_),\n";
+        file << "  p_new_" << var->name_ << "_(&" << var->name_ << "_),\n";
       }
       file << "  b_" << var->name_ << "_(NULL),\n";
       file << "  c_" << var->name_ << "_(false),\n";
     }
     if(Contains(com_end_2->type_, "vector")){
       file << "  " << com_end_2->name_ << "_(0),\n";
+      file << "  new_" << com_end_2->name_ << "_(0),\n";
     }else if(Contains(com_end_2->type_, "tring")){
       file << "  " << com_end_2->name_ << "_(\"\"),\n";
+      file << "  new_" << com_end_2->name_ << "_(\"\"),\n";
     }else{
       file << "  " << com_end_2->name_ << "_(static_cast<" << com_end_2->type_ << ">(bad_val_)),\n";
+      file << "  new_" << com_end_2->name_ << "_(static_cast<" << com_end_2->type_ << ">(bad_val_)),\n";
     }
     if(Contains(com_end_2->type_, "vector")){
       file << "  p_" << com_end_2->name_ << "_(&" << com_end_2->name_ << "_),\n";
+      file << "  p_new_" << com_end_2->name_ << "_(&" << com_end_2->name_ << "_),\n";
     }
     file << "  b_" << com_end_2->name_ << "_(NULL),\n";
     file << "  c_" << com_end_2->name_ << "_(false){\n";
   }else{
     file << "  {\n";
   }
-  file << "  chain_.Add(filename);\n";
+  file << "  infile_ = new TFile(filename, \"read\");\n";
+  file << "  if(!infile_->IsOpen()) ERROR(\"Could not open input file \"+filename);\n";
+  file << "  intree_ = static_cast<TTree*>(infile_->Get(\"tree\"));\n";
+  file << "  if(intree_ == nullptr) ERROR(\"No tree in input file:\" +filename);\n";
+  file << "    \n";
+  file << "  outfile_ = new TFile(filename.ReplaceAll(\".root\",\"_renorm.root\"), \"recreate\");\n";
+  file << "  if(!outfile_->IsOpen()) ERROR(\"Could not open output file \"+filename);\n";
+  file << "  outfile_->cd();\n";
+  file << "  outtree_ = intree_->CloneTree(0);\n";
+  file << "  intree_->CopyAddresses(outtree_);\n";
   for(set<Variable>::const_iterator var = com_vars.begin(); var != com_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
-      file << "  chain_.SetBranchAddress(\"" << var->name_ << "\", &p_" << var->name_ << "_, &b_" << var->name_ << "_);\n";
+      file << "  intree_->SetBranchAddress(\"" << var->name_ << "\", &p_" << var->name_ << "_, &b_" << var->name_ << "_);\n";
+      file << "  outtree_->SetBranchAddress(\"" << var->name_ << "\", &p_new_" << var->name_ << "_);\n";
     }else{
-      file << "  chain_.SetBranchAddress(\"" << var->name_ << "\", &" << var->name_ << "_, &b_" << var->name_ << "_);\n";
+      file << "  intree_->SetBranchAddress(\"" << var->name_ << "\", &" << var->name_ << "_, &b_" << var->name_ << "_);\n";
+      file << "  outtree_->SetBranchAddress(\"" << var->name_ << "\", &new_" << var->name_ << "_);\n";
     }
   }
   file << "}\n\n";
 
   file << "void baby_base::Fill(){\n";
-  file << "  tree_.Fill();\n";
+  file << "  //Loading unused branch so their values are copied to the new tree\n";
+  for(set<Variable>::const_iterator var = com_vars.begin(); var != com_vars.end(); ++var){
+    file << "  if (!c_"+var->name_+"_) " << var->name_ << "();\n";
+  }
+  file << "  outtree_->Fill();\n";
 
   file << "  //Resetting variables\n";
   for(set<Variable>::const_iterator var = com_vars.begin(); var != com_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
       file << "  " << var->name_ << "_.clear();\n";
+      file << "  new_" << var->name_ << "_.clear();\n";
     }else if(Contains(var->type_, "tring")){
       file << "  " << var->name_ << "_ = \"\";\n";
+      file << "  new_" << var->name_ << "_ = \"\";\n";
     }else{
       file << "  " << var->name_ << "_ = static_cast<" << var->type_ << ">(bad_val_);\n";
+      file << "  new_" << var->name_ << "_ = static_cast<" << var->type_ << ">(bad_val_);\n";
     }
   }
   file << "}\n\n";
 
   file << "void baby_base::Write(){\n";
-  file << "  tree_.Write();\n";
-  file << "}\n\n";
-
-  file << "string baby_base::Type() const{\n";
-  file << "  return \"\";\n";
+  file << "  outtree_->Write();\n";
   file << "}\n\n";
 
   file << "baby_base::~baby_base(){\n";
-  file << "}\n\n";
-
-  file << "int baby_base::Add(const TString &filename){\n";
-  file << "  return chain_.Add(filename);\n";
-  file << "}\n\n";
-
-
-  file << "bool baby_base::PassString(string cut){\n";
-  //  file << " TTreeFormula f(\"formula\",cut, &chain_);\n";
-  //  file << " bool result = f.EvalInstance(0);\n";
-  file << " bool result = (cut==\"\");\n";
-  file << " return result;\n";
+  file << "  infile_->Close();\n";
+  file << "  outfile_->Close();\n";
   file << "}\n\n";
   
   file << "long baby_base::GetEntries() const{\n";
-  file << "  return tree_.GetEntries();\n";
+  file << "  return intree_->GetEntries();\n";
   file << "}\n\n";
 
   file << "void baby_base::GetEntry(const long entry){\n";
@@ -413,24 +398,21 @@ void WriteBaseSource(const set<Variable> &all_vars,
   for(set<Variable>::const_iterator var = com_vars.begin(); var!= com_vars.end(); ++var){
     file << "  c_" << var->name_ << "_ = false;\n";
   }
-  file << "  entry_ = chain_.LoadTree(entry);\n";
+  file << "  entry_ = intree_->LoadTree(entry);\n";
   file << "}\n\n";
 
   for(set<Variable>::const_iterator var = com_vars.begin(); var != com_vars.end(); ++var){
     file << var->type_ << " & baby_base::" << var->name_ << "(){\n";
     file << "  if(!c_" << var->name_ << "_ && b_" << var->name_ <<"_){\n";
     file << "    b_" << var->name_ << "_->GetEntry(entry_);\n";
+    file << "    new_" << var->name_ << "_ = " << var->name_ <<"_;\n";
     file << "    c_" << var->name_ << "_ = true;\n";
     file << "  }\n";
     file << "  return " << var->name_ << "_;\n";
     file << "}\n\n";
-  }
 
-  for(set<Variable>::const_iterator var = all_vars.begin(); var != all_vars.end(); ++var){
-    if(com_vars.find(*var) != com_vars.end()) continue;
-    file << var->type_ << " const & baby_base::" << var->name_ << "() const{\n";
-    file << "  throw std::logic_error(\"" << var->name_
-         << " does not exist in this baby_base version.\");\n";
+    file << var->type_ << " & baby_base::new_" << var->name_ << "(){\n";
+    file << "  return new_" << var->name_ << "_;\n";
     file << "}\n\n";
   }
 
