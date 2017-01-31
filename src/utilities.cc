@@ -6,6 +6,7 @@
 #include <cmath>
 #include <deque>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <stdexcept>
 #include <iomanip>   // setw
@@ -163,3 +164,29 @@ TString hoursMinSec(long seconds){
   return hhmmss;
 }
 
+set<Variable> GetVariablesUtil(const string &file_name){
+  string allowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_";
+  set<Variable> vars;
+
+  // ifstream infile(("variables/"+file_name).c_str());
+  // string line;
+  // while(getline(infile, line)){
+  //   size_t start = line.find_first_not_of(" ");
+  //   if(start >= line.size() || line.at(start) == '#' || line.at(start) == '/') continue;
+
+  //   //Replace double space with single space
+  //   size_t pos = line.rfind("  ");
+  //   while(pos < line.size()){
+  //     line.replace(pos, 2, " ");
+  //     pos = line.rfind("  ");
+  //   }
+  //   size_t end = line.find_last_of(allowed)+1;
+  //   size_t split = line.rfind(' ', end)+1;
+
+  //   vars.insert(Variable(line.substr(start, split-start),
+  //                        line.substr(split, end-split)));
+  // }
+  // infile.close();
+
+  return vars;
+}

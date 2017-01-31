@@ -27,9 +27,10 @@ public:
 
 bool Contains(const std::string &text, const std::string &pattern);
 
-void WriteBaseHeader(const std::set<Variable> &all_vars,
-                     const std::set<Variable> &com_vars);
-void WriteBaseSource(const std::set<Variable> &all_vars,
-                     const std::set<Variable> &com_vars);
+void WriteBaseHeader(const std::set<Variable> &extra_vars,
+                     const std::set<Variable> &full_vars);
+void WriteBaseSource(const std::set<Variable> &extra_vars,
+                     const std::set<Variable> &full_vars,
+                     const std::set<Variable> &sum_vars);
 
 #endif

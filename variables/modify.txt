@@ -1,4 +1,0 @@
-float w_btag
-int njets
-vector<float> sys_bctag
-

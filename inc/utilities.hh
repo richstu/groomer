@@ -12,11 +12,32 @@
 
 #include <string>
 #include <vector>
+#include <set>
+#include <unistd.h>
 
 #include "TString.h"
 #include "TTree.h"
 #include "TGraph.h"
 
+class Variable{
+public:
+  Variable():
+    type_(""),
+    name_(""){
+  }
+
+  Variable( std::string &type,
+            std::string &name):
+    type_(type),
+    name_(name){
+  }
+
+  bool operator<( Variable& var) {
+    return type_<var.type_ || (type_==var.type_ && name_<var.name_);
+  }
+
+  std::string type_, name_;
+};
 
 const long double PI = acos(-1.L);
 long double DeltaPhi(long double phi1, long double phi2);
@@ -55,5 +76,7 @@ short Sign(T val){
 }
 
 std::string execute(const std::string &cmd);
+
+std::set<Variable> GetVariablesUtil(const std::string &file_name);
 
 #endif
