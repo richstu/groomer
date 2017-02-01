@@ -1,9 +1,9 @@
-# special 
+# list of branches for which to calculate corrections
+# must be a subset of full
 
+# require special treatment
 float weight
-float weight_rpv
 float w_lumi
-float w_toppt
 float w_isr
 float w_lep
 float w_fs_lep

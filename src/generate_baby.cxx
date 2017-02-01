@@ -111,11 +111,11 @@ set<Variable> GetVariables(const string &file_name){
 
 int main(){
   set<Variable> full_vars = GetVariables("full");
-  set<Variable> sum_vars = GetVariables("sum");
+  set<Variable> corr_vars = GetVariables("corr");
   set<Variable> extra_vars = GetVariables("extra");
 
   WriteBaseHeader(extra_vars, full_vars);
-  WriteBaseSource(extra_vars, full_vars, sum_vars);
+  WriteBaseSource(extra_vars, full_vars, corr_vars);
 
 }
 
@@ -145,7 +145,7 @@ void WriteBaseHeader(const set<Variable> &extra_vars,
 
   file << "class baby_base{\n";
   file << "public:\n";
-  file << "  baby_base(TString inputs, TString outname, bool doSumOutputTree = false); // Constructor to read tree\n\n";
+  file << "  baby_base(TString inputs, TString outname, bool doCorrOutputTree = false); // Constructor to read tree\n\n";
 
   file << "  long GetEntries() const;\n";
   file << "  void GetEntry(const long entry);\n";
@@ -153,7 +153,7 @@ void WriteBaseHeader(const set<Variable> &extra_vars,
   file << "  void Fill();\n";
   file << "  void Write();\n\n";
 
-  file << "  bool doSumOutputTree_;\n\n";
+  file << "  bool doCorrOutputTree_;\n\n";
   file << "  double bad_val_;\n\n";
 
   file << "  ~baby_base();\n\n";
@@ -232,7 +232,7 @@ void WriteBaseHeader(const set<Variable> &extra_vars,
 
 void WriteBaseSource(const set<Variable> &extra_vars,
                      const set<Variable> &full_vars,
-                     const set<Variable> &sum_vars){
+                     const set<Variable> &corr_vars){
   ofstream file("src/baby_base.cpp");
 
   file << "// baby_base: base class to handle reduce tree ntuples\n";
@@ -268,9 +268,9 @@ void WriteBaseSource(const set<Variable> &extra_vars,
   file << "  }\n";
   file << "}\n\n";
 
-  file << "baby_base::baby_base(TString inputs, TString outname, bool doSumOutputTree):\n";
-  file << "  doSumOutputTree_(doSumOutputTree),\n";
-  file << "  bad_val_(doSumOutputTree ? 0 : -999.),\n";
+  file << "baby_base::baby_base(TString inputs, TString outname, bool doCorrOutputTree):\n";
+  file << "  doCorrOutputTree_(doCorrOutputTree),\n";
+  file << "  bad_val_(doCorrOutputTree ? 0 : -999.),\n";
   file << "  entry_(0),\n";
 
   for(set<Variable>::const_iterator var = full_vars.begin(); var != full_vars.end(); ++var){
@@ -311,16 +311,16 @@ void WriteBaseSource(const set<Variable> &extra_vars,
   file << "  intree_->Add(inputs);\n";
   file << "    \n";
   file << "  outfile_ = new TFile(outname, \"recreate\");\n";
-  file << "  if(!outfile_->IsOpen()) ERROR(\"Could not open output file \"+outname);\n";
+  file << "  if(!outfile_->IsOpen()) ERROR(\"Could not open output file \"+outname.Data());\n";
   file << "  outfile_->cd();\n";
-  file << "  if (doSumOutputTree) {\n";
-  file << "    outtree_ = new TTree(\"sum_tree\",\"sum_tree\");\n";
+  file << "  if (doCorrOutputTree) {\n";
+  file << "    outtree_ = new TTree(\"corr_tree\",\"corr_tree\");\n";
   file << "  } else {\n"; 
   file << "    outtree_ = intree_->CloneTree(0);\n";
   file << "    intree_->CopyAddresses(outtree_);\n";
   file << "  }\n\n";
 
-  file << "  if (doSumOutputTree) {\n";
+  file << "  if (doCorrOutputTree) {\n";
   for(set<Variable>::const_iterator var = full_vars.begin(); var != full_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
       file << "    intree_->SetBranchAddress(\"" << var->name_ << "\", &p_" << var->name_ << "_, &b_" << var->name_ << "_);\n";
@@ -328,7 +328,7 @@ void WriteBaseSource(const set<Variable> &extra_vars,
       file << "    intree_->SetBranchAddress(\"" << var->name_ << "\", &" << var->name_ << "_, &b_" << var->name_ << "_);\n";
     }
   }
-  for(set<Variable>::const_iterator var = sum_vars.begin(); var != sum_vars.end(); ++var){
+  for(set<Variable>::const_iterator var = corr_vars.begin(); var != corr_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
       file << "    outtree_->Branch(\"" << var->name_ << "\", &p_out_" << var->name_ << "_);\n";
     }else{
@@ -413,16 +413,16 @@ void WriteBaseSource(const set<Variable> &extra_vars,
     file << var->type_ << " & baby_base::" << var->name_ << "(){\n";
     file << "  if(!c_" << var->name_ << "_ && b_" << var->name_ <<"_){\n";
     file << "    b_" << var->name_ << "_->GetEntry(entry_);\n";
-    file << "    if (!doSumOutputTree_) out_" << var->name_ << "_ = " << var->name_ <<"_;\n";
+    file << "    if (!doCorrOutputTree_) out_" << var->name_ << "_ = " << var->name_ <<"_;\n";
     file << "    c_" << var->name_ << "_ = true;\n";
     file << "  }\n";
     file << "  return " << var->name_ << "_;\n";
     file << "}\n\n";
 
     file << var->type_ << " & baby_base::out_" << var->name_ << "(){\n";
-    if (sum_vars.find(*var)!=sum_vars.end()){
+    if (corr_vars.find(*var)!=corr_vars.end()){
       if (Contains(var->type_, "vector")) {
-        file << "  if (doSumOutputTree_ && out_" << var->name_ << "_.size()==0) {\n";
+        file << "  if (doCorrOutputTree_ && out_" << var->name_ << "_.size()==0) {\n";
         file << "     " << var->name_ << "();\n";
         file << "     out_" << var->name_ << "_.resize(" << var->name_ << "_.size(), bad_val_);\n";
         file << "  }\n";

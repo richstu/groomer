@@ -63,9 +63,12 @@ void AddPoint(TGraph& graph, const double x, const double y);
 TString hoursMinSec(long seconds);
 
 template<class T>
-T noNaN(T val, T defval=1.){
+T noInfNan(T val, T defval=1.){
   if(isnan(val)) {
     std::cout<<"Value is NaN. Returning "<<defval<<std::endl;
+    return defval;
+  } else if(isinf(val)) {
+    std::cout<<"Value is Inf. Returning "<<defval<<std::endl;
     return defval;
   } else return val;
 }

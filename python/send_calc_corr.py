@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-import os, sys, subprocess
+import os, sys, subprocess, glob
 import string
 from pprint import pprint
-from utilities import *
 
 def findBaseSampleNames(folder):
     infiles = set()
@@ -21,13 +20,13 @@ def findBaseSampleNames(folder):
         infiles.add(tag)
     sortedfiles = list()
     for file in infiles:
-        sortedfiles.append(file)
+        sortedfiles.append(file.strip('_'))
     sortedfiles = sorted(sortedfiles)
 
     return sortedfiles
 
 infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
-outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/sum_wgts/'
+outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
 
 ## Finding tags for each dataset
 tags = findBaseSampleNames(infolder)
@@ -41,7 +40,8 @@ ijob = 0
 
 for tag in tags:
   ijob += 1
-  cmd = "JobSubmit.csh ./run/wrapper.sh ./run/sum_wgts.exe -i "+infolder+" -t "+tag+" -o "+outfolder
+  cmd = "JobSubmit.csh ./run/wrapper.sh ./run/calc_corr.exe -i "+infolder+" -t "+tag+" -o "+outfolder
   os.system(cmd)
 
 print "\nSubmitted "+str(ijob)+" jobs. Output goes to "+outfolder+"\n"
+
