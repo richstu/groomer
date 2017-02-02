@@ -13,7 +13,7 @@ using namespace std;
 namespace {
   string indir = "/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/";
   string tag = "fullbaby_TTJets_Tune";
-  string outdir = "/homes/aovcharova/code/groomer/";//"/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/sum_wgts/";
+  string outdir = "/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/";
 }
 
 void GetOptions(int argc, char *argv[]);
@@ -31,7 +31,9 @@ int main(int argc, char *argv[]){
     fin += "*.root";
     fout +=".root";
   }
-  baby_base b(indir+"/*"+fin, outdir+"/sum_"+fout, doCorrOutputTree);
+  cout<<"Chaining inputs: "<<indir+"/*"+fin<<endl;
+  cout<<"Writing output to: "<<outdir+"/corr_"+fout<<endl;
+  baby_base b(indir+"/*"+fin, outdir+"/corr_"+fout, doCorrOutputTree);
 
   // quantities to keep track of;
   int neff(0);
@@ -45,14 +47,12 @@ int main(int argc, char *argv[]){
     b.GetEntry(entry);
     if (entry%100000==0) {
       cout<<"Processing event: "<<entry<<endl;
-      cout<<"Entry = "<<entry<<" b.out_w_btag_deep() ="<<b.out_w_bhig_deep()
-                             <<" b.w_btag_deep() = "<<b.w_bhig_deep()<<endl;
     }
 
     wgt = noInfNan(b.w_lep())*noInfNan(b.w_fs_lep())*noInfNan(b.w_btag())*noInfNan(b.w_isr());//*noInfNan(b.w_pu());
 
     // need special treatment in summing and/or renormalizing
-    neff = b.w_lumi()>0 ? 1:-1;
+    neff += b.w_lumi()>0 ? 1:-1;
 
     b.out_w_isr() += noInfNan(b.w_isr());
     for (unsigned i(0); i<b.sys_isr().size(); i++) b.out_sys_isr()[i] += noInfNan(b.sys_isr()[i]);
