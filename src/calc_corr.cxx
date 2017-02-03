@@ -26,7 +26,7 @@ int main(int argc, char *argv[]){
   time_t begtime, endtime;
   time(&begtime);
 
-  cout<<setprecision(20);
+  // cout<<setprecision(20);
   bool doCorrOutputTree = true;
   string fin(tag), fout(tag);
   if (!Contains(tag,".root")) {

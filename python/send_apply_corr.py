@@ -6,18 +6,18 @@ from ROOT import TChain
 import string
 from pprint import pprint
 
-# infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed_skim_met100nj4/'
-# outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/skim_met100nj4/'
-# corrfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
-
-infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
-outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unskimmed/'
+infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed_skim_met100nj4/'
+outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/skim_met100nj4/'
 corrfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
+
+# infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
+# outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unskimmed/'
+# corrfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
 quick = True
 # leave as empty string to run over all input files in the infolder
 one_sample = 'TTJets_Tune'
 
-njobs = 40
+njobs = 10
 
 
 def getTag(file):
@@ -26,7 +26,6 @@ def getTag(file):
   tag = tag.split("RunIISummer16MiniAODv2")[0]
   tag = tag.replace("fullbaby_","")
   tag = tag.rstrip("_")
-  infiles.add(tag)
   return tag
 
 # Setting folders
@@ -45,19 +44,17 @@ for x in glob(infolder+"*.root"):
   if (one_sample!='') and (one_sample not in x): continue
   if ('unskimmed' not in outfolder):
     c = TChain("tree") 
-    c.Add(infile)
+    c.Add(x)
     if c.GetEntries()==0: 
-      copyfile(infile, outfile)
+      copyfile(x, outfile)
       continue
-  corrfile = corrfolder + "corr_" + getTag(infile) +".root"
-  if quick: corrfile = corrfolder + "corrquick_" + getTag(infile) +".root"
+  corrfile = corrfolder + "corr_" + getTag(x) +".root"
+  if quick: corrfile = corrfolder + "corrquick_" + getTag(x) +".root"
   if not os.path.exists(corrfile):
     print "Corr. file not found. Skipping:", corrfile 
     continue
   infiles.append(x)
 infiles = sorted(infiles)
-pprint(infiles)
-sys.exit(0)
 
 splitting = len(infiles)/njobs 
 if (len(infiles)%njobs!=0): splitting += 1
@@ -90,8 +87,8 @@ for ijob in range(njobs):
   fexe.close()
   cmd = "JobSubmit.csh ./run/wrapper.sh "+exename
   print cmd
-  # os.system(cmd)
-  sys.exit(0)
+  os.system(cmd)
+  # sys.exit(0)
 
 print "\nSubmitted "+str(ijob)+" jobs. Output goes to "+outfolder+"\n"
 

@@ -325,7 +325,7 @@ void WriteBaseSource(const set<Variable> &extra_vars,
   file << "      outtree_ = new TTree(\"tree\",\"tree\");\n";
   file << "    } else {\n"; 
   file << "      outtree_ = intree_->CloneTree(0);\n";
-  file << "      intree_->CopyAddresses(outtree_);\n";
+  file << "      //intree_->CopyAddresses(outtree_);\n";
   file << "    }\n\n";
   file << "  }\n\n";
 
@@ -377,7 +377,7 @@ void WriteBaseSource(const set<Variable> &extra_vars,
   file << "void baby_base::Fill(){\n";
   file << "  //Loading unused branch so their values are copied to the new tree\n";
   for(set<Variable>::const_iterator var = full_vars.begin(); var != full_vars.end(); ++var){
-    file << "  if (!readCorrTree_ && !c_out_"+var->name_+"_) out_" << var->name_ << "_ = " << var->name_ << "();\n";
+    file << "  if (!readCorrTree_ && !doCorrOutputTree_ && !c_out_"+var->name_+"_) out_" << var->name_ << "_ = " << var->name_ << "();\n";
   }
   file << "  outtree_->Fill();\n";
 

@@ -14,7 +14,7 @@ def getTags(folder):
     infiles.add(tag)
   return sorted(infiles)
 
-infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
+infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed_skim_met100/'
 outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
 quick = True
 # leave as empty string to run over all input files in the infolder
@@ -37,7 +37,7 @@ for tag in tags:
     cmd = "JobSubmit.csh ./run/wrapper.sh ./run/calc_corr.exe --quick -i "+infolder+" -t "+tag+" -o "+outfolder
   else:
     cmd = "JobSubmit.csh ./run/wrapper.sh ./run/calc_corr.exe -i "+infolder+" -t "+tag+" -o "+outfolder
-  # os.system(cmd)
+  os.system(cmd)
   print cmd
   ijob += 1
 
