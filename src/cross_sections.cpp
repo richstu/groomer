@@ -8,7 +8,7 @@ using namespace std;
 namespace xsec{
 
   float crossSection(const TString &file){
-    float xsec(1.), Htobb(0.5824);
+    float xsec(999999.), Htobb(0.5824);
 
     if(file.Contains("SMS-T1qqqq_mGluino-1000_mLSP-800_Tune")) xsec = 0.325388;
     if(file.Contains("SMS-T1qqqq_mGluino-1400_mLSP-100_Tune")) xsec = 0.0252977;
@@ -84,11 +84,11 @@ namespace xsec{
 
     // Cross sections from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec
     // multiplied by BF(W->mu,e,tau) = 0.324
-    if (file.Contains("ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8"))     xsec = 3.34;
-    if (file.Contains("ST_t-channel_antitop_4f_inclusiveDecays_TuneCUETP8M2T4_13TeV-powhegV2")) xsec = 80.95;
-    if (file.Contains("ST_t-channel_top_4f_inclusiveDecays_TuneCUETP8M2T4_13TeV-powhegV2")) xsec = 136.02;
-    if (file.Contains("ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg"))     xsec = 35.85*0.543;
-    if (file.Contains("ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg"))     xsec = 35.85*0.543; 
+    if (file.Contains("ST_s-channel_4f_leptonDecays"))     xsec = 3.34;
+    if (file.Contains("ST_t-channel_antitop_4f_inclusiveDecays")) xsec = 80.95;
+    if (file.Contains("ST_t-channel_top_4f_inclusiveDecays")) xsec = 136.02;
+    if (file.Contains("ST_tW_antitop_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543;
+    if (file.Contains("ST_tW_top_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543; 
 
     if(file.Contains("DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV")) xsec = 18610*1.23;
     if(file.Contains("DYJetsToLL_M-50_TuneCUETP8M1_13TeV"))     xsec = 4895*1.23;

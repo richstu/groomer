@@ -80,6 +80,7 @@ short Sign(T val){
 
 std::string execute(const std::string &cmd);
 
-std::set<Variable> GetVariablesUtil(const std::string &file_name);
+void ReplaceAll(std::string &str, const std::string &orig, const std::string &rep);
+std::string CopyReplaceAll(const std::string str, const std::string &orig, const std::string &rep);
 
 #endif

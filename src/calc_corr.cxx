@@ -12,8 +12,9 @@ using namespace std;
 
 namespace {
   string indir = "/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/";
-  string tag = "fullbaby_TTJets_Tune";
+  string tag = "fullbaby_TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1_60";
   string outdir = "/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/";
+  bool quick = false;
 }
 
 void GetOptions(int argc, char *argv[]);
@@ -32,24 +33,29 @@ int main(int argc, char *argv[]){
     fout +=".root";
   }
   cout<<"Chaining inputs: "<<indir+"/*"+fin<<endl;
-  cout<<"Writing output to: "<<outdir+"/corr_"+fout<<endl;
-  baby_base b(indir+"/*"+fin, outdir+"/corr_"+fout, doCorrOutputTree);
+  string outfile = outdir+"/corr_"+fout;
+  if (quick) outfile = outdir+"/corrquick_"+fout;
+  cout<<"Writing output to: "<<outfile<<endl;
+  baby_base b(indir+"/*"+fin, outfile, doCorrOutputTree);
 
   // quantities to keep track of;
   int neff(0);
   double wgt(0), tot_weight_l0(0), tot_weight_l1(0), nent_zlep(0);
 
   long nent = b.GetEntries();
+  cout<<"Running over "<<nent<<" events."<<endl;
   bool isSignal = false;
   for(long entry(0); entry<nent; entry++){
     if (entry==0 && b.type()>100e3) isSignal = true;
 
     b.GetEntry(entry);
-    if (entry%100000==0) {
+    if (entry%10000==0) {
       cout<<"Processing event: "<<entry<<endl;
+      cout<<"b.out_w_pu() = "<<b.out_w_pu()<<"\t b.w_pu() = "<<b.w_pu()<<endl;
     }
 
-    wgt = noInfNan(b.w_lep())*noInfNan(b.w_fs_lep())*noInfNan(b.w_btag())*noInfNan(b.w_isr());//*noInfNan(b.w_pu());
+    wgt = noInfNan(b.w_lep())*noInfNan(b.w_fs_lep())*
+          noInfNan(b.w_btag())*noInfNan(b.w_isr());//*noInfNan(b.w_pu());
 
     // need special treatment in summing and/or renormalizing
     neff += b.w_lumi()>0 ? 1:-1;
@@ -72,71 +78,73 @@ int main(int argc, char *argv[]){
     //-----------------------------------
     b.out_w_pu()                   += noInfNan(b.w_pu());
     b.out_w_btag()                 += noInfNan(b.w_btag());
-    b.out_w_btag_deep()            += noInfNan(b.w_btag_deep());
-    b.out_w_btag_loose()           += noInfNan(b.w_btag_loose());
-    b.out_w_btag_loose_deep()      += noInfNan(b.w_btag_loose_deep());
-    b.out_w_btag_tight()           += noInfNan(b.w_btag_tight());
-    b.out_w_btag_tight_deep()      += noInfNan(b.w_btag_tight_deep());
-    b.out_w_bhig()                 += noInfNan(b.w_bhig());
-    b.out_w_bhig_deep()            += noInfNan(b.w_bhig_deep());
-    b.out_w_btag_proc()            += noInfNan(b.w_btag_proc());
-    b.out_w_btag_deep_proc()       += noInfNan(b.w_btag_deep_proc());
-    b.out_w_btag_loose_proc()      += noInfNan(b.w_btag_loose_proc());
-    b.out_w_btag_loose_deep_proc() += noInfNan(b.w_btag_loose_deep_proc());
-    b.out_w_btag_tight_proc()      += noInfNan(b.w_btag_tight_proc());
-    b.out_w_btag_tight_deep_proc() += noInfNan(b.w_btag_tight_deep_proc());
-    b.out_w_bhig_proc()            += noInfNan(b.w_bhig_proc());
-    b.out_w_bhig_deep_proc()       += noInfNan(b.w_bhig_deep_proc());
+    if (!quick) {
+      b.out_w_btag_deep()            += noInfNan(b.w_btag_deep());
+      b.out_w_btag_loose()           += noInfNan(b.w_btag_loose());
+      b.out_w_btag_loose_deep()      += noInfNan(b.w_btag_loose_deep());
+      b.out_w_btag_tight()           += noInfNan(b.w_btag_tight());
+      b.out_w_btag_tight_deep()      += noInfNan(b.w_btag_tight_deep());
+      b.out_w_bhig()                 += noInfNan(b.w_bhig());
+      b.out_w_bhig_deep()            += noInfNan(b.w_bhig_deep());
+      b.out_w_btag_proc()            += noInfNan(b.w_btag_proc());
+      b.out_w_btag_deep_proc()       += noInfNan(b.w_btag_deep_proc());
+      b.out_w_btag_loose_proc()      += noInfNan(b.w_btag_loose_proc());
+      b.out_w_btag_loose_deep_proc() += noInfNan(b.w_btag_loose_deep_proc());
+      b.out_w_btag_tight_proc()      += noInfNan(b.w_btag_tight_proc());
+      b.out_w_btag_tight_deep_proc() += noInfNan(b.w_btag_tight_deep_proc());
+      b.out_w_bhig_proc()            += noInfNan(b.w_bhig_proc());
+      b.out_w_bhig_deep_proc()       += noInfNan(b.w_bhig_deep_proc());
 
-    for (unsigned i(0); i<b.w_pdf().size(); i++)  b.out_w_pdf()[i] += noInfNan(b.w_pdf()[i]);
+      for (unsigned i(0); i<b.w_pdf().size(); i++)  b.out_w_pdf()[i] += noInfNan(b.w_pdf()[i]);
 
-    for (unsigned i(0); i<b.sys_mur().size(); i++) {
-      b.out_sys_mur()[i]                     += noInfNan(b.sys_mur()[i]);
-      b.out_sys_muf()[i]                     += noInfNan(b.sys_muf()[i]);
-      b.out_sys_murf()[i]                    += noInfNan(b.sys_murf()[i]);
-      b.out_sys_pdf()[i]                     += noInfNan(b.sys_pdf()[i]);
-      b.out_sys_bctag()[i]                   += noInfNan(b.sys_bctag()[i]);
-      b.out_sys_bctag_deep()[i]              += noInfNan(b.sys_bctag_deep()[i]);
-      b.out_sys_udsgtag()[i]                 += noInfNan(b.sys_udsgtag()[i]);
-      b.out_sys_udsgtag_deep()[i]            += noInfNan(b.sys_udsgtag_deep()[i]);
-      b.out_sys_bctag_loose()[i]             += noInfNan(b.sys_bctag_loose()[i]);
-      b.out_sys_bctag_loose_deep()[i]        += noInfNan(b.sys_bctag_loose_deep()[i]);
-      b.out_sys_udsgtag_loose()[i]           += noInfNan(b.sys_udsgtag_loose()[i]);
-      b.out_sys_udsgtag_loose_deep()[i]      += noInfNan(b.sys_udsgtag_loose_deep()[i]);
-      b.out_sys_bctag_tight()[i]             += noInfNan(b.sys_bctag_tight()[i]);
-      b.out_sys_bctag_tight_deep()[i]        += noInfNan(b.sys_bctag_tight_deep()[i]);
-      b.out_sys_udsgtag_tight()[i]           += noInfNan(b.sys_udsgtag_tight()[i]);
-      b.out_sys_udsgtag_tight_deep()[i]      += noInfNan(b.sys_udsgtag_tight_deep()[i]);
-      b.out_sys_bchig()[i]                   += noInfNan(b.sys_bchig()[i]);
-      b.out_sys_bchig_deep()[i]              += noInfNan(b.sys_bchig_deep()[i]);
-      b.out_sys_udsghig()[i]                 += noInfNan(b.sys_udsghig()[i]);
-      b.out_sys_udsghig_deep()[i]            += noInfNan(b.sys_udsghig_deep()[i]);
-      b.out_sys_bctag_proc()[i]              += noInfNan(b.sys_bctag_proc()[i]);
-      b.out_sys_bctag_deep_proc()[i]         += noInfNan(b.sys_bctag_deep_proc()[i]);
-      b.out_sys_udsgtag_proc()[i]            += noInfNan(b.sys_udsgtag_proc()[i]);
-      b.out_sys_udsgtag_deep_proc()[i]       += noInfNan(b.sys_udsgtag_deep_proc()[i]);
-      b.out_sys_bctag_loose_proc()[i]        += noInfNan(b.sys_bctag_loose_proc()[i]);
-      b.out_sys_bctag_loose_deep_proc()[i]   += noInfNan(b.sys_bctag_loose_deep_proc()[i]);
-      b.out_sys_udsgtag_loose_proc()[i]      += noInfNan(b.sys_udsgtag_loose_proc()[i]);
-      b.out_sys_udsgtag_loose_deep_proc()[i] += noInfNan(b.sys_udsgtag_loose_deep_proc()[i]);
-      b.out_sys_bctag_tight_proc()[i]        += noInfNan(b.sys_bctag_tight_proc()[i]);
-      b.out_sys_bctag_tight_deep_proc()[i]   += noInfNan(b.sys_bctag_tight_deep_proc()[i]);
-      b.out_sys_udsgtag_tight_proc()[i]      += noInfNan(b.sys_udsgtag_tight_proc()[i]);
-      b.out_sys_udsgtag_tight_deep_proc()[i] += noInfNan(b.sys_udsgtag_tight_deep_proc()[i]);
-      b.out_sys_bchig_proc()[i]              += noInfNan(b.sys_bchig_proc()[i]);
-      b.out_sys_bchig_deep_proc()[i]         += noInfNan(b.sys_bchig_deep_proc()[i]);
-      b.out_sys_udsghig_proc()[i]            += noInfNan(b.sys_udsghig_proc()[i]);
-      b.out_sys_udsghig_deep_proc()[i]       += noInfNan(b.sys_udsghig_deep_proc()[i]);
-      b.out_sys_pu()[i]                      += noInfNan(b.sys_pu()[i]);
-      if (isSignal) { // yes, this ignores the fullsim points
-        b.out_sys_fs_bctag()[i]              += noInfNan(b.sys_fs_bctag()[i]);
-        b.out_sys_fs_bctag_deep()[i]         += noInfNan(b.sys_fs_bctag_deep()[i]);
-        b.out_sys_fs_udsgtag()[i]            += noInfNan(b.sys_fs_udsgtag()[i]);
-        b.out_sys_fs_udsgtag_deep()[i]       += noInfNan(b.sys_fs_udsgtag_deep()[i]);
-        b.out_sys_fs_bchig()[i]              += noInfNan(b.sys_fs_bchig()[i]);
-        b.out_sys_fs_bchig_deep()[i]         += noInfNan(b.sys_fs_bchig_deep()[i]);
-        b.out_sys_fs_udsghig()[i]            += noInfNan(b.sys_fs_udsghig()[i]);
-        b.out_sys_fs_udsghig_deep()[i]       += noInfNan(b.sys_fs_udsghig_deep()[i]);
+      for (unsigned i(0); i<b.sys_mur().size(); i++) {
+        b.out_sys_mur()[i]                     += noInfNan(b.sys_mur()[i]);
+        b.out_sys_muf()[i]                     += noInfNan(b.sys_muf()[i]);
+        b.out_sys_murf()[i]                    += noInfNan(b.sys_murf()[i]);
+        b.out_sys_pdf()[i]                     += noInfNan(b.sys_pdf()[i]);
+        b.out_sys_bctag()[i]                   += noInfNan(b.sys_bctag()[i]);
+        b.out_sys_bctag_deep()[i]              += noInfNan(b.sys_bctag_deep()[i]);
+        b.out_sys_udsgtag()[i]                 += noInfNan(b.sys_udsgtag()[i]);
+        b.out_sys_udsgtag_deep()[i]            += noInfNan(b.sys_udsgtag_deep()[i]);
+        b.out_sys_bctag_loose()[i]             += noInfNan(b.sys_bctag_loose()[i]);
+        b.out_sys_bctag_loose_deep()[i]        += noInfNan(b.sys_bctag_loose_deep()[i]);
+        b.out_sys_udsgtag_loose()[i]           += noInfNan(b.sys_udsgtag_loose()[i]);
+        b.out_sys_udsgtag_loose_deep()[i]      += noInfNan(b.sys_udsgtag_loose_deep()[i]);
+        b.out_sys_bctag_tight()[i]             += noInfNan(b.sys_bctag_tight()[i]);
+        b.out_sys_bctag_tight_deep()[i]        += noInfNan(b.sys_bctag_tight_deep()[i]);
+        b.out_sys_udsgtag_tight()[i]           += noInfNan(b.sys_udsgtag_tight()[i]);
+        b.out_sys_udsgtag_tight_deep()[i]      += noInfNan(b.sys_udsgtag_tight_deep()[i]);
+        b.out_sys_bchig()[i]                   += noInfNan(b.sys_bchig()[i]);
+        b.out_sys_bchig_deep()[i]              += noInfNan(b.sys_bchig_deep()[i]);
+        b.out_sys_udsghig()[i]                 += noInfNan(b.sys_udsghig()[i]);
+        b.out_sys_udsghig_deep()[i]            += noInfNan(b.sys_udsghig_deep()[i]);
+        b.out_sys_bctag_proc()[i]              += noInfNan(b.sys_bctag_proc()[i]);
+        b.out_sys_bctag_deep_proc()[i]         += noInfNan(b.sys_bctag_deep_proc()[i]);
+        b.out_sys_udsgtag_proc()[i]            += noInfNan(b.sys_udsgtag_proc()[i]);
+        b.out_sys_udsgtag_deep_proc()[i]       += noInfNan(b.sys_udsgtag_deep_proc()[i]);
+        b.out_sys_bctag_loose_proc()[i]        += noInfNan(b.sys_bctag_loose_proc()[i]);
+        b.out_sys_bctag_loose_deep_proc()[i]   += noInfNan(b.sys_bctag_loose_deep_proc()[i]);
+        b.out_sys_udsgtag_loose_proc()[i]      += noInfNan(b.sys_udsgtag_loose_proc()[i]);
+        b.out_sys_udsgtag_loose_deep_proc()[i] += noInfNan(b.sys_udsgtag_loose_deep_proc()[i]);
+        b.out_sys_bctag_tight_proc()[i]        += noInfNan(b.sys_bctag_tight_proc()[i]);
+        b.out_sys_bctag_tight_deep_proc()[i]   += noInfNan(b.sys_bctag_tight_deep_proc()[i]);
+        b.out_sys_udsgtag_tight_proc()[i]      += noInfNan(b.sys_udsgtag_tight_proc()[i]);
+        b.out_sys_udsgtag_tight_deep_proc()[i] += noInfNan(b.sys_udsgtag_tight_deep_proc()[i]);
+        b.out_sys_bchig_proc()[i]              += noInfNan(b.sys_bchig_proc()[i]);
+        b.out_sys_bchig_deep_proc()[i]         += noInfNan(b.sys_bchig_deep_proc()[i]);
+        b.out_sys_udsghig_proc()[i]            += noInfNan(b.sys_udsghig_proc()[i]);
+        b.out_sys_udsghig_deep_proc()[i]       += noInfNan(b.sys_udsghig_deep_proc()[i]);
+        b.out_sys_pu()[i]                      += noInfNan(b.sys_pu()[i]);
+        if (isSignal) { // yes, this ignores the fullsim points
+          b.out_sys_fs_bctag()[i]              += noInfNan(b.sys_fs_bctag()[i]);
+          b.out_sys_fs_bctag_deep()[i]         += noInfNan(b.sys_fs_bctag_deep()[i]);
+          b.out_sys_fs_udsgtag()[i]            += noInfNan(b.sys_fs_udsgtag()[i]);
+          b.out_sys_fs_udsgtag_deep()[i]       += noInfNan(b.sys_fs_udsgtag_deep()[i]);
+          b.out_sys_fs_bchig()[i]              += noInfNan(b.sys_fs_bchig()[i]);
+          b.out_sys_fs_bchig_deep()[i]         += noInfNan(b.sys_fs_bchig_deep()[i]);
+          b.out_sys_fs_udsghig()[i]            += noInfNan(b.sys_fs_udsghig()[i]);
+          b.out_sys_fs_udsghig_deep()[i]       += noInfNan(b.sys_fs_udsghig_deep()[i]);
+        }
       }
     }
   } // loop over events
@@ -195,71 +203,73 @@ int main(int argc, char *argv[]){
   //------------------------------------------------
   b.out_w_pu()                   = nent / b.out_w_pu();
   b.out_w_btag()                 = nent / b.out_w_btag();
-  b.out_w_btag_deep()            = nent / b.out_w_btag_deep();
-  b.out_w_btag_loose()           = nent / b.out_w_btag_loose();
-  b.out_w_btag_loose_deep()      = nent / b.out_w_btag_loose_deep();
-  b.out_w_btag_tight()           = nent / b.out_w_btag_tight();
-  b.out_w_btag_tight_deep()      = nent / b.out_w_btag_tight_deep();
-  b.out_w_bhig()                 = nent / b.out_w_bhig();
-  b.out_w_bhig_deep()            = nent / b.out_w_bhig_deep();
-  b.out_w_btag_proc()            = nent / b.out_w_btag_proc();
-  b.out_w_btag_deep_proc()       = nent / b.out_w_btag_deep_proc();
-  b.out_w_btag_loose_proc()      = nent / b.out_w_btag_loose_proc();
-  b.out_w_btag_loose_deep_proc() = nent / b.out_w_btag_loose_deep_proc();
-  b.out_w_btag_tight_proc()      = nent / b.out_w_btag_tight_proc();
-  b.out_w_btag_tight_deep_proc() = nent / b.out_w_btag_tight_deep_proc();
-  b.out_w_bhig_proc()            = nent / b.out_w_bhig_proc();
-  b.out_w_bhig_deep_proc()       = nent / b.out_w_bhig_deep_proc();
+  if (!quick) {
+    b.out_w_btag_deep()            = nent / b.out_w_btag_deep();
+    b.out_w_btag_loose()           = nent / b.out_w_btag_loose();
+    b.out_w_btag_loose_deep()      = nent / b.out_w_btag_loose_deep();
+    b.out_w_btag_tight()           = nent / b.out_w_btag_tight();
+    b.out_w_btag_tight_deep()      = nent / b.out_w_btag_tight_deep();
+    b.out_w_bhig()                 = nent / b.out_w_bhig();
+    b.out_w_bhig_deep()            = nent / b.out_w_bhig_deep();
+    b.out_w_btag_proc()            = nent / b.out_w_btag_proc();
+    b.out_w_btag_deep_proc()       = nent / b.out_w_btag_deep_proc();
+    b.out_w_btag_loose_proc()      = nent / b.out_w_btag_loose_proc();
+    b.out_w_btag_loose_deep_proc() = nent / b.out_w_btag_loose_deep_proc();
+    b.out_w_btag_tight_proc()      = nent / b.out_w_btag_tight_proc();
+    b.out_w_btag_tight_deep_proc() = nent / b.out_w_btag_tight_deep_proc();
+    b.out_w_bhig_proc()            = nent / b.out_w_bhig_proc();
+    b.out_w_bhig_deep_proc()       = nent / b.out_w_bhig_deep_proc();
 
-  for (unsigned i(0); i<b.w_pdf().size(); i++)  b.out_w_pdf()[i] = nent / b.out_w_pdf()[i];
+    for (unsigned i(0); i<b.w_pdf().size(); i++) b.out_w_pdf()[i] = nent / b.out_w_pdf()[i];
 
-  for (unsigned i(0); i<b.sys_mur().size(); i++) {
-    b.out_sys_mur()[i]                     = nent / b.out_sys_mur()[i];
-    b.out_sys_muf()[i]                     = nent / b.out_sys_muf()[i];
-    b.out_sys_murf()[i]                    = nent / b.out_sys_murf()[i];
-    b.out_sys_pdf()[i]                     = nent / b.out_sys_pdf()[i];
-    b.out_sys_bctag()[i]                   = nent / b.out_sys_bctag()[i];
-    b.out_sys_bctag_deep()[i]              = nent / b.out_sys_bctag_deep()[i];
-    b.out_sys_udsgtag()[i]                 = nent / b.out_sys_udsgtag()[i];
-    b.out_sys_udsgtag_deep()[i]            = nent / b.out_sys_udsgtag_deep()[i];
-    b.out_sys_bctag_loose()[i]             = nent / b.out_sys_bctag_loose()[i];
-    b.out_sys_bctag_loose_deep()[i]        = nent / b.out_sys_bctag_loose_deep()[i];
-    b.out_sys_udsgtag_loose()[i]           = nent / b.out_sys_udsgtag_loose()[i];
-    b.out_sys_udsgtag_loose_deep()[i]      = nent / b.out_sys_udsgtag_loose_deep()[i];
-    b.out_sys_bctag_tight()[i]             = nent / b.out_sys_bctag_tight()[i];
-    b.out_sys_bctag_tight_deep()[i]        = nent / b.out_sys_bctag_tight_deep()[i];
-    b.out_sys_udsgtag_tight()[i]           = nent / b.out_sys_udsgtag_tight()[i];
-    b.out_sys_udsgtag_tight_deep()[i]      = nent / b.out_sys_udsgtag_tight_deep()[i];
-    b.out_sys_bchig()[i]                   = nent / b.out_sys_bchig()[i];
-    b.out_sys_bchig_deep()[i]              = nent / b.out_sys_bchig_deep()[i];
-    b.out_sys_udsghig()[i]                 = nent / b.out_sys_udsghig()[i];
-    b.out_sys_udsghig_deep()[i]            = nent / b.out_sys_udsghig_deep()[i];
-    b.out_sys_bctag_proc()[i]              = nent / b.out_sys_bctag_proc()[i];
-    b.out_sys_bctag_deep_proc()[i]         = nent / b.out_sys_bctag_deep_proc()[i];
-    b.out_sys_udsgtag_proc()[i]            = nent / b.out_sys_udsgtag_proc()[i];
-    b.out_sys_udsgtag_deep_proc()[i]       = nent / b.out_sys_udsgtag_deep_proc()[i];
-    b.out_sys_bctag_loose_proc()[i]        = nent / b.out_sys_bctag_loose_proc()[i];
-    b.out_sys_bctag_loose_deep_proc()[i]   = nent / b.out_sys_bctag_loose_deep_proc()[i];
-    b.out_sys_udsgtag_loose_proc()[i]      = nent / b.out_sys_udsgtag_loose_proc()[i];
-    b.out_sys_udsgtag_loose_deep_proc()[i] = nent / b.out_sys_udsgtag_loose_deep_proc()[i];
-    b.out_sys_bctag_tight_proc()[i]        = nent / b.out_sys_bctag_tight_proc()[i];
-    b.out_sys_bctag_tight_deep_proc()[i]   = nent / b.out_sys_bctag_tight_deep_proc()[i];
-    b.out_sys_udsgtag_tight_proc()[i]      = nent / b.out_sys_udsgtag_tight_proc()[i];
-    b.out_sys_udsgtag_tight_deep_proc()[i] = nent / b.out_sys_udsgtag_tight_deep_proc()[i];
-    b.out_sys_bchig_proc()[i]              = nent / b.out_sys_bchig_proc()[i];
-    b.out_sys_bchig_deep_proc()[i]         = nent / b.out_sys_bchig_deep_proc()[i];
-    b.out_sys_udsghig_proc()[i]            = nent / b.out_sys_udsghig_proc()[i];
-    b.out_sys_udsghig_deep_proc()[i]       = nent / b.out_sys_udsghig_deep_proc()[i];
-    b.out_sys_pu()[i]                      = nent / b.out_sys_pu()[i];
-    if (isSignal) { // yes, this ignores the fullsim points
-      b.out_sys_fs_bctag()[i]              = nent / b.out_sys_fs_bctag()[i];
-      b.out_sys_fs_bctag_deep()[i]         = nent / b.out_sys_fs_bctag_deep()[i];
-      b.out_sys_fs_udsgtag()[i]            = nent / b.out_sys_fs_udsgtag()[i];
-      b.out_sys_fs_udsgtag_deep()[i]       = nent / b.out_sys_fs_udsgtag_deep()[i];
-      b.out_sys_fs_bchig()[i]              = nent / b.out_sys_fs_bchig()[i];
-      b.out_sys_fs_bchig_deep()[i]         = nent / b.out_sys_fs_bchig_deep()[i];
-      b.out_sys_fs_udsghig()[i]            = nent / b.out_sys_fs_udsghig()[i];
-      b.out_sys_fs_udsghig_deep()[i]       = nent / b.out_sys_fs_udsghig_deep()[i];
+    for (unsigned i(0); i<b.sys_mur().size(); i++) {
+      b.out_sys_mur()[i]                     = nent / b.out_sys_mur()[i];
+      b.out_sys_muf()[i]                     = nent / b.out_sys_muf()[i];
+      b.out_sys_murf()[i]                    = nent / b.out_sys_murf()[i];
+      b.out_sys_pdf()[i]                     = nent / b.out_sys_pdf()[i];
+      b.out_sys_bctag()[i]                   = nent / b.out_sys_bctag()[i];
+      b.out_sys_bctag_deep()[i]              = nent / b.out_sys_bctag_deep()[i];
+      b.out_sys_udsgtag()[i]                 = nent / b.out_sys_udsgtag()[i];
+      b.out_sys_udsgtag_deep()[i]            = nent / b.out_sys_udsgtag_deep()[i];
+      b.out_sys_bctag_loose()[i]             = nent / b.out_sys_bctag_loose()[i];
+      b.out_sys_bctag_loose_deep()[i]        = nent / b.out_sys_bctag_loose_deep()[i];
+      b.out_sys_udsgtag_loose()[i]           = nent / b.out_sys_udsgtag_loose()[i];
+      b.out_sys_udsgtag_loose_deep()[i]      = nent / b.out_sys_udsgtag_loose_deep()[i];
+      b.out_sys_bctag_tight()[i]             = nent / b.out_sys_bctag_tight()[i];
+      b.out_sys_bctag_tight_deep()[i]        = nent / b.out_sys_bctag_tight_deep()[i];
+      b.out_sys_udsgtag_tight()[i]           = nent / b.out_sys_udsgtag_tight()[i];
+      b.out_sys_udsgtag_tight_deep()[i]      = nent / b.out_sys_udsgtag_tight_deep()[i];
+      b.out_sys_bchig()[i]                   = nent / b.out_sys_bchig()[i];
+      b.out_sys_bchig_deep()[i]              = nent / b.out_sys_bchig_deep()[i];
+      b.out_sys_udsghig()[i]                 = nent / b.out_sys_udsghig()[i];
+      b.out_sys_udsghig_deep()[i]            = nent / b.out_sys_udsghig_deep()[i];
+      b.out_sys_bctag_proc()[i]              = nent / b.out_sys_bctag_proc()[i];
+      b.out_sys_bctag_deep_proc()[i]         = nent / b.out_sys_bctag_deep_proc()[i];
+      b.out_sys_udsgtag_proc()[i]            = nent / b.out_sys_udsgtag_proc()[i];
+      b.out_sys_udsgtag_deep_proc()[i]       = nent / b.out_sys_udsgtag_deep_proc()[i];
+      b.out_sys_bctag_loose_proc()[i]        = nent / b.out_sys_bctag_loose_proc()[i];
+      b.out_sys_bctag_loose_deep_proc()[i]   = nent / b.out_sys_bctag_loose_deep_proc()[i];
+      b.out_sys_udsgtag_loose_proc()[i]      = nent / b.out_sys_udsgtag_loose_proc()[i];
+      b.out_sys_udsgtag_loose_deep_proc()[i] = nent / b.out_sys_udsgtag_loose_deep_proc()[i];
+      b.out_sys_bctag_tight_proc()[i]        = nent / b.out_sys_bctag_tight_proc()[i];
+      b.out_sys_bctag_tight_deep_proc()[i]   = nent / b.out_sys_bctag_tight_deep_proc()[i];
+      b.out_sys_udsgtag_tight_proc()[i]      = nent / b.out_sys_udsgtag_tight_proc()[i];
+      b.out_sys_udsgtag_tight_deep_proc()[i] = nent / b.out_sys_udsgtag_tight_deep_proc()[i];
+      b.out_sys_bchig_proc()[i]              = nent / b.out_sys_bchig_proc()[i];
+      b.out_sys_bchig_deep_proc()[i]         = nent / b.out_sys_bchig_deep_proc()[i];
+      b.out_sys_udsghig_proc()[i]            = nent / b.out_sys_udsghig_proc()[i];
+      b.out_sys_udsghig_deep_proc()[i]       = nent / b.out_sys_udsghig_deep_proc()[i];
+      b.out_sys_pu()[i]                      = nent / b.out_sys_pu()[i];
+      if (isSignal) { // yes, this ignores the fullsim points
+        b.out_sys_fs_bctag()[i]              = nent / b.out_sys_fs_bctag()[i];
+        b.out_sys_fs_bctag_deep()[i]         = nent / b.out_sys_fs_bctag_deep()[i];
+        b.out_sys_fs_udsgtag()[i]            = nent / b.out_sys_fs_udsgtag()[i];
+        b.out_sys_fs_udsgtag_deep()[i]       = nent / b.out_sys_fs_udsgtag_deep()[i];
+        b.out_sys_fs_bchig()[i]              = nent / b.out_sys_fs_bchig()[i];
+        b.out_sys_fs_bchig_deep()[i]         = nent / b.out_sys_fs_bchig_deep()[i];
+        b.out_sys_fs_udsghig()[i]            = nent / b.out_sys_fs_udsghig()[i];
+        b.out_sys_fs_udsghig_deep()[i]       = nent / b.out_sys_fs_udsghig_deep()[i];
+      }
     }
   }
 
@@ -277,6 +287,7 @@ void GetOptions(int argc, char *argv[]){
       {"indir", required_argument, 0, 'i'},  // Method to run on (if you just want one)
       {"tag", required_argument, 0, 't'},       // Apply correction
       {"outdir", required_argument, 0, 'o'},    // Luminosity to normalize MC with (no data)
+      {"quick", no_argument, 0, 0},  
       {0, 0, 0, 0}
     };
 
@@ -297,6 +308,14 @@ void GetOptions(int argc, char *argv[]){
       outdir = optarg;
       break;
     case 0:
+      optname = long_options[option_index].name;
+      if(optname == "quick"){
+        quick = true;
+      }else{
+        printf("Bad option! Found option name %s\n", optname.c_str());
+        exit(1);
+      }
+      break;
     default:
       printf("Bad option! getopt_long returned character code 0%o\n", opt);
       break;

@@ -3,33 +3,26 @@ import os, sys, subprocess, glob
 import string
 from pprint import pprint
 
-def findBaseSampleNames(folder):
-    infiles = set()
-    for file in glob.glob(folder+'/*.root'):
-        tag = file.split("RunII")[0]
-        tag = tag.split("13TeV")[0]
-        tag = tag.split("CUETP")[0]
-        tag = tag.split("-PromptReco")[0]
-        tag = tag.split("-23Sep2016")[0]
-        tag = tag.split("_runs")[0]
-        tag = tag.split("pythia")[0]
-        tag = tag.split("baby_")[1]
-        tag = tag.split("__")[0]
-        if tag[0] != '_': tag = "_"+tag
-        if tag[-1] != '_' and "Tune" not in tag and "Run2016" not in tag: tag = tag+"_"
-        infiles.add(tag)
-    sortedfiles = list()
-    for file in infiles:
-        sortedfiles.append(file.strip('_'))
-    sortedfiles = sorted(sortedfiles)
-
-    return sortedfiles
+def getTags(folder):
+  infiles = set()
+  for file in glob.glob(folder+'/*.root'):
+    tag = file.split("/")[-1]
+    tag = tag.split("RunIISpring16MiniAODv2")[0]
+    tag = tag.split("RunIISummer16MiniAODv2")[0]
+    tag = tag.replace("fullbaby_","")
+    tag = tag.rstrip("_")
+    infiles.add(tag)
+  return sorted(infiles)
 
 infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
 outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
+quick = True
+# leave as empty string to run over all input files in the infolder
+one_sample = 'TTJets_Tune'
+
 
 ## Finding tags for each dataset
-tags = findBaseSampleNames(infolder)
+tags = getTags(infolder)
 
 # Setting folders
 if not os.path.exists(outfolder):
@@ -39,9 +32,14 @@ os.system("JobSetup.csh")
 ijob = 0
 
 for tag in tags:
+  if (one_sample!='') and (one_sample not in tag): continue
+  if quick:
+    cmd = "JobSubmit.csh ./run/wrapper.sh ./run/calc_corr.exe --quick -i "+infolder+" -t "+tag+" -o "+outfolder
+  else:
+    cmd = "JobSubmit.csh ./run/wrapper.sh ./run/calc_corr.exe -i "+infolder+" -t "+tag+" -o "+outfolder
+  # os.system(cmd)
+  print cmd
   ijob += 1
-  cmd = "JobSubmit.csh ./run/wrapper.sh ./run/calc_corr.exe -i "+infolder+" -t "+tag+" -o "+outfolder
-  os.system(cmd)
 
 print "\nSubmitted "+str(ijob)+" jobs. Output goes to "+outfolder+"\n"
 

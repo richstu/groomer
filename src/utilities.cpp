@@ -163,3 +163,16 @@ TString hoursMinSec(long seconds){
 
   return hhmmss;
 }
+
+void ReplaceAll(string &str, const string &orig, const string &rep){
+  size_t loc = 0;
+  while ((loc = str.find(orig, loc)) != string::npos) {
+    str.replace(loc, orig.length(), rep);
+    loc += rep.length();
+  }
+}
+
+string CopyReplaceAll(string str, const string &orig, const string &rep){
+  ReplaceAll(str, orig, rep);
+  return str;
+}
