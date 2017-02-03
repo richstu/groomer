@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
     b.out_w_lumi() *= bcorr.w_lumi();
 
     b.out_weight() = bcorr.weight() *b.out_w_lumi() 
-                     *noInfNan(b.out_w_lep()) *noInfNan(b.out_w_fs_lep()) //post-corr values in order for 0l to be correct
+                     *noInfNan(b.val_w_lep()) *noInfNan(b.val_w_fs_lep()) //post-corr values in order for 0l to be correct
                      *noInfNan(b.w_btag()) *noInfNan(b.w_isr()) *b.eff_jetid();
     
     b.out_w_isr() = bcorr.w_isr()*noInfNan(b.w_isr());
@@ -85,6 +85,9 @@ int main(int argc, char *argv[]){
     //-----------------------------------
     b.out_w_pu()                   = bcorr.w_pu()                  *noInfNan(b.w_pu());
     b.out_w_btag()                 = bcorr.w_btag()                *noInfNan(b.w_btag());
+    
+    for (unsigned i(0); i<b.sys_mur().size(); i++)                      b.out_sys_mur()[i]                     = bcorr.sys_mur()[i]                    *noInfNan(b.sys_mur()[i]);
+
     if (!quick) {
       b.out_w_btag_deep()            = bcorr.w_btag_deep()           *noInfNan(b.w_btag_deep());
       b.out_w_btag_loose()           = bcorr.w_btag_loose()          *noInfNan(b.w_btag_loose());
@@ -104,53 +107,54 @@ int main(int argc, char *argv[]){
 
       for (unsigned i(0); i<b.w_pdf().size(); i++)  b.out_w_pdf()[i] = bcorr.w_pdf()[i]*noInfNan(b.w_pdf()[i]);
 
-      // loop for each since we need the branch to load before trying to access a particular element in the output tree (only an issue for vectors)
-      for (unsigned i(0); i<b.sys_mur().size(); i++)                      b.out_sys_mur()[i]                     = bcorr.sys_mur()[i]                    *noInfNan(b.sys_mur()[i]);
-      for (unsigned i(0); i<b.sys_muf().size(); i++)                      b.out_sys_muf()[i]                     = bcorr.sys_muf()[i]                    *noInfNan(b.sys_muf()[i]);
-      for (unsigned i(0); i<b.sys_murf().size(); i++)                     b.out_sys_murf()[i]                    = bcorr.sys_murf()[i]                   *noInfNan(b.sys_murf()[i]);
-      for (unsigned i(0); i<b.sys_pdf().size(); i++)                      b.out_sys_pdf()[i]                     = bcorr.sys_pdf()[i]                    *noInfNan(b.sys_pdf()[i]);
-      for (unsigned i(0); i<b.sys_bctag().size(); i++)                    b.out_sys_bctag()[i]                   = bcorr.sys_bctag()[i]                  *noInfNan(b.sys_bctag()[i]);
-      for (unsigned i(0); i<b.sys_bctag_deep().size(); i++)               b.out_sys_bctag_deep()[i]              = bcorr.sys_bctag_deep()[i]             *noInfNan(b.sys_bctag_deep()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag().size(); i++)                  b.out_sys_udsgtag()[i]                 = bcorr.sys_udsgtag()[i]                *noInfNan(b.sys_udsgtag()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_deep().size(); i++)             b.out_sys_udsgtag_deep()[i]            = bcorr.sys_udsgtag_deep()[i]           *noInfNan(b.sys_udsgtag_deep()[i]);
-      for (unsigned i(0); i<b.sys_bctag_loose().size(); i++)              b.out_sys_bctag_loose()[i]             = bcorr.sys_bctag_loose()[i]            *noInfNan(b.sys_bctag_loose()[i]);
-      for (unsigned i(0); i<b.sys_bctag_loose_deep().size(); i++)         b.out_sys_bctag_loose_deep()[i]        = bcorr.sys_bctag_loose_deep()[i]       *noInfNan(b.sys_bctag_loose_deep()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_loose().size(); i++)            b.out_sys_udsgtag_loose()[i]           = bcorr.sys_udsgtag_loose()[i]          *noInfNan(b.sys_udsgtag_loose()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_loose_deep().size(); i++)       b.out_sys_udsgtag_loose_deep()[i]      = bcorr.sys_udsgtag_loose_deep()[i]     *noInfNan(b.sys_udsgtag_loose_deep()[i]);
-      for (unsigned i(0); i<b.sys_bctag_tight().size(); i++)              b.out_sys_bctag_tight()[i]             = bcorr.sys_bctag_tight()[i]            *noInfNan(b.sys_bctag_tight()[i]);
-      for (unsigned i(0); i<b.sys_bctag_tight_deep().size(); i++)         b.out_sys_bctag_tight_deep()[i]        = bcorr.sys_bctag_tight_deep()[i]       *noInfNan(b.sys_bctag_tight_deep()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_tight().size(); i++)            b.out_sys_udsgtag_tight()[i]           = bcorr.sys_udsgtag_tight()[i]          *noInfNan(b.sys_udsgtag_tight()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_tight_deep().size(); i++)       b.out_sys_udsgtag_tight_deep()[i]      = bcorr.sys_udsgtag_tight_deep()[i]     *noInfNan(b.sys_udsgtag_tight_deep()[i]);
-      for (unsigned i(0); i<b.sys_bchig().size(); i++)                    b.out_sys_bchig()[i]                   = bcorr.sys_bchig()[i]                  *noInfNan(b.sys_bchig()[i]);
-      for (unsigned i(0); i<b.sys_bchig_deep().size(); i++)               b.out_sys_bchig_deep()[i]              = bcorr.sys_bchig_deep()[i]             *noInfNan(b.sys_bchig_deep()[i]);
-      for (unsigned i(0); i<b.sys_udsghig().size(); i++)                  b.out_sys_udsghig()[i]                 = bcorr.sys_udsghig()[i]                *noInfNan(b.sys_udsghig()[i]);
-      for (unsigned i(0); i<b.sys_udsghig_deep().size(); i++)             b.out_sys_udsghig_deep()[i]            = bcorr.sys_udsghig_deep()[i]           *noInfNan(b.sys_udsghig_deep()[i]);
-      for (unsigned i(0); i<b.sys_bctag_proc().size(); i++)               b.out_sys_bctag_proc()[i]              = bcorr.sys_bctag_proc()[i]             *noInfNan(b.sys_bctag_proc()[i]);
-      for (unsigned i(0); i<b.sys_bctag_deep_proc().size(); i++)          b.out_sys_bctag_deep_proc()[i]         = bcorr.sys_bctag_deep_proc()[i]        *noInfNan(b.sys_bctag_deep_proc()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_proc().size(); i++)             b.out_sys_udsgtag_proc()[i]            = bcorr.sys_udsgtag_proc()[i]           *noInfNan(b.sys_udsgtag_proc()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_deep_proc().size(); i++)        b.out_sys_udsgtag_deep_proc()[i]       = bcorr.sys_udsgtag_deep_proc()[i]      *noInfNan(b.sys_udsgtag_deep_proc()[i]);
-      for (unsigned i(0); i<b.sys_bctag_loose_proc().size(); i++)         b.out_sys_bctag_loose_proc()[i]        = bcorr.sys_bctag_loose_proc()[i]       *noInfNan(b.sys_bctag_loose_proc()[i]);
-      for (unsigned i(0); i<b.sys_bctag_loose_deep_proc().size(); i++)    b.out_sys_bctag_loose_deep_proc()[i]   = bcorr.sys_bctag_loose_deep_proc()[i]  *noInfNan(b.sys_bctag_loose_deep_proc()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_loose_proc().size(); i++)       b.out_sys_udsgtag_loose_proc()[i]      = bcorr.sys_udsgtag_loose_proc()[i]     *noInfNan(b.sys_udsgtag_loose_proc()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_loose_deep_proc().size(); i++)  b.out_sys_udsgtag_loose_deep_proc()[i] = bcorr.sys_udsgtag_loose_deep_proc()[i]*noInfNan(b.sys_udsgtag_loose_deep_proc()[i]);
-      for (unsigned i(0); i<b.sys_bctag_tight_proc().size(); i++)         b.out_sys_bctag_tight_proc()[i]        = bcorr.sys_bctag_tight_proc()[i]       *noInfNan(b.sys_bctag_tight_proc()[i]);
-      for (unsigned i(0); i<b.sys_bctag_tight_deep_proc().size(); i++)    b.out_sys_bctag_tight_deep_proc()[i]   = bcorr.sys_bctag_tight_deep_proc()[i]  *noInfNan(b.sys_bctag_tight_deep_proc()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_tight_proc().size(); i++)       b.out_sys_udsgtag_tight_proc()[i]      = bcorr.sys_udsgtag_tight_proc()[i]     *noInfNan(b.sys_udsgtag_tight_proc()[i]);
-      for (unsigned i(0); i<b.sys_udsgtag_tight_deep_proc().size(); i++)  b.out_sys_udsgtag_tight_deep_proc()[i] = bcorr.sys_udsgtag_tight_deep_proc()[i]*noInfNan(b.sys_udsgtag_tight_deep_proc()[i]);
-      for (unsigned i(0); i<b.sys_bchig_proc().size(); i++)               b.out_sys_bchig_proc()[i]              = bcorr.sys_bchig_proc()[i]             *noInfNan(b.sys_bchig_proc()[i]);
-      for (unsigned i(0); i<b.sys_bchig_deep_proc().size(); i++)          b.out_sys_bchig_deep_proc()[i]         = bcorr.sys_bchig_deep_proc()[i]        *noInfNan(b.sys_bchig_deep_proc()[i]);
-      for (unsigned i(0); i<b.sys_udsghig_proc().size(); i++)             b.out_sys_udsghig_proc()[i]            = bcorr.sys_udsghig_proc()[i]           *noInfNan(b.sys_udsghig_proc()[i]);
-      for (unsigned i(0); i<b.sys_udsghig_deep_proc().size(); i++)        b.out_sys_udsghig_deep_proc()[i]       = bcorr.sys_udsghig_deep_proc()[i]      *noInfNan(b.sys_udsghig_deep_proc()[i]);
-      for (unsigned i(0); i<b.sys_pu().size(); i++)                       b.out_sys_pu()[i]                      = bcorr.sys_pu()[i]                     *noInfNan(b.sys_pu()[i]);
-      if (isSignal) { // yes, this ignores the fullsim points
-        for (unsigned i(0); i<b.sys_fs_bctag().size(); i++)               b.out_sys_fs_bctag()[i]              = bcorr.sys_fs_bctag()[i]               *noInfNan(b.sys_fs_bctag()[i]);
-        for (unsigned i(0); i<b.sys_fs_bctag_deep().size(); i++)          b.out_sys_fs_bctag_deep()[i]         = bcorr.sys_fs_bctag_deep()[i]          *noInfNan(b.sys_fs_bctag_deep()[i]);
-        for (unsigned i(0); i<b.sys_fs_udsgtag().size(); i++)             b.out_sys_fs_udsgtag()[i]            = bcorr.sys_fs_udsgtag()[i]             *noInfNan(b.sys_fs_udsgtag()[i]);
-        for (unsigned i(0); i<b.sys_fs_udsgtag_deep().size(); i++)        b.out_sys_fs_udsgtag_deep()[i]       = bcorr.sys_fs_udsgtag_deep()[i]        *noInfNan(b.sys_fs_udsgtag_deep()[i]);
-        for (unsigned i(0); i<b.sys_fs_bchig().size(); i++)               b.out_sys_fs_bchig()[i]              = bcorr.sys_fs_bchig()[i]               *noInfNan(b.sys_fs_bchig()[i]);
-        for (unsigned i(0); i<b.sys_fs_bchig_deep().size(); i++)          b.out_sys_fs_bchig_deep()[i]         = bcorr.sys_fs_bchig_deep()[i]          *noInfNan(b.sys_fs_bchig_deep()[i]);
-        for (unsigned i(0); i<b.sys_fs_udsghig().size(); i++)             b.out_sys_fs_udsghig()[i]            = bcorr.sys_fs_udsghig()[i]             *noInfNan(b.sys_fs_udsghig()[i]);
-        for (unsigned i(0); i<b.sys_fs_udsghig_deep().size(); i++)        b.out_sys_fs_udsghig_deep()[i]       = bcorr.sys_fs_udsghig_deep()[i]        *noInfNan(b.sys_fs_udsghig_deep()[i]);
+      for (unsigned i(0); i<2; i++) {
+        b.out_sys_mur()[i]                     = bcorr.sys_mur()[i]                    *noInfNan(b.sys_mur()[i]);
+        b.out_sys_muf()[i]                     = bcorr.sys_muf()[i]                    *noInfNan(b.sys_muf()[i]);
+        b.out_sys_murf()[i]                    = bcorr.sys_murf()[i]                   *noInfNan(b.sys_murf()[i]);
+        b.out_sys_pdf()[i]                     = bcorr.sys_pdf()[i]                    *noInfNan(b.sys_pdf()[i]);
+        b.out_sys_bctag()[i]                   = bcorr.sys_bctag()[i]                  *noInfNan(b.sys_bctag()[i]);
+        b.out_sys_bctag_deep()[i]              = bcorr.sys_bctag_deep()[i]             *noInfNan(b.sys_bctag_deep()[i]);
+        b.out_sys_udsgtag()[i]                 = bcorr.sys_udsgtag()[i]                *noInfNan(b.sys_udsgtag()[i]);
+        b.out_sys_udsgtag_deep()[i]            = bcorr.sys_udsgtag_deep()[i]           *noInfNan(b.sys_udsgtag_deep()[i]);
+        b.out_sys_bctag_loose()[i]             = bcorr.sys_bctag_loose()[i]            *noInfNan(b.sys_bctag_loose()[i]);
+        b.out_sys_bctag_loose_deep()[i]        = bcorr.sys_bctag_loose_deep()[i]       *noInfNan(b.sys_bctag_loose_deep()[i]);
+        b.out_sys_udsgtag_loose()[i]           = bcorr.sys_udsgtag_loose()[i]          *noInfNan(b.sys_udsgtag_loose()[i]);
+        b.out_sys_udsgtag_loose_deep()[i]      = bcorr.sys_udsgtag_loose_deep()[i]     *noInfNan(b.sys_udsgtag_loose_deep()[i]);
+        b.out_sys_bctag_tight()[i]             = bcorr.sys_bctag_tight()[i]            *noInfNan(b.sys_bctag_tight()[i]);
+        b.out_sys_bctag_tight_deep()[i]        = bcorr.sys_bctag_tight_deep()[i]       *noInfNan(b.sys_bctag_tight_deep()[i]);
+        b.out_sys_udsgtag_tight()[i]           = bcorr.sys_udsgtag_tight()[i]          *noInfNan(b.sys_udsgtag_tight()[i]);
+        b.out_sys_udsgtag_tight_deep()[i]      = bcorr.sys_udsgtag_tight_deep()[i]     *noInfNan(b.sys_udsgtag_tight_deep()[i]);
+        b.out_sys_bchig()[i]                   = bcorr.sys_bchig()[i]                  *noInfNan(b.sys_bchig()[i]);
+        b.out_sys_bchig_deep()[i]              = bcorr.sys_bchig_deep()[i]             *noInfNan(b.sys_bchig_deep()[i]);
+        b.out_sys_udsghig()[i]                 = bcorr.sys_udsghig()[i]                *noInfNan(b.sys_udsghig()[i]);
+        b.out_sys_udsghig_deep()[i]            = bcorr.sys_udsghig_deep()[i]           *noInfNan(b.sys_udsghig_deep()[i]);
+        b.out_sys_bctag_proc()[i]              = bcorr.sys_bctag_proc()[i]             *noInfNan(b.sys_bctag_proc()[i]);
+        b.out_sys_bctag_deep_proc()[i]         = bcorr.sys_bctag_deep_proc()[i]        *noInfNan(b.sys_bctag_deep_proc()[i]);
+        b.out_sys_udsgtag_proc()[i]            = bcorr.sys_udsgtag_proc()[i]           *noInfNan(b.sys_udsgtag_proc()[i]);
+        b.out_sys_udsgtag_deep_proc()[i]       = bcorr.sys_udsgtag_deep_proc()[i]      *noInfNan(b.sys_udsgtag_deep_proc()[i]);
+        b.out_sys_bctag_loose_proc()[i]        = bcorr.sys_bctag_loose_proc()[i]       *noInfNan(b.sys_bctag_loose_proc()[i]);
+        b.out_sys_bctag_loose_deep_proc()[i]   = bcorr.sys_bctag_loose_deep_proc()[i]  *noInfNan(b.sys_bctag_loose_deep_proc()[i]);
+        b.out_sys_udsgtag_loose_proc()[i]      = bcorr.sys_udsgtag_loose_proc()[i]     *noInfNan(b.sys_udsgtag_loose_proc()[i]);
+        b.out_sys_udsgtag_loose_deep_proc()[i] = bcorr.sys_udsgtag_loose_deep_proc()[i]*noInfNan(b.sys_udsgtag_loose_deep_proc()[i]);
+        b.out_sys_bctag_tight_proc()[i]        = bcorr.sys_bctag_tight_proc()[i]       *noInfNan(b.sys_bctag_tight_proc()[i]);
+        b.out_sys_bctag_tight_deep_proc()[i]   = bcorr.sys_bctag_tight_deep_proc()[i]  *noInfNan(b.sys_bctag_tight_deep_proc()[i]);
+        b.out_sys_udsgtag_tight_proc()[i]      = bcorr.sys_udsgtag_tight_proc()[i]     *noInfNan(b.sys_udsgtag_tight_proc()[i]);
+        b.out_sys_udsgtag_tight_deep_proc()[i] = bcorr.sys_udsgtag_tight_deep_proc()[i]*noInfNan(b.sys_udsgtag_tight_deep_proc()[i]);
+        b.out_sys_bchig_proc()[i]              = bcorr.sys_bchig_proc()[i]             *noInfNan(b.sys_bchig_proc()[i]);
+        b.out_sys_bchig_deep_proc()[i]         = bcorr.sys_bchig_deep_proc()[i]        *noInfNan(b.sys_bchig_deep_proc()[i]);
+        b.out_sys_udsghig_proc()[i]            = bcorr.sys_udsghig_proc()[i]           *noInfNan(b.sys_udsghig_proc()[i]);
+        b.out_sys_udsghig_deep_proc()[i]       = bcorr.sys_udsghig_deep_proc()[i]      *noInfNan(b.sys_udsghig_deep_proc()[i]);
+        b.out_sys_pu()[i]                      = bcorr.sys_pu()[i]                     *noInfNan(b.sys_pu()[i]);
+        if (isSignal) { // yes, this ignores the fullsim points
+          b.out_sys_fs_bctag()[i]              = bcorr.sys_fs_bctag()[i]               *noInfNan(b.sys_fs_bctag()[i]);
+          b.out_sys_fs_bctag_deep()[i]         = bcorr.sys_fs_bctag_deep()[i]          *noInfNan(b.sys_fs_bctag_deep()[i]);
+          b.out_sys_fs_udsgtag()[i]            = bcorr.sys_fs_udsgtag()[i]             *noInfNan(b.sys_fs_udsgtag()[i]);
+          b.out_sys_fs_udsgtag_deep()[i]       = bcorr.sys_fs_udsgtag_deep()[i]        *noInfNan(b.sys_fs_udsgtag_deep()[i]);
+          b.out_sys_fs_bchig()[i]              = bcorr.sys_fs_bchig()[i]               *noInfNan(b.sys_fs_bchig()[i]);
+          b.out_sys_fs_bchig_deep()[i]         = bcorr.sys_fs_bchig_deep()[i]          *noInfNan(b.sys_fs_bchig_deep()[i]);
+          b.out_sys_fs_udsghig()[i]            = bcorr.sys_fs_udsghig()[i]             *noInfNan(b.sys_fs_udsghig()[i]);
+          b.out_sys_fs_udsghig_deep()[i]       = bcorr.sys_fs_udsghig_deep()[i]        *noInfNan(b.sys_fs_udsghig_deep()[i]);
+        }
       }
     }
     

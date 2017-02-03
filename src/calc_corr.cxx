@@ -26,6 +26,7 @@ int main(int argc, char *argv[]){
   time_t begtime, endtime;
   time(&begtime);
 
+  cout<<setprecision(20);
   bool doCorrOutputTree = true;
   string fin(tag), fout(tag);
   if (!Contains(tag,".root")) {
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]){
     if (entry==0 && b.type()>100e3) isSignal = true;
 
     b.GetEntry(entry);
-    if (entry%10000==0) {
+    if (entry%10000==0 || entry == nent-1) {
       cout<<"Processing event: "<<entry<<endl;
       cout<<"b.out_w_pu() = "<<b.out_w_pu()<<"\t b.w_pu() = "<<b.w_pu()<<endl;
     }
@@ -62,6 +63,7 @@ int main(int argc, char *argv[]){
 
     b.out_w_isr() += noInfNan(b.w_isr());
     for (unsigned i(0); i<b.sys_isr().size(); i++) b.out_sys_isr()[i] += noInfNan(b.sys_isr()[i]);
+
 
     if(b.nleps()==0) {
       nent_zlep += 1.;
@@ -78,6 +80,9 @@ int main(int argc, char *argv[]){
     //-----------------------------------
     b.out_w_pu()                   += noInfNan(b.w_pu());
     b.out_w_btag()                 += noInfNan(b.w_btag());
+
+    for (unsigned i(0); i<b.sys_mur().size(); i++) b.out_sys_mur()[i] += noInfNan(b.sys_mur()[i]);
+
     if (!quick) {
       b.out_w_btag_deep()            += noInfNan(b.w_btag_deep());
       b.out_w_btag_loose()           += noInfNan(b.w_btag_loose());
@@ -97,7 +102,7 @@ int main(int argc, char *argv[]){
 
       for (unsigned i(0); i<b.w_pdf().size(); i++)  b.out_w_pdf()[i] += noInfNan(b.w_pdf()[i]);
 
-      for (unsigned i(0); i<b.sys_mur().size(); i++) {
+      for (unsigned i(0); i<2; i++) {
         b.out_sys_mur()[i]                     += noInfNan(b.sys_mur()[i]);
         b.out_sys_muf()[i]                     += noInfNan(b.sys_muf()[i]);
         b.out_sys_murf()[i]                    += noInfNan(b.sys_murf()[i]);
@@ -170,105 +175,110 @@ int main(int argc, char *argv[]){
   //-----------------------------------------------------------------------
   double corr_w_isr(1.);
   vector<double> corr_sys_isr(2,1.);
-  double tot_w_isr = b.out_w_isr();
+  double tot_w_isr = b.val_w_isr();
   if (Contains(tag,"TTJetst_HT") || Contains(tag,"genMET-150")) {
     // in this case take correction from inclusive since should not norm. to unity
     corr_w_isr = 1/1.013; 
     corr_sys_isr[0] = 1/1.065;
     corr_sys_isr[1] = 1/0.9612;
   } else{
-    corr_w_isr = nent/b.out_w_isr();
-    for (unsigned i(0); i<b.sys_isr().size(); i++) corr_sys_isr[i] = nent/b.out_sys_isr()[i];
+    corr_w_isr = nent/b.val_w_isr();
+    for (unsigned i(0); i<b.sys_isr().size(); i++) corr_sys_isr[i] = nent/b.val_sys_isr()[i];
   }
   b.out_w_isr() = corr_w_isr;
   for (unsigned i(0); i<b.sys_isr().size(); i++) b.out_sys_isr()[i] = corr_sys_isr[i];
   
   // Calculate correction to total weight whilst correcting zero lepton
   //----------------------------------------------------------------------
-  double w_corr_l0 = (nent-b.out_w_lep())/nent_zlep * (nent-b.out_w_fs_lep())/nent_zlep;
+  double w_corr_l0 = (nent-b.val_w_lep())/nent_zlep * (nent-b.val_w_fs_lep())/nent_zlep;
   if(nent_zlep==0) w_corr_l0 = 1.;
   // again normalize to total w_isr, not unity
   b.out_weight() = (tot_w_isr*corr_w_isr)/(tot_weight_l0*w_corr_l0 + tot_weight_l1);
 
   // Lepton weights corrections to be applied only to 0-lep events
   //----------------------------------------------------------------
-  b.out_w_lep()           = (nent-b.out_w_lep())/nent_zlep;
-  b.out_w_fs_lep()        = (nent-b.out_w_fs_lep())/nent_zlep;
+  b.out_w_lep()           = (nent-b.val_w_lep())/nent_zlep;
+  b.out_w_fs_lep()        = (nent-b.val_w_fs_lep())/nent_zlep;
   for (unsigned i(0); i<b.sys_lep().size(); i++) 
-    b.out_sys_lep()[i]    = (nent-b.out_sys_lep()[i])/nent_zlep;
+    b.out_sys_lep()[i]    = (nent-b.val_sys_lep()[i])/nent_zlep;
   for (unsigned i(0); i<b.sys_fs_lep().size(); i++) 
-    b.out_sys_fs_lep()[i] = (nent-b.out_sys_fs_lep()[i])/nent_zlep;
+    b.out_sys_fs_lep()[i] = (nent-b.val_sys_fs_lep()[i])/nent_zlep;
 
   //   Correction to cookie-cutter variables
   //------------------------------------------------
-  b.out_w_pu()                   = nent / b.out_w_pu();
-  b.out_w_btag()                 = nent / b.out_w_btag();
-  if (!quick) {
-    b.out_w_btag_deep()            = nent / b.out_w_btag_deep();
-    b.out_w_btag_loose()           = nent / b.out_w_btag_loose();
-    b.out_w_btag_loose_deep()      = nent / b.out_w_btag_loose_deep();
-    b.out_w_btag_tight()           = nent / b.out_w_btag_tight();
-    b.out_w_btag_tight_deep()      = nent / b.out_w_btag_tight_deep();
-    b.out_w_bhig()                 = nent / b.out_w_bhig();
-    b.out_w_bhig_deep()            = nent / b.out_w_bhig_deep();
-    b.out_w_btag_proc()            = nent / b.out_w_btag_proc();
-    b.out_w_btag_deep_proc()       = nent / b.out_w_btag_deep_proc();
-    b.out_w_btag_loose_proc()      = nent / b.out_w_btag_loose_proc();
-    b.out_w_btag_loose_deep_proc() = nent / b.out_w_btag_loose_deep_proc();
-    b.out_w_btag_tight_proc()      = nent / b.out_w_btag_tight_proc();
-    b.out_w_btag_tight_deep_proc() = nent / b.out_w_btag_tight_deep_proc();
-    b.out_w_bhig_proc()            = nent / b.out_w_bhig_proc();
-    b.out_w_bhig_deep_proc()       = nent / b.out_w_bhig_deep_proc();
+  cout<<"Before final calc, val wpu = "<<b.val_w_pu()<<" out_w_pu = "<<b.out_w_pu()<<endl;
+  b.out_w_pu()                   = nent / b.val_w_pu();
+  cout<<"After final calc, val wpu = "<<b.val_w_pu()<<" out_w_pu = "<<b.out_w_pu()<<endl;
+  b.out_w_btag()                 = nent / b.val_w_btag();
+  
+  for (unsigned i(0); i<2; i++) b.out_sys_mur()[i]                     = nent / b.val_sys_mur()[i];
 
-    for (unsigned i(0); i<b.w_pdf().size(); i++) b.out_w_pdf()[i] = nent / b.out_w_pdf()[i];
+  if (!quick) {
+    b.out_w_btag_deep()            = nent / b.val_w_btag_deep();
+    b.out_w_btag_loose()           = nent / b.val_w_btag_loose();
+    b.out_w_btag_loose_deep()      = nent / b.val_w_btag_loose_deep();
+    b.out_w_btag_tight()           = nent / b.val_w_btag_tight();
+    b.out_w_btag_tight_deep()      = nent / b.val_w_btag_tight_deep();
+    b.out_w_bhig()                 = nent / b.val_w_bhig();
+    b.out_w_bhig_deep()            = nent / b.val_w_bhig_deep();
+    b.out_w_btag_proc()            = nent / b.val_w_btag_proc();
+    b.out_w_btag_deep_proc()       = nent / b.val_w_btag_deep_proc();
+    b.out_w_btag_loose_proc()      = nent / b.val_w_btag_loose_proc();
+    b.out_w_btag_loose_deep_proc() = nent / b.val_w_btag_loose_deep_proc();
+    b.out_w_btag_tight_proc()      = nent / b.val_w_btag_tight_proc();
+    b.out_w_btag_tight_deep_proc() = nent / b.val_w_btag_tight_deep_proc();
+    b.out_w_bhig_proc()            = nent / b.val_w_bhig_proc();
+    b.out_w_bhig_deep_proc()       = nent / b.val_w_bhig_deep_proc();
+
+    for (unsigned i(0); i<b.w_pdf().size(); i++) b.out_w_pdf()[i] = nent / b.val_w_pdf()[i];
 
     for (unsigned i(0); i<b.sys_mur().size(); i++) {
-      b.out_sys_mur()[i]                     = nent / b.out_sys_mur()[i];
-      b.out_sys_muf()[i]                     = nent / b.out_sys_muf()[i];
-      b.out_sys_murf()[i]                    = nent / b.out_sys_murf()[i];
-      b.out_sys_pdf()[i]                     = nent / b.out_sys_pdf()[i];
-      b.out_sys_bctag()[i]                   = nent / b.out_sys_bctag()[i];
-      b.out_sys_bctag_deep()[i]              = nent / b.out_sys_bctag_deep()[i];
-      b.out_sys_udsgtag()[i]                 = nent / b.out_sys_udsgtag()[i];
-      b.out_sys_udsgtag_deep()[i]            = nent / b.out_sys_udsgtag_deep()[i];
-      b.out_sys_bctag_loose()[i]             = nent / b.out_sys_bctag_loose()[i];
-      b.out_sys_bctag_loose_deep()[i]        = nent / b.out_sys_bctag_loose_deep()[i];
-      b.out_sys_udsgtag_loose()[i]           = nent / b.out_sys_udsgtag_loose()[i];
-      b.out_sys_udsgtag_loose_deep()[i]      = nent / b.out_sys_udsgtag_loose_deep()[i];
-      b.out_sys_bctag_tight()[i]             = nent / b.out_sys_bctag_tight()[i];
-      b.out_sys_bctag_tight_deep()[i]        = nent / b.out_sys_bctag_tight_deep()[i];
-      b.out_sys_udsgtag_tight()[i]           = nent / b.out_sys_udsgtag_tight()[i];
-      b.out_sys_udsgtag_tight_deep()[i]      = nent / b.out_sys_udsgtag_tight_deep()[i];
-      b.out_sys_bchig()[i]                   = nent / b.out_sys_bchig()[i];
-      b.out_sys_bchig_deep()[i]              = nent / b.out_sys_bchig_deep()[i];
-      b.out_sys_udsghig()[i]                 = nent / b.out_sys_udsghig()[i];
-      b.out_sys_udsghig_deep()[i]            = nent / b.out_sys_udsghig_deep()[i];
-      b.out_sys_bctag_proc()[i]              = nent / b.out_sys_bctag_proc()[i];
-      b.out_sys_bctag_deep_proc()[i]         = nent / b.out_sys_bctag_deep_proc()[i];
-      b.out_sys_udsgtag_proc()[i]            = nent / b.out_sys_udsgtag_proc()[i];
-      b.out_sys_udsgtag_deep_proc()[i]       = nent / b.out_sys_udsgtag_deep_proc()[i];
-      b.out_sys_bctag_loose_proc()[i]        = nent / b.out_sys_bctag_loose_proc()[i];
-      b.out_sys_bctag_loose_deep_proc()[i]   = nent / b.out_sys_bctag_loose_deep_proc()[i];
-      b.out_sys_udsgtag_loose_proc()[i]      = nent / b.out_sys_udsgtag_loose_proc()[i];
-      b.out_sys_udsgtag_loose_deep_proc()[i] = nent / b.out_sys_udsgtag_loose_deep_proc()[i];
-      b.out_sys_bctag_tight_proc()[i]        = nent / b.out_sys_bctag_tight_proc()[i];
-      b.out_sys_bctag_tight_deep_proc()[i]   = nent / b.out_sys_bctag_tight_deep_proc()[i];
-      b.out_sys_udsgtag_tight_proc()[i]      = nent / b.out_sys_udsgtag_tight_proc()[i];
-      b.out_sys_udsgtag_tight_deep_proc()[i] = nent / b.out_sys_udsgtag_tight_deep_proc()[i];
-      b.out_sys_bchig_proc()[i]              = nent / b.out_sys_bchig_proc()[i];
-      b.out_sys_bchig_deep_proc()[i]         = nent / b.out_sys_bchig_deep_proc()[i];
-      b.out_sys_udsghig_proc()[i]            = nent / b.out_sys_udsghig_proc()[i];
-      b.out_sys_udsghig_deep_proc()[i]       = nent / b.out_sys_udsghig_deep_proc()[i];
-      b.out_sys_pu()[i]                      = nent / b.out_sys_pu()[i];
+      b.out_sys_mur()[i]                     = nent / b.val_sys_mur()[i];
+      b.out_sys_muf()[i]                     = nent / b.val_sys_muf()[i];
+      b.out_sys_murf()[i]                    = nent / b.val_sys_murf()[i];
+      b.out_sys_pdf()[i]                     = nent / b.val_sys_pdf()[i];
+      b.out_sys_bctag()[i]                   = nent / b.val_sys_bctag()[i];
+      b.out_sys_bctag_deep()[i]              = nent / b.val_sys_bctag_deep()[i];
+      b.out_sys_udsgtag()[i]                 = nent / b.val_sys_udsgtag()[i];
+      b.out_sys_udsgtag_deep()[i]            = nent / b.val_sys_udsgtag_deep()[i];
+      b.out_sys_bctag_loose()[i]             = nent / b.val_sys_bctag_loose()[i];
+      b.out_sys_bctag_loose_deep()[i]        = nent / b.val_sys_bctag_loose_deep()[i];
+      b.out_sys_udsgtag_loose()[i]           = nent / b.val_sys_udsgtag_loose()[i];
+      b.out_sys_udsgtag_loose_deep()[i]      = nent / b.val_sys_udsgtag_loose_deep()[i];
+      b.out_sys_bctag_tight()[i]             = nent / b.val_sys_bctag_tight()[i];
+      b.out_sys_bctag_tight_deep()[i]        = nent / b.val_sys_bctag_tight_deep()[i];
+      b.out_sys_udsgtag_tight()[i]           = nent / b.val_sys_udsgtag_tight()[i];
+      b.out_sys_udsgtag_tight_deep()[i]      = nent / b.val_sys_udsgtag_tight_deep()[i];
+      b.out_sys_bchig()[i]                   = nent / b.val_sys_bchig()[i];
+      b.out_sys_bchig_deep()[i]              = nent / b.val_sys_bchig_deep()[i];
+      b.out_sys_udsghig()[i]                 = nent / b.val_sys_udsghig()[i];
+      b.out_sys_udsghig_deep()[i]            = nent / b.val_sys_udsghig_deep()[i];
+      b.out_sys_bctag_proc()[i]              = nent / b.val_sys_bctag_proc()[i];
+      b.out_sys_bctag_deep_proc()[i]         = nent / b.val_sys_bctag_deep_proc()[i];
+      b.out_sys_udsgtag_proc()[i]            = nent / b.val_sys_udsgtag_proc()[i];
+      b.out_sys_udsgtag_deep_proc()[i]       = nent / b.val_sys_udsgtag_deep_proc()[i];
+      b.out_sys_bctag_loose_proc()[i]        = nent / b.val_sys_bctag_loose_proc()[i];
+      b.out_sys_bctag_loose_deep_proc()[i]   = nent / b.val_sys_bctag_loose_deep_proc()[i];
+      b.out_sys_udsgtag_loose_proc()[i]      = nent / b.val_sys_udsgtag_loose_proc()[i];
+      b.out_sys_udsgtag_loose_deep_proc()[i] = nent / b.val_sys_udsgtag_loose_deep_proc()[i];
+      b.out_sys_bctag_tight_proc()[i]        = nent / b.val_sys_bctag_tight_proc()[i];
+      b.out_sys_bctag_tight_deep_proc()[i]   = nent / b.val_sys_bctag_tight_deep_proc()[i];
+      b.out_sys_udsgtag_tight_proc()[i]      = nent / b.val_sys_udsgtag_tight_proc()[i];
+      b.out_sys_udsgtag_tight_deep_proc()[i] = nent / b.val_sys_udsgtag_tight_deep_proc()[i];
+      b.out_sys_bchig_proc()[i]              = nent / b.val_sys_bchig_proc()[i];
+      b.out_sys_bchig_deep_proc()[i]         = nent / b.val_sys_bchig_deep_proc()[i];
+      b.out_sys_udsghig_proc()[i]            = nent / b.val_sys_udsghig_proc()[i];
+      b.out_sys_udsghig_deep_proc()[i]       = nent / b.val_sys_udsghig_deep_proc()[i];
+      b.out_sys_pu()[i]                      = nent / b.val_sys_pu()[i];
       if (isSignal) { // yes, this ignores the fullsim points
-        b.out_sys_fs_bctag()[i]              = nent / b.out_sys_fs_bctag()[i];
-        b.out_sys_fs_bctag_deep()[i]         = nent / b.out_sys_fs_bctag_deep()[i];
-        b.out_sys_fs_udsgtag()[i]            = nent / b.out_sys_fs_udsgtag()[i];
-        b.out_sys_fs_udsgtag_deep()[i]       = nent / b.out_sys_fs_udsgtag_deep()[i];
-        b.out_sys_fs_bchig()[i]              = nent / b.out_sys_fs_bchig()[i];
-        b.out_sys_fs_bchig_deep()[i]         = nent / b.out_sys_fs_bchig_deep()[i];
-        b.out_sys_fs_udsghig()[i]            = nent / b.out_sys_fs_udsghig()[i];
-        b.out_sys_fs_udsghig_deep()[i]       = nent / b.out_sys_fs_udsghig_deep()[i];
+        b.out_sys_fs_bctag()[i]              = nent / b.val_sys_fs_bctag()[i];
+        b.out_sys_fs_bctag_deep()[i]         = nent / b.val_sys_fs_bctag_deep()[i];
+        b.out_sys_fs_udsgtag()[i]            = nent / b.val_sys_fs_udsgtag()[i];
+        b.out_sys_fs_udsgtag_deep()[i]       = nent / b.val_sys_fs_udsgtag_deep()[i];
+        b.out_sys_fs_bchig()[i]              = nent / b.val_sys_fs_bchig()[i];
+        b.out_sys_fs_bchig_deep()[i]         = nent / b.val_sys_fs_bchig_deep()[i];
+        b.out_sys_fs_udsghig()[i]            = nent / b.val_sys_fs_udsghig()[i];
+        b.out_sys_fs_udsghig_deep()[i]       = nent / b.val_sys_fs_udsghig_deep()[i];
       }
     }
   }

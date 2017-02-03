@@ -161,11 +161,13 @@ void WriteBaseHeader(const set<Variable> &extra_vars,
 
   for(set<Variable>::const_iterator var = full_vars.begin(); var != full_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
-      file << "  " << var->type_ << " & " << var->name_ << "();\n";
+      file << "  " << var->type_ << " " << var->name_ << "();\n";
       file << "  " << var->type_ << " & out_" << var->name_ << "();\n";
+      file << "  " << var->type_ << " val_" << var->name_ << "();\n";
     } else {
-      file << "  " << var->type_ << " & " << var->name_ << "();\n";
+      file << "  " << var->type_ << " " << var->name_ << "();\n";
       file << "  " << var->type_ << " & out_" << var->name_ << "();\n";      
+      file << "  " << var->type_ << " val_" << var->name_ << "();\n";      
     }
   }
   file << '\n';
@@ -174,8 +176,10 @@ void WriteBaseHeader(const set<Variable> &extra_vars,
   for(set<Variable>::const_iterator var = extra_vars.begin(); var != extra_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
       file << "  " << var->type_ << " & out_" << var->name_ << "();\n";
+      file << "  " << var->type_ << " val_" << var->name_ << "();\n";
     } else {
       file << "  " << var->type_ << " & out_" << var->name_ << "();\n";      
+      file << "  " << var->type_ << " val_" << var->name_ << "();\n";      
     }
   }
   file << "  int & out_nevents();\n";
@@ -292,6 +296,7 @@ void WriteBaseSource(const set<Variable> &extra_vars,
     }
     file << "  b_" << var->name_ << "_(NULL),\n";
     file << "  c_" << var->name_ << "_(false),\n";
+    file << "  c_out_" << var->name_ << "_(false),\n";
   }
 
   for(set<Variable>::const_iterator var = extra_vars.begin(); var != extra_vars.end(); ++var){
@@ -372,7 +377,7 @@ void WriteBaseSource(const set<Variable> &extra_vars,
   file << "void baby_base::Fill(){\n";
   file << "  //Loading unused branch so their values are copied to the new tree\n";
   for(set<Variable>::const_iterator var = full_vars.begin(); var != full_vars.end(); ++var){
-    file << "  if (!doCorrOutputTree_ && !readCorrTree_ && !c_"+var->name_+"_ && !c_out_"+var->name_+"_) " << var->name_ << "();\n";
+    file << "  if (!readCorrTree_ && !c_out_"+var->name_+"_) out_" << var->name_ << "_ = " << var->name_ << "();\n";
   }
   file << "  outtree_->Fill();\n";
 
@@ -430,25 +435,28 @@ void WriteBaseSource(const set<Variable> &extra_vars,
   file << "}\n\n";
 
   for(set<Variable>::const_iterator var = full_vars.begin(); var != full_vars.end(); ++var){
-    file << var->type_ << " & baby_base::" << var->name_ << "(){\n";
+    file << var->type_ << " baby_base::" << var->name_ << "(){\n";
     file << "  if(!c_" << var->name_ << "_ && b_" << var->name_ <<"_){\n";
     file << "    b_" << var->name_ << "_->GetEntry(entry_);\n";
-    file << "    if (!doCorrOutputTree_ && !readCorrTree_) out_" << var->name_ << "_ = " << var->name_ <<"_;\n";
     file << "    c_" << var->name_ << "_ = true;\n";
     file << "  }\n";
     file << "  return " << var->name_ << "_;\n";
     file << "}\n\n";
 
     file << var->type_ << " & baby_base::out_" << var->name_ << "(){\n";
-    if (corr_vars.find(*var)!=corr_vars.end()){
-      if (Contains(var->type_, "vector")) {
-        file << "  if (doCorrOutputTree_ && out_" << var->name_ << "_.size()==0) {\n";
-        file << "     " << var->name_ << "();\n";
-        file << "     out_" << var->name_ << "_.resize(" << var->name_ << "_.size(), bad_val_);\n";
-        file << "  }\n";
-      }
+    file << "  if (!c_out_" << var->name_ << "_) {\n";
+    if(Contains(var->type_, "vector")){
+      file << "    if(!c_" << var->name_ << "_) " << var->name_ << "();\n";
+      file << "    out_" << var->name_ << "_.resize(" << var->name_ <<"_.size(),0);\n";
+    } else { 
+      file << "    out_" << var->name_ << "_ = 0;\n";
     }
+    file << "  }\n";
     file << "  c_out_" << var->name_ << "_ = true;\n";
+    file << "  return out_" << var->name_ << "_;\n";
+    file << "}\n\n";
+
+    file << var->type_ << " baby_base::val_" << var->name_ << "(){\n";
     file << "  return out_" << var->name_ << "_;\n";
     file << "}\n\n";
   }
@@ -456,6 +464,10 @@ void WriteBaseSource(const set<Variable> &extra_vars,
   for(set<Variable>::const_iterator var = extra_vars.begin(); var != extra_vars.end(); ++var){
     file << var->type_ << " & baby_base::out_" << var->name_ << "(){\n";
     file << "  c_out_" << var->name_ << "_ = true;\n";
+    file << "  return out_" << var->name_ << "_;\n";
+    file << "}\n\n";
+
+    file << var->type_ << " baby_base::val_" << var->name_ << "(){\n";
     file << "  return out_" << var->name_ << "_;\n";
     file << "}\n\n";
   }
