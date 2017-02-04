@@ -14,11 +14,11 @@ def getTags(folder):
     infiles.add(tag)
   return sorted(infiles)
 
-infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed_skim_met100/'
+infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
 outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
 quick = True
 # leave as empty string to run over all input files in the infolder
-one_sample = 'TTJets_Tune'
+one_sample = '' #'TTJets_Tune'
 
 
 ## Finding tags for each dataset

@@ -15,9 +15,9 @@ corrfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
 # corrfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
 quick = True
 # leave as empty string to run over all input files in the infolder
-one_sample = 'TTJets_Tune'
+one_sample = '' # 'TTJets_Tune'
 
-njobs = 10
+njobs = 40
 
 
 def getTag(file):
@@ -37,17 +37,20 @@ if not os.path.exists(runfolder):
 
 infiles = []
 for x in glob(infolder+"*.root"):
+  if (one_sample!='') and (one_sample not in x): continue
+  # check if output file already exists
   outfile = x.split('/')[-1]
   outfile = outfolder+outfile.replace(".root","_renorm.root")
   if (quick): outfile = outfile.replace("_renorm.root", "_requick.root")
   if os.path.exists(outfile): continue
-  if (one_sample!='') and (one_sample not in x): continue
+  # check if there are 0 entry files if running on a skim
   if ('unskimmed' not in outfolder):
     c = TChain("tree") 
     c.Add(x)
     if c.GetEntries()==0: 
       copyfile(x, outfile)
       continue
+  # check that corrections file exists
   corrfile = corrfolder + "corr_" + getTag(x) +".root"
   if quick: corrfile = corrfolder + "corrquick_" + getTag(x) +".root"
   if not os.path.exists(corrfile):
@@ -59,19 +62,17 @@ infiles = sorted(infiles)
 splitting = len(infiles)/njobs 
 if (len(infiles)%njobs!=0): splitting += 1
 
-ijobfiles = [[]]
-for i,file in enumerate(infiles):
-  iset = i/njobs 
-
-
 os.system("JobSetup.csh")
+done = False
 for ijob in range(njobs):
   exename = runfolder+"/apply_corr_"+str(ijob)+".sh"
   fexe = open(exename,"w")
   os.system("chmod u+x "+exename)
   fexe.write("#!/bin/bash\n\n")
   for ifile in range(ijob*splitting, (ijob+1)*splitting):
-    if ifile>=len(infiles): break 
+    if ifile>=len(infiles): 
+      done = True
+      break 
     infile = infiles[ifile]
     outfile = infile.split('/')[-1]
     outfile = outfolder+outfile.replace(".root","_renorm.root")
@@ -88,7 +89,7 @@ for ijob in range(njobs):
   cmd = "JobSubmit.csh ./run/wrapper.sh "+exename
   print cmd
   os.system(cmd)
-  # sys.exit(0)
+  if done: break
 
 print "\nSubmitted "+str(ijob)+" jobs. Output goes to "+outfolder+"\n"
 

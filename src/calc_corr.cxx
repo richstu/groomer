@@ -100,9 +100,8 @@ int main(int argc, char *argv[]){
     if (entry==0 && b.type()>100e3) isSignal = true;
 
     b.GetEntry(entry);
-    if (entry%10000==0 || entry == nent-1) {
+    if (entry%100000==0 || entry == nent-1) {
       cout<<"Processing event: "<<entry<<endl;
-      cout<<"c.out_w_pu() = "<<c.out_w_pu()<<"\t b.w_pu() = "<<b.w_pu()<<endl;
     }
 
     wgt = b.w_lep()*b.w_fs_lep()*
