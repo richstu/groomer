@@ -58,11 +58,15 @@ $(EXEDIR)/%.exe: $(OBJDIR)/%.o $(LIBFILE)
 	$(LINK)
 
 # Auto-generated code
-.SECONDARY: dummy_baby.all 
+.SECONDARY: dummy_baby_plus.all dummy_baby_corr.all 
 .PRECIOUS: generate_baby.o 
 
-$(SRCDIR)/baby_base.cpp $(INCDIR)/baby_base.hpp: dummy_baby.all
-dummy_baby.all: $(EXEDIR)/generate_baby.exe 
+$(SRCDIR)/baby_plus.cpp $(INCDIR)/baby_plus.hpp: dummy_baby_plus.all
+dummy_baby_plus.all: $(EXEDIR)/generate_baby.exe 
+	./$< 
+
+$(SRCDIR)/baby_corr.cpp $(INCDIR)/baby_corr.hpp: dummy_baby_corr.all
+dummy_baby_corr.all: $(EXEDIR)/generate_baby.exe 
 	./$< 
 
 .DELETE_ON_ERROR:
