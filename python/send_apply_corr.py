@@ -6,18 +6,15 @@ from ROOT import TChain
 import string
 from pprint import pprint
 
-infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed_skim_met100nj4/'
-outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/skim_met100nj4/'
+infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
+outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unskimmed/'
 corrfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
-
-# infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
-# outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unskimmed/'
-# corrfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
 quick = True
-# leave as empty string to run over all input files in the infolder
-one_sample = '' # 'TTJets_Tune'
+# leave as empty list to run over all input files in the infolder
+# wanted_samples = ['TTJets_HT']
+wanted_samples = ['']
 
-njobs = 40
+njobs = 50
 
 
 def getTag(file):
@@ -37,25 +34,31 @@ if not os.path.exists(runfolder):
 
 infiles = []
 for x in glob(infolder+"*.root"):
-  if (one_sample!='') and (one_sample not in x): continue
+  wanted = False
+  for sample in wanted_samples:
+    if sample in x: 
+      wanted = True
+
+  if len(wanted_samples)>0 and (not wanted): continue
   # check if output file already exists
   outfile = x.split('/')[-1]
   outfile = outfolder+outfile.replace(".root","_renorm.root")
   if (quick): outfile = outfile.replace("_renorm.root", "_requick.root")
   if os.path.exists(outfile): continue
-  # check if there are 0 entry files if running on a skim
-  if ('unskimmed' not in outfolder):
-    c = TChain("tree") 
-    c.Add(x)
-    if c.GetEntries()==0: 
-      copyfile(x, outfile)
-      continue
   # check that corrections file exists
   corrfile = corrfolder + "corr_" + getTag(x) +".root"
   if quick: corrfile = corrfolder + "corrquick_" + getTag(x) +".root"
   if not os.path.exists(corrfile):
     print "Corr. file not found. Skipping:", corrfile 
     continue
+  # check if there are 0 entry files if running on a skim
+  if ('unskimmed' not in outfolder):
+    c = TChain("tree") 
+    c.Add(x)
+    if c.GetEntries()==0: 
+      copyfile(x, outfile)
+      # print "Input file has 0 entries, copying to output:", x
+      continue
   infiles.append(x)
 infiles = sorted(infiles)
 
@@ -73,6 +76,8 @@ for ijob in range(njobs):
     if ifile>=len(infiles): 
       done = True
       break 
+    fexe.write("echo Doing file "+str(ifile-ijob*splitting)+" out of "+str(splitting))
+
     infile = infiles[ifile]
     outfile = infile.split('/')[-1]
     outfile = outfolder+outfile.replace(".root","_renorm.root")
@@ -89,6 +94,7 @@ for ijob in range(njobs):
   cmd = "JobSubmit.csh ./run/wrapper.sh "+exename
   print cmd
   os.system(cmd)
+  if (ijob==0): os.system('cat '+exename)
   if done: break
 
 print "\nSubmitted "+str(ijob)+" jobs. Output goes to "+outfolder+"\n"

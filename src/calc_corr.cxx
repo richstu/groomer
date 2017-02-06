@@ -222,6 +222,7 @@ int main(int argc, char *argv[]){
     xsec = xsec::crossSection(tag);
   }
   c.out_w_lumi() = xsec*lumi/neff;
+  if (Contains(tag,"TTJets_SingleLeptFromT_genMET-150")) c.out_w_lumi() *= 2;
   
   // ISR weights correction is derived based on the mean weight found in 
   // SingleLeptFromT + SingleLeptFromTbar + DiLept sample 
@@ -230,7 +231,7 @@ int main(int argc, char *argv[]){
   double corr_w_isr(1.);
   vector<double> corr_sys_isr(2,1.);
   double tot_w_isr = c.out_w_isr();
-  if (Contains(tag,"TTJetst_HT") || Contains(tag,"genMET-150")) {
+  if (Contains(tag,"TTJets_HT") || Contains(tag,"genMET-150")) {
     // in this case take correction from inclusive since should not norm. to unity
     corr_w_isr = 1/1.013; 
     corr_sys_isr[0] = 1/1.065;

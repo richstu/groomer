@@ -17,8 +17,9 @@ def getTags(folder):
 infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
 outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
 quick = True
-# leave as empty string to run over all input files in the infolder
-one_sample = '' #'TTJets_Tune'
+# leave as empty list to run over all input files in the infolder
+# wanted_samples = ['TTJets_HT','TTJets_SingleLeptFromT_genMET-150']
+wanted_samples = ['']
 
 
 ## Finding tags for each dataset
@@ -32,7 +33,13 @@ os.system("JobSetup.csh")
 ijob = 0
 
 for tag in tags:
-  if (one_sample!='') and (one_sample not in tag): continue
+  wanted = False
+  for sample in wanted_samples:
+    if sample in tag: 
+      wanted = True
+
+  if len(wanted_samples)>0 and (not wanted): continue
+  
   if quick:
     cmd = "JobSubmit.csh ./run/wrapper.sh ./run/calc_corr.exe --quick -i "+infolder+" -t "+tag+" -o "+outfolder
   else:

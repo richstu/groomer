@@ -9,16 +9,28 @@ import string
 import time
 import math
 
-def getTags(folder):
-  infiles = set()
-  for file in glob.glob(folder+'/*.root'):
-    tag = file.split("/")[-1]
-    tag = tag.split("RunIISpring16MiniAODv2")[0]
-    tag = tag.split("RunIISummer16MiniAODv2")[0]
-    tag = tag.replace("fullbaby_","")
-    tag = tag.rstrip("_")
-    infiles.add(tag)
-  return sorted(infiles)
+## Finding basename for each dataset
+def findBaseSampleNames(folder):
+    infiles = set()
+    for file in glob.glob(folder+'/*.root'):
+        tag = file.split("RunII")[0]
+        tag = tag.split("13TeV")[0]
+        tag = tag.split("CUETP")[0]
+        tag = tag.split("-PromptReco")[0]
+        tag = tag.split("-23Sep2016")[0]
+        tag = tag.split("_runs")[0]
+        tag = tag.split("pythia")[0]
+        tag = tag.split("baby_")[1]
+        tag = tag.split("__")[0]
+        if tag[0] != '_': tag = "_"+tag
+        if tag[-1] != '_' and "Tune" not in tag and "Run2016" not in tag: tag = tag+"_"
+        infiles.add(tag)
+    sortedfiles = list()
+    for file in infiles:
+        sortedfiles.append(file)
+    sortedfiles = sorted(sortedfiles)
+
+    return sortedfiles
 
 class bcolors:
     HEADER = '\033[95m'
@@ -31,14 +43,14 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 # Setting folders
-oldfolder    = '/net/cms29/cms29r0/babymaker/babies/2016_08_10/mc/skim_met100/'
-newfolder    = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/skim_met100/'
+oldfolder    = '/net/cms29/cms29r0/babymaker/babies/2016_08_10/mc/unskimmed/'
+newfolder    = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unskimmed/'
 
 oweight = "weight"
 nweight = "weight"
 
 ## Finding tags for each dataset
-sortedfiles = getTags(newfolder)
+sortedfiles = findBaseSampleNames(newfolder)
 
 print '\nOLD FOLDER: '+oldfolder
 print 'NEW FOLDER: '+newfolder
@@ -53,6 +65,7 @@ rows = list()
 line = 1
 histo = TH1D("histo","",10,0,10)
 for ifile in sortedfiles:
+  if ("TTJets_HT" not in ifile): continue
   ochain = TChain("tree")
   oldntuples = oldfolder+"/*"+ifile+'*root'
   no = ochain.Add(oldntuples)
