@@ -19,6 +19,9 @@
 #include "TTree.h"
 #include "TGraph.h"
 
+#define ERROR(x) do{throw std::runtime_error(std::string("Error in file ")+__FILE__+" at line "+std::to_string(__LINE__)+" (in "+__func__+"): "+x);}while(false)
+#define DBG(x) do{std::cerr << "In " << __FILE__ << " at line " << __LINE__ << " (in function " << __func__ << "): " << x << std::endl;}while(false)
+
 class Variable{
 public:
   Variable():
