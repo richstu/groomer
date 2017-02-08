@@ -1,7 +1,5 @@
 #include "btag_weighter.hpp"
 
-#include "TH3D.h"
-
 #include "utilities.hpp"
 
 using namespace std;
@@ -16,19 +14,19 @@ namespace{
   }
 }
 
-BTagWeighter::BTagWeighter(bool is_fast_sim, bool is_cmssw_7):
-  calib_full_(new BTagCalibration("csvv2", "data/CSVv2Moriond17_comb.csv")),
+BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
+  calib_full_(new BTagCalibration("csvv2", "data/CSVv2Moriond17_2017_1_26_BtoH.csv")),
   calib_fast_(new BTagCalibration("csvv2_deep", "data/CSV_13TEV_Combined_14_7_2016.csv")),
   readers_full_(),
   readers_fast_(),
-  btag_efficiencies_(op_pts_.size(), nullptr),
-  btag_efficiencies_proc_(op_pts_.size(), nullptr),
-  calib_deep_full_(new BTagCalibration("csvv2_deep", "data/DeepCSVMoriond17_comb.csv")),
+  btag_efficiencies_(op_pts_.size()),
+  btag_efficiencies_proc_(op_pts_.size()),
+  calib_deep_full_(new BTagCalibration("csvv2_deep", "data/CSVv2Moriond17_2017_1_26_BtoH.csv")),
   calib_deep_fast_(new BTagCalibration("csvv2_deep", "data/CSV_13TEV_Combined_14_7_2016.csv")),
   readers_deep_full_(),
   readers_deep_fast_(),
-  btag_efficiencies_deep_(op_pts_.size(), nullptr),
-  btag_efficiencies_deep_proc_(op_pts_.size(), nullptr),
+  btag_efficiencies_deep_(op_pts_.size()),
+  btag_efficiencies_deep_proc_(op_pts_.size()),
   csv_loose_(is_cmssw_7 ? 0.605 : 0.5426),
   csv_medium_(is_cmssw_7 ? 0.890 : 0.8484),
   csv_tight_(is_cmssw_7 ? 0.970 : 0.9535),
@@ -36,7 +34,17 @@ BTagWeighter::BTagWeighter(bool is_fast_sim, bool is_cmssw_7):
   deep_csv_medium_(is_cmssw_7 ? 0. : 0.6324),
   deep_csv_tight_(is_cmssw_7 ? 0. : 0.8958),
   is_fast_sim_(is_fast_sim){
-  for(const auto &op: op_pts_){
+  if(proc != "tt" && proc != "qcd" && proc != "wjets"){
+    ERROR("Process "+proc+" not found. Valid processes are tt, qcd, and wjets.");
+  }
+  TFile file_eff("data/btagEfficiency.root", "read");
+  TFile file_deep("data/btagEfficiency_deep.root", "read");
+  TFile file_proc(("data/btagEfficiency_"+proc+".root").c_str(), "read");
+  TFile file_deep_proc(("data/btagEfficiency_deep_"+proc+".root").c_str(), "read");
+
+  for(size_t i = 0; i < op_pts_.size(); ++i){
+    const auto op = op_pts_.at(i);
+    
     readers_full_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
     readers_full_.at(op)->load(*calib_full_, BTagEntry::FLAV_UDSG, "incl");
     readers_full_.at(op)->load(*calib_full_, BTagEntry::FLAV_C, "comb");
@@ -56,7 +64,100 @@ BTagWeighter::BTagWeighter(bool is_fast_sim, bool is_cmssw_7):
     readers_deep_fast_.at(op)->load(*calib_deep_fast_, BTagEntry::FLAV_UDSG, "fastsim");
     readers_deep_fast_.at(op)->load(*calib_deep_fast_, BTagEntry::FLAV_C, "fastsim");
     readers_deep_fast_.at(op)->load(*calib_deep_fast_, BTagEntry::FLAV_B, "fastsim");
+
+    string hist_eff, hist_deep;
+    switch(op){
+    case BTagEntry::OP_LOOSE:
+      hist_eff = "btagEfficiency_loose";
+      hist_deep = "btagEfficiency_deep_loose";
+      break;
+    case BTagEntry::OP_MEDIUM:
+      hist_eff = "btagEfficiency_medium";
+      hist_deep = "btagEfficiency_deep_medium";
+      break;
+    case BTagEntry::OP_TIGHT:
+      hist_eff = "btagEfficiency_tight";
+      hist_deep = "btagEfficiency_deep_tight";
+      break;
+    case BTagEntry::OP_RESHAPING:
+      hist_eff = "btagEfficiency_reshaping";
+      hist_deep = "btagEfficiency_deep_reshaping";
+      break;
+    default:
+      hist_eff = "btagEfficiency";
+      hist_deep = "btagEfficiency";
+      break;
+    }
+    
+    btag_efficiencies_.at(i) = *static_cast<const TH3D*>(file_eff.Get(hist_eff.c_str()));
+    btag_efficiencies_proc_.at(i) = *static_cast<const TH3D*>(file_proc.Get(hist_eff.c_str()));
+    btag_efficiencies_deep_.at(i) = *static_cast<const TH3D*>(file_deep.Get(hist_deep.c_str()));
+    btag_efficiencies_deep_proc_.at(i) = *static_cast<const TH3D*>(file_deep_proc.Get(hist_deep.c_str()));
   }
+}
+
+double BTagWeighter::EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
+				 const string &bc_full_syst, const string &udsg_full_syst,
+				 const string &bc_fast_syst, const string &udsg_fast_syst,
+				 bool do_deep_csv, bool do_by_proc) const{
+  double product = 1.;
+  auto n_jets = b.jets_islep().size();
+  for(size_t i = 0; i < n_jets; ++i){
+    if(!b.jets_islep().at(i)){
+      product *= JetBTagWeight(b, i, op,
+			       bc_full_syst, udsg_full_syst,
+			       bc_fast_syst, udsg_fast_syst,
+			       do_deep_csv, do_by_proc);
+    }
+  }
+  return product;
+}
+
+double BTagWeighter::EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
+				 const string &bc_full_syst, const string &udsg_full_syst,
+				 bool do_deep_csv, bool do_by_proc) const{
+  double product = 1.;
+  auto n_jets = b.jets_islep().size();
+  for(size_t i = 0; i < n_jets; ++i){
+    if(!b.jets_islep().at(i)){
+      product *= JetBTagWeight(b, i, op,
+			       bc_full_syst, udsg_full_syst,
+			       do_deep_csv, do_by_proc);
+    }
+  }
+  return product;
+}
+
+double BTagWeighter::EventWeight(baby_plus &b, const vector<BTagEntry::OperatingPoint> &ops,
+				 const string &bc_full_syst, const string &udsg_full_syst,
+				 bool do_deep_csv, bool do_by_proc) const{
+  double product = 1.;
+  auto n_jets = b.jets_islep().size();
+  for(size_t i = 0; i < n_jets; ++i){
+    if(!b.jets_islep().at(i)){
+      product *= JetBTagWeight(b, i, ops,
+			       bc_full_syst, udsg_full_syst,
+			       do_deep_csv, do_by_proc);
+    }
+  }
+  return product;
+}
+
+double BTagWeighter::EventWeight(baby_plus &b, const vector<BTagEntry::OperatingPoint> &ops,
+				 const string &bc_full_syst, const string &udsg_full_syst,
+				 const string &bc_fast_syst, const string &udsg_fast_syst,
+				 bool do_deep_csv, bool do_by_proc) const{
+  double product = 1.;
+  auto n_jets = b.jets_islep().size();
+  for(size_t i = 0; i < n_jets; ++i){
+    if(!b.jets_islep().at(i)){
+      product *= JetBTagWeight(b, i, ops,
+			       bc_full_syst, udsg_full_syst,
+			       bc_fast_syst, udsg_fast_syst,
+			       do_deep_csv, do_by_proc);
+    }
+  }
+  return product;
 }
 
 double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, BTagEntry::OperatingPoint op,
@@ -167,22 +268,19 @@ double BTagWeighter::GetMCTagEfficiency(int pdgId, float pT, float eta,
   float eff;
   if(!do_deep_csv){
     if(!do_by_proc){
-      bin = btag_efficiencies_.at(rdr_idx)->FindFixBin(fabs(eta), pT, pdgId);
-      eff = btag_efficiencies_.at(rdr_idx)->GetBinContent(bin);
+      bin = btag_efficiencies_.at(rdr_idx).FindFixBin(fabs(eta), pT, pdgId);
+      eff = btag_efficiencies_.at(rdr_idx).GetBinContent(bin);
+    }else{
+      bin = btag_efficiencies_proc_.at(rdr_idx).FindFixBin(fabs(eta), pT, pdgId);
+      eff = btag_efficiencies_proc_.at(rdr_idx).GetBinContent(bin);
     }
-    else{
-      bin = btag_efficiencies_proc_.at(rdr_idx)->FindFixBin(fabs(eta), pT, pdgId);
-      eff = btag_efficiencies_proc_.at(rdr_idx)->GetBinContent(bin);
-    }
-  }
-  else{
+  }else{
     if(!do_by_proc){
-      bin = btag_efficiencies_deep_.at(rdr_idx)->FindFixBin(fabs(eta), pT, pdgId);
-      eff = btag_efficiencies_deep_.at(rdr_idx)->GetBinContent(bin);
-    }
-    else{
-      bin = btag_efficiencies_deep_proc_.at(rdr_idx)->FindFixBin(fabs(eta), pT, pdgId);
-      eff = btag_efficiencies_deep_proc_.at(rdr_idx)->GetBinContent(bin);
+      bin = btag_efficiencies_deep_.at(rdr_idx).FindFixBin(fabs(eta), pT, pdgId);
+      eff = btag_efficiencies_deep_.at(rdr_idx).GetBinContent(bin);
+    }else{
+      bin = btag_efficiencies_deep_proc_.at(rdr_idx).FindFixBin(fabs(eta), pT, pdgId);
+      eff = btag_efficiencies_deep_proc_.at(rdr_idx).GetBinContent(bin);
     }
   }
   
