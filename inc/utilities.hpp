@@ -7,12 +7,13 @@
 
 #include <cstddef>
 #include <cstdio>
-#include <iostream>
 #include <cmath>
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <set>
+
 #include <unistd.h>
 
 #include "TString.h"
@@ -85,5 +86,7 @@ std::string execute(const std::string &cmd);
 
 void ReplaceAll(std::string &str, const std::string &orig, const std::string &rep);
 std::string CopyReplaceAll(const std::string str, const std::string &orig, const std::string &rep);
+
+void SplitFilePath(const std::string &path, std::string &dir_name, std::string &base_name);
 
 #endif

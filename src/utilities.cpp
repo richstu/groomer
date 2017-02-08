@@ -2,14 +2,18 @@
 // utilities - Various functions used accross the code
 //----------------------------------------------------------------------------
 
+#include "utilities.hpp"
 
 #include <cmath>
+
 #include <deque>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <stdexcept>
 #include <iomanip>   // setw
+
+#include <libgen.h>
 
 #include "TCollection.h"
 #include "TFile.h"
@@ -23,8 +27,6 @@
 #include "TTree.h"
 #include "TChain.h"
 #include "TRegexp.h"
-
-#include "utilities.hpp"
 
 using namespace std;
 
@@ -175,4 +177,11 @@ void ReplaceAll(string &str, const string &orig, const string &rep){
 string CopyReplaceAll(string str, const string &orig, const string &rep){
   ReplaceAll(str, orig, rep);
   return str;
+}
+
+void SplitFilePath(const string &path, string &dir_name, string &base_name){
+  vector<char> cstr(path.c_str(), path.c_str()+path.size()+1);
+  dir_name = dirname(&cstr.at(0));
+  cstr = vector<char>(path.c_str(), path.c_str()+path.size()+1);
+  base_name = basename(&cstr.at(0));
 }

@@ -1,1 +1,5 @@
 int neff
+int nent
+int nent_zlep
+float tot_weight_l0
+float tot_weight_l1
