@@ -11,6 +11,7 @@
 #include "utilities.hpp"
 #include "cross_sections.hpp"
 #include "btag_weighter.hpp"
+#include "lepton_weighter.hpp"
 
 using namespace std;
 
@@ -20,6 +21,7 @@ namespace {
   string out_dir = "";
   bool quick = false;
   bool fix_b_wgt = true;
+  bool fix_lep_wgt = true;
 }
 
 void GetOptions(int argc, char *argv[]);
@@ -132,8 +134,20 @@ int main(int argc, char *argv[]){
       cout<<"Processing event: "<<entry<<endl;
     }
 
-    double w_btag = fix_b_wgt ? btw.EventWeight(b, BTagEntry::OP_MEDIUM, ctr, ctr, false) : b.w_btag();
-    wgt = b.w_lep()*b.w_fs_lep()*
+    float w_btag = fix_b_wgt ? btw.EventWeight(b, BTagEntry::OP_MEDIUM, ctr, ctr, false) : b.w_btag();
+    float w_lep, w_fs_lep;
+    vector<float> sys_lep(2), sys_fs_lep(2);
+    if(fix_lep_wgt){
+      LeptonWeighter::FullSim(b, w_lep, sys_lep);
+      LeptonWeighter::FastSim(b, w_fs_lep, sys_fs_lep);
+    }else{
+      w_lep = b.w_lep();
+      sys_lep = b.sys_lep();
+      w_fs_lep = b.w_lep();
+      sys_fs_lep = b.sys_fs_lep();
+    }
+
+    wgt = w_lep*w_fs_lep*
           w_btag*b.w_isr();//*b.w_pu();
 
     // need special treatment in summing and/or renormalizing
@@ -149,13 +163,13 @@ int main(int argc, char *argv[]){
       c.out_tot_weight_l0() += wgt;
     } else{
       c.out_tot_weight_l1() += wgt;
-      c.out_w_lep()         += b.w_lep();
-      c.out_w_fs_lep()      += b.w_fs_lep();
+      c.out_w_lep()         += w_lep;
+      c.out_w_fs_lep()      += w_fs_lep;
       for(unsigned i(0); i<b.sys_lep().size(); i++){
-        c.out_sys_lep()[i] += b.sys_lep()[i];
+        c.out_sys_lep()[i] += sys_lep[i];
       }
       for(unsigned i(0); i<b.sys_fs_lep().size(); i++){
-        c.out_sys_fs_lep()[i] += b.sys_fs_lep()[i];
+        c.out_sys_fs_lep()[i] += sys_fs_lep[i];
       }
     }
     
@@ -315,10 +329,11 @@ int main(int argc, char *argv[]){
 void GetOptions(int argc, char *argv[]){
   while(true){
     static struct option long_options[] = {
-      {"in_file", required_argument, 0, 'f'},  // Method to run on (if you just want one)
+      {"in_file", required_argument, 0, 'f'},  // Input file with unmodified weights
       {"corr_dir", required_argument, 0, 'c'}, // Directory in which to put sum-of-weights correction file
       {"out_dir", required_argument, 0, 'o'},  // Directory in which to place modified baby
       {"keep_b_wgt", no_argument, 0, 0},       // Use existing b-tag weights/systematics instead of applying new SFs
+      {"keep_lep_wgt", no_argument, 0, 0},     // Use existing lepton weights/systematics instead of applying new SFs
       {"quick", no_argument, 0, 0},            // Leave less important variables uncorrected
       {0, 0, 0, 0}
     };
@@ -345,6 +360,8 @@ void GetOptions(int argc, char *argv[]){
         quick = true;
       }else if(optname == "keep_b_wgt"){
         fix_b_wgt = false;
+      }else if(optname == "keep_lep_wgt"){
+        fix_lep_wgt = false;
       }else{
         printf("Bad option! Found option name %s\n", optname.c_str());
         exit(1);

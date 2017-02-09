@@ -31,6 +31,8 @@ def getTag(path):
 def mergeCorrections(input_dir, output_dir):
     input_dir = fullPath(input_dir)
     output_dir = fullPath(output_dir)
+
+    ensureDir(output_dir)
     
     input_files = [os.path.join(input_dir,f) for f in os.listdir(input_dir)
                    if os.path.isfile(os.path.join(input_dir, f))
@@ -42,7 +44,7 @@ def mergeCorrections(input_dir, output_dir):
 
     for tag in tags:
         output_file = os.path.join(output_dir, "corr_"+tag+".root")
-        command = ["echo","./run/merge_corrections.exe",output_file]
+        command = ["run/merge_corrections.exe", output_file]
         for f in input_files:
             if tag in f:
                 command.append(f)
@@ -51,8 +53,10 @@ def mergeCorrections(input_dir, output_dir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Merges multiple sum-of-weights files into one corrections file per tag.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("input_dir", help="Directory from which to read sum-of-weights files")
-    parser.add_argument("output_dir", help="Directory in which to store corrections files")
+    parser.add_argument("input_dir", default="/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/sum_of_weights/",
+                        help="Directory from which to read sum-of-weights files")
+    parser.add_argument("output_dir", default="/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/",
+                        help="Directory in which to store corrections files")
     args = parser.parse_args()
 
     mergeCorrections(args.input_dir, args.output_dir)
