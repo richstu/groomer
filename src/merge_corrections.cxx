@@ -197,8 +197,6 @@ void FixLumi(baby_corr &out, const string &out_path){
   }
 
   out.out_w_lumi() = xsec*lumi/out.out_neff();
-
-  if(Contains(out_path,"TTJets_SingleLeptFromT_genMET-150")) out.out_w_lumi() *= 2.;
 }
 
 void FixISR(baby_corr &out, const string &out_path){

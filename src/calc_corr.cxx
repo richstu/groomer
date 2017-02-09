@@ -48,6 +48,18 @@ int main(int argc, char *argv[]){
   cout << "Writing output to: " << out_file << endl;
   cout << "Writing sum-of-weights to: " << corr_file << endl;
 
+  bool isSignal = false;
+  if(b.GetEntries() > 0){
+    b.GetEntry(0);
+    if(b.type()>100e3) isSignal = true;
+  }
+
+  string proc = "tt";
+  if(Contains(file_name, "WJets")) proc = "wjets";
+  else if(Contains(file_name, "QCD")) proc = "qcd";
+  //Need to improve to handle FullSim signal points
+  BTagWeighter btw(proc, isSignal, false);
+
   baby_corr c("", out_file);
   c.out_w_pdf().resize(100,0);
   c.out_sys_isr().resize(2,0);
@@ -108,17 +120,6 @@ int main(int argc, char *argv[]){
   c.out_tot_weight_l1() = 0.;
   c.out_nent() = b.GetEntries();
   cout<<"Running over "<<c.out_nent()<<" events."<<endl;
-  bool isSignal = false;
-  if(c.out_nent() > 0){
-    b.GetEntry(0);
-    if(b.type()>100e3) isSignal = true;
-  }
-
-  string proc = "tt";
-  if(Contains(file_name, "WJets")) proc = "wjets";
-  else if(Contains(file_name, "QCD")) proc = "qcd";
-  //Need to improve to handle FullSim signal points
-  BTagWeighter btw(proc, isSignal, false);
 
   const string ctr = "central";
   const string vup = "up";
@@ -340,7 +341,7 @@ void GetOptions(int argc, char *argv[]){
 
     char opt = -1;
     int option_index;
-    opt = getopt_long(argc, argv, "f:t:o:", long_options, &option_index);
+    opt = getopt_long(argc, argv, "f:c:o:", long_options, &option_index);
     if(opt == -1) break;
 
     string optname;

@@ -376,6 +376,7 @@ void WritePlusSource(const set<Variable> &full_vars,
   file << "}\n\n";
 
   file << "void baby_plus::Write(){\n";
+  file << "  outfile_->cd();\n";
   file << "  outtree_->Write();\n";
   file << "}\n\n";
 
