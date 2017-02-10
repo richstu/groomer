@@ -39,8 +39,6 @@ def mergeCorrections(input_dir, output_dir):
                    and os.path.splitext(f)[1] == ".root"]
 
     tags = set([getTag(f) for f in input_files])
-    print(input_files)
-    print(tags)
 
     for tag in tags:
         output_file = os.path.join(output_dir, "corr_"+tag+".root")
@@ -48,6 +46,7 @@ def mergeCorrections(input_dir, output_dir):
         for f in input_files:
             if tag in f:
                 command.append(f)
+        print(" ".join(command))
         subprocess.call(command)
 
 if __name__ == "__main__":

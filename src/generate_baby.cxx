@@ -477,7 +477,7 @@ void WriteCorrHeader(const set<Variable> &corr_vars, const set<Variable> &new_va
 
   file << "  ~baby_corr();\n\n";
 
-  for(set<Variable>::const_iterator var = corr_vars.begin(); var != corr_vars.end(); ++var){
+  for(set<Variable>::const_iterator var = all_vars.begin(); var != all_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
       file << "  " << var->type_ << " " << var->name_ << "();\n";
     } else {
@@ -513,7 +513,7 @@ void WriteCorrHeader(const set<Variable> &corr_vars, const set<Variable> &new_va
   file << "  };\n\n";
 
   file << "  static VectorLoader vl_;\n";
-  for(set<Variable>::const_iterator var = corr_vars.begin(); var != corr_vars.end(); ++var){
+  for(set<Variable>::const_iterator var = all_vars.begin(); var != all_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
       file << "  " << var->type_ << ' ' << var->name_ << "_;\n";
       file << "  " << var->type_ << " *p_" << var->name_ << "_;\n";
@@ -588,7 +588,7 @@ void WriteCorrSource(const set<Variable> &corr_vars, const set<Variable> &new_va
   file << "  readOnly_(outname==\"\"),\n";
   file << "  init_val_(0.),\n";
 
-  for(set<Variable>::const_iterator var = corr_vars.begin(); var != corr_vars.end(); ++var){
+  for(set<Variable>::const_iterator var = all_vars.begin(); var != all_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
       file << "  " << var->name_ << "_(0),\n";
     }else if(Contains(var->type_, "tring")){
@@ -630,7 +630,7 @@ void WriteCorrSource(const set<Variable> &corr_vars, const set<Variable> &new_va
   file << "  }\n\n";
 
   file << "  if (readOnly_ && inputs!=\"\") {\n";
-  for(set<Variable>::const_iterator var = corr_vars.begin(); var != corr_vars.end(); ++var){
+  for(set<Variable>::const_iterator var = all_vars.begin(); var != all_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
       file << "  intree_->SetBranchAddress(\"" << var->name_ << "\", &p_" << var->name_ << "_, &b_" << var->name_ << "_);\n";
     }else{
@@ -665,7 +665,7 @@ void WriteCorrSource(const set<Variable> &corr_vars, const set<Variable> &new_va
 
   file << "  //Resetting variables\n";
   file << "  if (readOnly_) {\n";
-  for(set<Variable>::const_iterator var = corr_vars.begin(); var != corr_vars.end(); ++var){
+  for(set<Variable>::const_iterator var = all_vars.begin(); var != all_vars.end(); ++var){
     if(Contains(var->type_, "vector")){
       file << "  " << var->name_ << "_.clear();\n";
     }else if(Contains(var->type_, "tring")){
@@ -705,13 +705,13 @@ void WriteCorrSource(const set<Variable> &corr_vars, const set<Variable> &new_va
 
   file << "void baby_corr::GetEntry(const long entry){\n";
 
-  for(set<Variable>::const_iterator var = corr_vars.begin(); var!= corr_vars.end(); ++var){
+  for(set<Variable>::const_iterator var = all_vars.begin(); var!= all_vars.end(); ++var){
     file << "  c_" << var->name_ << "_ = false;\n";
   }
   file << "  entry_ = intree_->LoadTree(entry);\n";
   file << "}\n\n";
 
-  for(set<Variable>::const_iterator var = corr_vars.begin(); var != corr_vars.end(); ++var){
+  for(set<Variable>::const_iterator var = all_vars.begin(); var != all_vars.end(); ++var){
     file << var->type_ << " baby_corr::" << var->name_ << "(){\n";
     file << "  if(readOnly_ && !c_" << var->name_ << "_ && b_" << var->name_ <<"_){\n";
     file << "    b_" << var->name_ << "_->GetEntry(entry_);\n";

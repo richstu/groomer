@@ -98,6 +98,12 @@ void VecAdd(const vector<T> &in, vector<U> &out){
 }
 
 void AddEntry(baby_corr &in, baby_corr &out){
+  out.out_neff() += in.neff();
+  out.out_nent() += in.nent();
+  out.out_nent_zlep() += in.nent_zlep();
+  out.out_tot_weight_l0() += in.tot_weight_l0();
+  out.out_tot_weight_l1() += in.tot_weight_l1();
+
   out.out_w_bhig() += in.w_bhig();
   out.out_w_bhig_deep() += in.w_bhig_deep();
   out.out_w_bhig_deep_proc() += in.w_bhig_deep_proc();
