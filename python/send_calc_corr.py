@@ -43,6 +43,8 @@ def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs):
     num_submitted = 0
 
     for sublist in in_files:
+        if len(sublist) == 0:
+            continue
         job_files = sublist.tolist()
         run_path = os.path.join(run_dir,"calc_corr_{}.sh".format(num_submitted)) 
         with open(run_path, "w") as run_file:
@@ -66,7 +68,7 @@ def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs):
     print("\nSubmitted {} jobs.".format(num_submitted))
     print("Sum-of-weights sent to {}.".format(wgt_dir))
     print("Modified weight babies sent to {}.".format(out_dir))
-    print("Shell scripts send to {}.".format(run_dir))
+    print("Shell scripts sent to {}.".format(run_dir))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Submits batch jobs to apply new SFs and compute sum-of-weights",

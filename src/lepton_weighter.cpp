@@ -171,12 +171,12 @@ void LeptonWeighter::FullSim(baby_plus &b, float &w_lep, vector<float> &sys_lep)
   pair<double, double> sf(1., 0.);
   for(size_t i = 0; i < b.mus_sig().size(); ++i){
     if(b.mus_sig().at(i)){
-      MergeSF(sf, GetMuonScaleFactor(b, i));
+      sf = MergeSF(sf, GetMuonScaleFactor(b, i));
     }
   }
   for(size_t i = 0; i < b.els_pt().size(); ++i){
     if(b.els_sig().at(i)){
-      MergeSF(sf, GetElectronScaleFactor(b, i));
+      sf = MergeSF(sf, GetElectronScaleFactor(b, i));
     }
   }
   w_lep = sf.first;
@@ -188,12 +188,12 @@ void LeptonWeighter::FastSim(baby_plus &b, float &w_fs_lep, vector<float> &sys_f
   pair<double, double> sf(1., 0.);
   for(size_t i = 0; i < b.mus_sig().size(); ++i){
     if(b.mus_sig().at(i)){
-      MergeSF(sf, GetMuonScaleFactorFS(b, i));
+      sf = MergeSF(sf, GetMuonScaleFactorFS(b, i));
     }
   }
   for(size_t i = 0; i < b.els_pt().size(); ++i){
     if(b.els_sig().at(i)){
-      MergeSF(sf, GetElectronScaleFactorFS(b, i));
+      sf = MergeSF(sf, GetElectronScaleFactorFS(b, i));
     }
   }
   w_fs_lep = sf.first;
