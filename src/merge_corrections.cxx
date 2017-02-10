@@ -215,9 +215,9 @@ void FixISR(baby_corr &out, const string &out_path){
     corr_sys_isr[0] = 1/1.065;
     corr_sys_isr[1] = 1/0.9612;
   }else{
-    corr_w_isr = out.out_nent()/out.out_w_isr();
+    corr_w_isr = out.out_w_isr() ? out.out_nent()/out.out_w_isr() : 1.;
     for(size_t i = 0; i<out.out_sys_isr().size(); i++){
-      corr_sys_isr[i] = out.out_nent()/out.out_sys_isr()[i];
+      corr_sys_isr[i] = out.out_sys_isr()[i] ? out.out_nent()/out.out_sys_isr()[i] : 1.;
     }
   }
   out.out_w_isr() = corr_w_isr;
@@ -241,24 +241,24 @@ void Fix0L(baby_corr &out){
 
   // Lepton weights corrections to be applied only to 0-lep events
   //----------------------------------------------------------------
-  out.out_w_lep()           = (nent-out.out_w_lep())/nent_zlep;
-  out.out_w_fs_lep()        = (nent-out.out_w_fs_lep())/nent_zlep;
+  out.out_w_lep()           = out.out_w_lep() ? (nent-out.out_w_lep())/nent_zlep : 1.;
+  out.out_w_fs_lep()        = out.out_w_fs_lep() ? (nent-out.out_w_fs_lep())/nent_zlep : 1.;
   for(size_t i = 0; i<out.out_sys_lep().size(); i++){
-    out.out_sys_lep()[i]    = (nent-out.out_sys_lep()[i])/nent_zlep;
+    out.out_sys_lep()[i]    = out.out_sys_lep()[i] ? (nent-out.out_sys_lep()[i])/nent_zlep : 1.;
   }
   for(size_t i = 0; i<out.out_sys_fs_lep().size(); i++){
-    out.out_sys_fs_lep()[i] = (nent-out.out_sys_fs_lep()[i])/nent_zlep;
+    out.out_sys_fs_lep()[i] = out.out_sys_fs_lep()[i] ? (nent-out.out_sys_fs_lep()[i])/nent_zlep : 1.;
   }
 }
 
 template<typename T>
 void Normalize(T &x, double nent){
-  x = x ? nent/x : x;
+  x = x ? nent/x : 1.;
 }
 
 template<typename T>
 void Normalize(vector<T> &v, double nent){
-  for(auto &x: v) x = x ? nent/x : x;
+  for(auto &x: v) x = x ? nent/x : 1.;
 }
 
 void Normalize(baby_corr &out){
