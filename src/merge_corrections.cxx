@@ -123,7 +123,6 @@ void AddEntry(baby_corr &in, baby_corr &out){
   out.out_w_fs_lep() += in.w_fs_lep();
   out.out_w_isr() += in.w_isr();
   out.out_w_lep() += in.w_lep();
-  out.out_w_lumi() += in.w_lumi();
   out.out_w_pu() += in.w_pu();
   out.out_weight() += in.weight();
 
@@ -229,7 +228,9 @@ void FixISR(baby_corr &out, const string &out_path){
 
   // Calculate correction to total weight whilst correcting zero lepton
   //----------------------------------------------------------------------
-  double w_corr_l0 = (nent-out.out_w_lep())/nent_zlep * (nent-out.out_w_fs_lep())/nent_zlep;
+  double w_corr_l0 = 1.;
+  if (out.out_w_lep()) w_corr_l0 *= (nent-out.out_w_lep())/nent_zlep;
+  if (out.out_w_fs_lep()) w_corr_l0 *= (nent-out.out_w_fs_lep())/nent_zlep;
   if(nent_zlep==0) w_corr_l0 = 1.;
   // again normalize to total w_isr, not unity
   out.out_weight() = (tot_w_isr*corr_w_isr)/(out.out_tot_weight_l0()*w_corr_l0 + out.out_tot_weight_l1());

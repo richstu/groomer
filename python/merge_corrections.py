@@ -38,15 +38,16 @@ def mergeCorrections(input_dir, output_dir):
                    if os.path.isfile(os.path.join(input_dir, f))
                    and os.path.splitext(f)[1] == ".root"]
 
-    tags = set([getTag(f) for f in input_files])
+    tags = list(set([getTag(f) for f in input_files]))
 
-    for tag in tags:
+    for i in range(len(tags)):
+        tag = tags[i]
         output_file = os.path.join(output_dir, "corr_"+tag+".root")
         command = ["run/merge_corrections.exe", output_file]
         for f in input_files:
             if tag in f:
                 command.append(f)
-        print(" ".join(command))
+        print("Processing tag {} of {}: {}".format(i+1,len(tags),tag))
         subprocess.call(command)
 
 if __name__ == "__main__":

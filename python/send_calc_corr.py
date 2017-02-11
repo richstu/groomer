@@ -56,11 +56,13 @@ def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs):
             print(". /net/cms2/cms2r0/babymaker/cmsset_default.sh", file=run_file)
             print("eval `scramv1 runtime -sh`", file=run_file)
             print("cd $DIRECTORY", file=run_file)
-            print("", file=run_file)
-            for f in job_files:
+            for i in range(len(job_files)):
+                f = job_files[i]
                 command = "{} -f {} -c {} -o {}".format(exe_path,f,wgt_dir,out_dir)
                 if quick:
                     command += " --quick"
+                print("", file=run_file)
+                print("echo Starting to process file {} of {}".format(i+1, len(job_files)), file=run_file)
                 print(command, file=run_file)
         subprocess.call(["JobSubmit.csh",run_path])
         num_submitted += 1
