@@ -15,14 +15,14 @@ namespace{
 }
 
 BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
-  calib_full_(new BTagCalibration("csvv2", "data/CSVv2Moriond17_2017_1_26_BtoH.csv")),
-  calib_fast_(new BTagCalibration("csvv2_deep", "data/CSV_13TEV_Combined_14_7_2016.csv")),
+  calib_full_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_B_H.csv")),
+  calib_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_csvv2_ttbar_26_1_2017.csv")),
   readers_full_(),
   readers_fast_(),
   btag_efficiencies_(op_pts_.size()),
   btag_efficiencies_proc_(op_pts_.size()),
-  calib_deep_full_(new BTagCalibration("csvv2_deep", "data/CSVv2Moriond17_2017_1_26_BtoH.csv")),
-  calib_deep_fast_(new BTagCalibration("csvv2_deep", "data/CSV_13TEV_Combined_14_7_2016.csv")),
+  calib_deep_full_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_H.csv")),
+  calib_deep_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv")),
   readers_deep_full_(),
   readers_deep_fast_(),
   btag_efficiencies_deep_(op_pts_.size()),

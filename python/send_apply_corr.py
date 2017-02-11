@@ -81,7 +81,7 @@ for ijob in range(njobs):
     infile = infiles[ifile]
     outfile = infile.split('/')[-1]
     outfile = outfolder+outfile.replace(".root","_renorm.root")
-    corrfile = corrfolder + "corr" + getTag(infile) +".root"
+    corrfile = corrfolder + "corr_" + getTag(infile) +".root"
     if quick: corrfile = corrfolder + "corrquick_" + getTag(infile) +".root"
     if (quick):
       execmd = "\n./run/apply_corr.exe --quick -i "+infile+" -c "+corrfile+" -o "+outfile.replace("_renorm.root","_requick.root")+'\n'
