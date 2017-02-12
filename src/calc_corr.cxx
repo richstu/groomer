@@ -51,7 +51,7 @@ int main(int argc, char *argv[]){
   bool isSignal = false;
   if(b.GetEntries() > 0){
     b.GetEntry(0);
-    if(b.type()>100e3) isSignal = true;
+    if(b.type()>=100e3) isSignal = true;
   }
 
   string proc = "tt";
