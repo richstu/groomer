@@ -174,7 +174,7 @@ void LeptonWeighter::FullSim(baby_plus &b, float &w_lep, vector<float> &sys_lep)
       sf = MergeSF(sf, GetMuonScaleFactor(b, i));
     }
   }
-  for(size_t i = 0; i < b.els_pt().size(); ++i){
+  for(size_t i = 0; i < b.els_sig().size(); ++i){
     if(b.els_sig().at(i)){
       sf = MergeSF(sf, GetElectronScaleFactor(b, i));
     }
@@ -191,7 +191,7 @@ void LeptonWeighter::FastSim(baby_plus &b, float &w_fs_lep, vector<float> &sys_f
       sf = MergeSF(sf, GetMuonScaleFactorFS(b, i));
     }
   }
-  for(size_t i = 0; i < b.els_pt().size(); ++i){
+  for(size_t i = 0; i < b.els_sig().size(); ++i){
     if(b.els_sig().at(i)){
       sf = MergeSF(sf, GetElectronScaleFactorFS(b, i));
     }
@@ -226,7 +226,7 @@ std::pair<double, double> LeptonWeighter::GetElectronScaleFactor(baby_plus &b, s
   //ID iso systematics built-in
   //Tracking SFs from https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2#Electron_efficiencies_and_scale
   //3% tracking systematic below 20 GeV
-  double pt = b.els_pt().at(iel);
+  double pt = b.els_scpt().at(iel);
   double eta = b.els_sceta().at(iel);
   double abseta = fabs(eta);
   vector<pair<double, double> > sfs{
@@ -258,7 +258,7 @@ std::pair<double, double> LeptonWeighter::GetElectronScaleFactorFS(baby_plus &b,
   //https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#FullSim_FastSim_TTBar_MC_com_AN1
   //ID, iso SFs applied
   //No stat error, 2% systematic from ID, iso
-  double pt = b.els_pt().at(iel);
+  double pt = b.els_scpt().at(iel);
   double abseta = fabs(b.els_sceta().at(iel));
   vector<pair<double, double> > sfs{
     GetSF(sf_fast_electron_mediumiso_, pt, abseta, false),
