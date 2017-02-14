@@ -111,6 +111,15 @@ int main(int argc, char *argv[]){
   c.out_sys_udsgtag_tight_proc().resize(2,0);
   c.out_sys_udsgtag_tight_deep_proc().resize(2,0);
 
+  c.out_sys_bctag_bf().resize(2,0);
+  c.out_sys_bctag_gh().resize(2,0);
+  c.out_sys_udsgtag_bf().resize(2,0);
+  c.out_sys_udsgtag_gh().resize(2,0);
+  c.out_sys_bchig_deep_bf().resize(2,0);
+  c.out_sys_bchig_deep_gh().resize(2,0);
+  c.out_sys_udsghig_deep_bf().resize(2,0);
+  c.out_sys_udsghig_deep_gh().resize(2,0);
+
   // quantities to keep track of;
   int neff(0);
   double wgt(0);
@@ -131,6 +140,15 @@ int main(int argc, char *argv[]){
 
   for(long entry(0); entry<c.out_nent(); ++entry){
     b.GetEntry(entry);
+    b.out_sys_bctag_bf().resize(2,0);
+    b.out_sys_bctag_gh().resize(2,0);
+    b.out_sys_udsgtag_bf().resize(2,0);
+    b.out_sys_udsgtag_gh().resize(2,0);
+    b.out_sys_bchig_deep_bf().resize(2,0);
+    b.out_sys_bchig_deep_gh().resize(2,0);
+    b.out_sys_udsghig_deep_bf().resize(2,0);
+    b.out_sys_udsghig_deep_gh().resize(2,0);
+
     if (entry%100000==0 || entry == c.out_nent()-1) {
       cout<<"Processing event: "<<entry<<endl;
     }
@@ -235,7 +253,7 @@ int main(int argc, char *argv[]){
       c.out_sys_udsgtag_deep_proc().at(i)+= tmp; b.out_sys_udsgtag_deep_proc().at(i) = tmp;
       
       tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, false, false, BTagWeighter::Runs::BtoF) : 1.;
-      c.out_sys_bctag_bf().at(i)+= tmp; b.out_sys_bctag_bf().at(i) = tmp;
+  c.out_sys_bctag_bf().at(i)+= tmp; b.out_sys_bctag_bf().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, false, false, BTagWeighter::Runs::GtoH) : 1.;
       c.out_sys_bctag_gh().at(i)+= tmp; b.out_sys_bctag_gh().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, i==0 ? vup : vdown, false, false, BTagWeighter::Runs::BtoF) : 1.;

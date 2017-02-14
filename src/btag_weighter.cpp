@@ -297,7 +297,7 @@ double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, const vector<BTagE
 
   double eff1_fs(eff1/sf1_fs), eff2_fs(eff2/sf2_fs);
   double result = (sf1*sf1_fs*eff1_fs-sf2*sf2_fs*eff2_fs)/(eff1_fs-eff2_fs);
-  if(isnan(result) || isinf(result)) result = 1.;
+  if(std::isnan(result) || std::isinf(result)) result = 1.;
   return result;
 }
 
