@@ -135,7 +135,7 @@ int main(int argc, char *argv[]){
       cout<<"Processing event: "<<entry<<endl;
     }
 
-    float w_btag = fix_b_wgt ? btw.EventWeight(b, BTagEntry::OP_MEDIUM, ctr, ctr, false) : b.w_btag();
+    float w_btag = fix_b_wgt ? btw.EventWeight(b, BTagEntry::OP_MEDIUM, ctr, ctr, false, false) : b.w_btag();
     float w_lep(1.), w_fs_lep(1.);
     vector<float> sys_lep(2,1.), sys_fs_lep(2,1.);
     if(fix_lep_wgt){
@@ -188,91 +188,119 @@ int main(int argc, char *argv[]){
 
     double tmp = 0.;
     
-    tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, false)       : b.w_btag();
+    tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, false, false)       : b.w_btag();
     c.out_w_btag()+= tmp; b.out_w_btag() = tmp;
     tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, false, true) : b.w_btag_proc();
     c.out_w_btag_proc()+= tmp; b.out_w_btag_proc() = tmp;
-    tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, true)        : b.w_btag_deep();
+    tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, true, false)        : b.w_btag_deep();
     c.out_w_btag_deep()+= tmp; b.out_w_btag_deep() = tmp;
     tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, true, true)  : b.w_btag_deep_proc();
     c.out_w_btag_deep_proc()+= tmp; b.out_w_btag_deep_proc() = tmp;
 
-    tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, false)       : b.w_bhig();
+    tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, false, false, BTagWeighter::Runs::BtoF) : 1.;
+    c.out_w_btag_bf()+= tmp; b.out_w_btag_bf() = tmp;
+    tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, false, false, BTagWeighter::Runs::GtoH) : 1.;
+    c.out_w_btag_gh()+= tmp; b.out_w_btag_gh() = tmp;
+
+    tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, false, false)       : b.w_bhig();
     c.out_w_bhig()+= tmp; b.out_w_bhig() = tmp;
     tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, false, true) : b.w_bhig_proc();
     c.out_w_bhig_proc()+= tmp; b.out_w_bhig_proc() = tmp;
-    tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, true)        : b.w_bhig_deep();
+    tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, true, false)        : b.w_bhig_deep();
     c.out_w_bhig_deep()+= tmp; b.out_w_bhig_deep() = tmp;
     tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, true, true)  : b.w_bhig_deep_proc();
     c.out_w_bhig_deep_proc()+= tmp; b.out_w_bhig_deep_proc() = tmp;
     
+    tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, true, false, BTagWeighter::Runs::BtoF) : 1.;
+    c.out_w_bhig_deep_bf()+= tmp; b.out_w_bhig_deep_bf() = tmp;
+    tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, true, false, BTagWeighter::Runs::GtoH) : 1.;
+    c.out_w_bhig_deep_gh()+= tmp; b.out_w_bhig_deep_gh() = tmp;
+
     for(size_t i = 0; i<2; ++i){
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, false)       : b.sys_bctag().at(i);
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, false, false)       : b.sys_bctag().at(i);
       c.out_sys_bctag().at(i)+= tmp; b.out_sys_bctag().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, false, true) : b.sys_bctag_proc().at(i);
       c.out_sys_bctag_proc().at(i)+= tmp; b.out_sys_bctag_proc().at(i) = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, true)        : b.sys_bctag_deep().at(i);
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, true, false)        : b.sys_bctag_deep().at(i);
       c.out_sys_bctag_deep().at(i)+= tmp; b.out_sys_bctag_deep().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, true, true)  : b.sys_bctag_deep_proc().at(i);
       c.out_sys_bctag_deep_proc().at(i)+= tmp; b.out_sys_bctag_deep_proc().at(i) = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, i==0 ? vup : vdown, false)       : b.sys_udsgtag().at(i);
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, i==0 ? vup : vdown, false, false)       : b.sys_udsgtag().at(i);
       c.out_sys_udsgtag().at(i)+= tmp; b.out_sys_udsgtag().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, i==0 ? vup : vdown, false, true) : b.sys_udsgtag_proc().at(i);
       c.out_sys_udsgtag_proc().at(i)+= tmp; b.out_sys_udsgtag_proc().at(i) = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, i==0 ? vup : vdown, true)        : b.sys_udsgtag_deep().at(i);
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, i==0 ? vup : vdown, true, false)        : b.sys_udsgtag_deep().at(i);
       c.out_sys_udsgtag_deep().at(i)+= tmp; b.out_sys_udsgtag_deep().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, i==0 ? vup : vdown, true, true)  : b.sys_udsgtag_deep_proc().at(i);
       c.out_sys_udsgtag_deep_proc().at(i)+= tmp; b.out_sys_udsgtag_deep_proc().at(i) = tmp;
       
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, false)       : b.sys_bchig().at(i);
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, false, false, BTagWeighter::Runs::BtoF) : 1.;
+      c.out_sys_bctag_bf().at(i)+= tmp; b.out_sys_bctag_bf().at(i) = tmp;
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, false, false, BTagWeighter::Runs::GtoH) : 1.;
+      c.out_sys_bctag_gh().at(i)+= tmp; b.out_sys_bctag_gh().at(i) = tmp;
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, i==0 ? vup : vdown, false, false, BTagWeighter::Runs::BtoF) : 1.;
+      c.out_sys_udsgtag_bf().at(i)+= tmp; b.out_sys_udsgtag_bf().at(i) = tmp;
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, i==0 ? vup : vdown, false, false, BTagWeighter::Runs::GtoH) : 1.;
+      c.out_sys_udsgtag_gh().at(i)+= tmp; b.out_sys_udsgtag_gh().at(i) = tmp;
+
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, false, false)       : b.sys_bchig().at(i);
       c.out_sys_bchig().at(i)+= tmp; b.out_sys_bchig().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, false, true) : b.sys_bchig_proc().at(i);
       c.out_sys_bchig_proc().at(i)+= tmp; b.out_sys_bchig_proc().at(i) = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, true)        : b.sys_bchig_deep().at(i);
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, true, false)        : b.sys_bchig_deep().at(i);
       c.out_sys_bchig_deep().at(i)+= tmp; b.out_sys_bchig_deep().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, true, true)  : b.sys_bchig_deep_proc().at(i);
       c.out_sys_bchig_deep_proc().at(i)+= tmp; b.out_sys_bchig_deep_proc().at(i) = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, false)       : b.sys_udsghig().at(i);
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, false, false)       : b.sys_udsghig().at(i);
       c.out_sys_udsghig().at(i)+= tmp; b.out_sys_udsghig().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, false, true) : b.sys_udsghig_proc().at(i);
       c.out_sys_udsghig_proc().at(i)+= tmp; b.out_sys_udsghig_proc().at(i) = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, true)        : b.sys_udsghig_deep().at(i);
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, true, false)        : b.sys_udsghig_deep().at(i);
       c.out_sys_udsghig_deep().at(i)+= tmp; b.out_sys_udsghig_deep().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, true, true)  : b.sys_udsghig_deep_proc().at(i);
       c.out_sys_udsghig_deep_proc().at(i)+= tmp; b.out_sys_udsghig_deep_proc().at(i) = tmp;
+
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, true, false, BTagWeighter::Runs::BtoF) : 1.;
+      c.out_sys_bchig_deep_bf().at(i)+= tmp; b.out_sys_bchig_deep_bf().at(i) = tmp;
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, true, false, BTagWeighter::Runs::GtoH) : 1.;
+      c.out_sys_bchig_deep_gh().at(i)+= tmp; b.out_sys_bchig_deep_gh().at(i) = tmp;
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, true, false, BTagWeighter::Runs::BtoF) : 1.;
+      c.out_sys_udsghig_deep_bf().at(i)+= tmp; b.out_sys_udsghig_deep_bf().at(i) = tmp;
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, true, false, BTagWeighter::Runs::GtoH) : 1.;
+      c.out_sys_udsghig_deep_gh().at(i)+= tmp; b.out_sys_udsghig_deep_gh().at(i) = tmp;
 
       if(isSignal){ // yes, this ignores the fullsim points
         c.out_sys_mur().at(i)             += b.sys_mur().at(i);
         c.out_sys_muf().at(i)             += b.sys_muf().at(i);
         c.out_sys_murf().at(i)            += b.sys_murf().at(i);
 
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, i==0 ? vup : vdown, ctr, false) : b.sys_fs_bctag().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, i==0 ? vup : vdown, ctr, false, false) : b.sys_fs_bctag().at(i);
         c.out_sys_fs_bctag().at(i)+= tmp; b.out_sys_fs_bctag().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, i==0 ? vup : vdown, ctr, true)  : b.sys_fs_bctag_deep().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, i==0 ? vup : vdown, ctr, true, false)  : b.sys_fs_bctag_deep().at(i);
         c.out_sys_fs_bctag_deep().at(i)+= tmp; b.out_sys_fs_bctag_deep().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, ctr, i==0 ? vup : vdown, false) : b.sys_fs_udsgtag().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, ctr, i==0 ? vup : vdown, false, false) : b.sys_fs_udsgtag().at(i);
         c.out_sys_fs_udsgtag().at(i)+= tmp; b.out_sys_fs_udsgtag().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, ctr, i==0 ? vup : vdown, true)  : b.sys_fs_udsgtag_deep().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, ctr, i==0 ? vup : vdown, true, false)  : b.sys_fs_udsgtag_deep().at(i);
         c.out_sys_fs_udsgtag_deep().at(i)+= tmp; b.out_sys_fs_udsgtag_deep().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, i==0 ? vup : vdown, ctr, false) : b.sys_fs_bchig().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, i==0 ? vup : vdown, ctr, false, false) : b.sys_fs_bchig().at(i);
         c.out_sys_fs_bchig().at(i)+= tmp; b.out_sys_fs_bchig().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, i==0 ? vup : vdown, ctr, false) : b.sys_fs_bchig_deep().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, i==0 ? vup : vdown, ctr, false, false) : b.sys_fs_bchig_deep().at(i);
         c.out_sys_fs_bchig_deep().at(i)+= tmp; b.out_sys_fs_bchig_deep().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, i==0 ? vup : vdown, ctr, false) : b.sys_fs_udsghig().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, i==0 ? vup : vdown, ctr, false, false) : b.sys_fs_udsghig().at(i);
         c.out_sys_fs_udsghig().at(i)+= tmp; b.out_sys_fs_udsghig().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, i==0 ? vup : vdown, ctr, false) : b.sys_fs_udsghig_deep().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, i==0 ? vup : vdown, ctr, false, false) : b.sys_fs_udsghig_deep().at(i);
         c.out_sys_fs_udsghig_deep().at(i)+= tmp; b.out_sys_fs_udsghig_deep().at(i) = tmp;
       }
     }
 
     if(!quick){
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, ctr, ctr, false)       : b.w_btag_loose();
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, ctr, ctr, false, false)       : b.w_btag_loose();
       c.out_w_btag_loose()+= tmp; b.out_w_btag_loose() = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, ctr, ctr, true)        : b.w_btag_loose_deep();
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, ctr, ctr, true, false)        : b.w_btag_loose_deep();
       c.out_w_btag_loose_deep()+= tmp; b.out_w_btag_loose_deep() = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, ctr, ctr, false)       : b.w_btag_tight();
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, ctr, ctr, false, false)       : b.w_btag_tight();
       c.out_w_btag_tight()+= tmp; b.out_w_btag_tight() = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, ctr, ctr, true)        : b.w_btag_tight_deep();
+      tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, ctr, ctr, true, false)        : b.w_btag_tight_deep();
       c.out_w_btag_tight_deep()+= tmp; b.out_w_btag_tight_deep() = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, ctr, ctr, false, true) : b.w_btag_loose_proc();
       c.out_w_btag_loose_proc()+= tmp; b.out_w_btag_loose_proc() = tmp;
@@ -293,21 +321,21 @@ int main(int argc, char *argv[]){
 	  c.out_sys_pdf().at(i)                   += b.sys_pdf().at(i);
 	}
 
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, i==0 ? vup : vdown, ctr, false)       : b.sys_bctag_loose().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, i==0 ? vup : vdown, ctr, false, false)       : b.sys_bctag_loose().at(i);
         c.out_sys_bctag_loose().at(i)+= tmp; b.out_sys_bctag_loose().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, i==0 ? vup : vdown, ctr, true)        : b.sys_bctag_loose_deep().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, i==0 ? vup : vdown, ctr, true, false)        : b.sys_bctag_loose_deep().at(i);
         c.out_sys_bctag_loose_deep().at(i)+= tmp; b.out_sys_bctag_loose_deep().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, ctr, i==0 ? vup : vdown, false)       : b.sys_udsgtag_loose().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, ctr, i==0 ? vup : vdown, false, false)       : b.sys_udsgtag_loose().at(i);
         c.out_sys_udsgtag_loose().at(i)+= tmp; b.out_sys_udsgtag_loose().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, ctr, i==0 ? vup : vdown, true)        : b.sys_udsgtag_loose_deep().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, ctr, i==0 ? vup : vdown, true, false)        : b.sys_udsgtag_loose_deep().at(i);
         c.out_sys_udsgtag_loose_deep().at(i)+= tmp; b.out_sys_udsgtag_loose_deep().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, i==0 ? vup : vdown, ctr, false)       : b.sys_bctag_tight().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, i==0 ? vup : vdown, ctr, false, false)       : b.sys_bctag_tight().at(i);
         c.out_sys_bctag_tight().at(i)+= tmp; b.out_sys_bctag_tight().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, i==0 ? vup : vdown, ctr, true)        : b.sys_bctag_tight_deep().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, i==0 ? vup : vdown, ctr, true, false)        : b.sys_bctag_tight_deep().at(i);
         c.out_sys_bctag_tight_deep().at(i)+= tmp; b.out_sys_bctag_tight_deep().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, ctr, i==0 ? vup : vdown, false)       : b.sys_udsgtag_tight().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, ctr, i==0 ? vup : vdown, false, false)       : b.sys_udsgtag_tight().at(i);
         c.out_sys_udsgtag_tight().at(i)+= tmp; b.out_sys_udsgtag_tight().at(i) = tmp;
-        tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, ctr, i==0 ? vup : vdown, true)        : b.sys_udsgtag_tight_deep().at(i);
+        tmp = fix_b_wgt ? btw.EventWeight(b, op_tight, ctr, i==0 ? vup : vdown, true, false)        : b.sys_udsgtag_tight_deep().at(i);
         c.out_sys_udsgtag_tight_deep().at(i)+= tmp; b.out_sys_udsgtag_tight_deep().at(i) = tmp;
         tmp = fix_b_wgt ? btw.EventWeight(b, op_loose, i==0 ? vup : vdown, ctr, false, true) : b.sys_bctag_loose_proc().at(i);
         c.out_sys_bctag_loose_proc().at(i)+= tmp; b.out_sys_bctag_loose_proc().at(i) = tmp;

@@ -1,5 +1,7 @@
 #include "btag_weighter.hpp"
 
+#include <cmath>
+
 #include "utilities.hpp"
 
 using namespace std;
@@ -16,14 +18,22 @@ namespace{
 
 BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
   calib_full_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_B_H.csv")),
+  calib_full_bf_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_B_F.csv")),
+  calib_full_gh_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_G_H.csv")),
   calib_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_csvv2_ttbar_26_1_2017.csv")),
   readers_full_(),
+  readers_full_bf_(),
+  readers_full_gh_(),
   readers_fast_(),
   btag_efficiencies_(op_pts_.size()),
   btag_efficiencies_proc_(op_pts_.size()),
   calib_deep_full_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_H.csv")),
+  calib_deep_full_bf_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_F.csv")),
+  calib_deep_full_gh_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_G_H.csv")),
   calib_deep_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv")),
   readers_deep_full_(),
+  readers_deep_full_bf_(),
+  readers_deep_full_gh_(),
   readers_deep_fast_(),
   btag_efficiencies_deep_(op_pts_.size()),
   btag_efficiencies_deep_proc_(op_pts_.size()),
@@ -50,10 +60,30 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
     readers_full_.at(op)->load(*calib_full_, BTagEntry::FLAV_C, "comb");
     readers_full_.at(op)->load(*calib_full_, BTagEntry::FLAV_B, "comb");
 
+    readers_full_bf_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
+    readers_full_bf_.at(op)->load(*calib_full_bf_, BTagEntry::FLAV_UDSG, "incl");
+    readers_full_bf_.at(op)->load(*calib_full_bf_, BTagEntry::FLAV_C, "comb");
+    readers_full_bf_.at(op)->load(*calib_full_bf_, BTagEntry::FLAV_B, "comb");
+
+    readers_full_gh_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
+    readers_full_gh_.at(op)->load(*calib_full_gh_, BTagEntry::FLAV_UDSG, "incl");
+    readers_full_gh_.at(op)->load(*calib_full_gh_, BTagEntry::FLAV_C, "comb");
+    readers_full_gh_.at(op)->load(*calib_full_gh_, BTagEntry::FLAV_B, "comb");
+
     readers_deep_full_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
     readers_deep_full_.at(op)->load(*calib_deep_full_, BTagEntry::FLAV_UDSG, "incl");
     readers_deep_full_.at(op)->load(*calib_deep_full_, BTagEntry::FLAV_C, "comb");
     readers_deep_full_.at(op)->load(*calib_deep_full_, BTagEntry::FLAV_B, "comb");
+
+    readers_deep_full_bf_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
+    readers_deep_full_bf_.at(op)->load(*calib_deep_full_bf_, BTagEntry::FLAV_UDSG, "incl");
+    readers_deep_full_bf_.at(op)->load(*calib_deep_full_bf_, BTagEntry::FLAV_C, "comb");
+    readers_deep_full_bf_.at(op)->load(*calib_deep_full_bf_, BTagEntry::FLAV_B, "comb");
+
+    readers_deep_full_gh_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
+    readers_deep_full_gh_.at(op)->load(*calib_deep_full_gh_, BTagEntry::FLAV_UDSG, "incl");
+    readers_deep_full_gh_.at(op)->load(*calib_deep_full_gh_, BTagEntry::FLAV_C, "comb");
+    readers_deep_full_gh_.at(op)->load(*calib_deep_full_gh_, BTagEntry::FLAV_B, "comb");
 
     readers_fast_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
     readers_fast_.at(op)->load(*calib_fast_, BTagEntry::FLAV_UDSG, "fastsim");
@@ -99,7 +129,7 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
 double BTagWeighter::EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
 				 const string &bc_full_syst, const string &udsg_full_syst,
 				 const string &bc_fast_syst, const string &udsg_fast_syst,
-				 bool do_deep_csv, bool do_by_proc) const{
+				 bool do_deep_csv, bool do_by_proc, Runs runs) const{
   double product = 1.;
   auto n_jets = b.jets_islep().size();
   for(size_t i = 0; i < n_jets; ++i){
@@ -107,7 +137,7 @@ double BTagWeighter::EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
       product *= JetBTagWeight(b, i, op,
 			       bc_full_syst, udsg_full_syst,
 			       bc_fast_syst, udsg_fast_syst,
-			       do_deep_csv, do_by_proc);
+			       do_deep_csv, do_by_proc, runs);
     }
   }
   return product;
@@ -115,14 +145,14 @@ double BTagWeighter::EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
 
 double BTagWeighter::EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
 				 const string &bc_full_syst, const string &udsg_full_syst,
-				 bool do_deep_csv, bool do_by_proc) const{
+				 bool do_deep_csv, bool do_by_proc, Runs runs) const{
   double product = 1.;
   auto n_jets = b.jets_islep().size();
   for(size_t i = 0; i < n_jets; ++i){
     if(!b.jets_islep().at(i)){
       product *= JetBTagWeight(b, i, op,
 			       bc_full_syst, udsg_full_syst,
-			       do_deep_csv, do_by_proc);
+			       do_deep_csv, do_by_proc, runs);
     }
   }
   return product;
@@ -130,14 +160,14 @@ double BTagWeighter::EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
 
 double BTagWeighter::EventWeight(baby_plus &b, const vector<BTagEntry::OperatingPoint> &ops,
 				 const string &bc_full_syst, const string &udsg_full_syst,
-				 bool do_deep_csv, bool do_by_proc) const{
+				 bool do_deep_csv, bool do_by_proc, Runs runs) const{
   double product = 1.;
   auto n_jets = b.jets_islep().size();
   for(size_t i = 0; i < n_jets; ++i){
     if(!b.jets_islep().at(i)){
       product *= JetBTagWeight(b, i, ops,
 			       bc_full_syst, udsg_full_syst,
-			       do_deep_csv, do_by_proc);
+			       do_deep_csv, do_by_proc, runs);
     }
   }
   return product;
@@ -146,7 +176,7 @@ double BTagWeighter::EventWeight(baby_plus &b, const vector<BTagEntry::Operating
 double BTagWeighter::EventWeight(baby_plus &b, const vector<BTagEntry::OperatingPoint> &ops,
 				 const string &bc_full_syst, const string &udsg_full_syst,
 				 const string &bc_fast_syst, const string &udsg_fast_syst,
-				 bool do_deep_csv, bool do_by_proc) const{
+				 bool do_deep_csv, bool do_by_proc, Runs runs) const{
   double product = 1.;
   auto n_jets = b.jets_islep().size();
   for(size_t i = 0; i < n_jets; ++i){
@@ -154,7 +184,7 @@ double BTagWeighter::EventWeight(baby_plus &b, const vector<BTagEntry::Operating
       product *= JetBTagWeight(b, i, ops,
 			       bc_full_syst, udsg_full_syst,
 			       bc_fast_syst, udsg_fast_syst,
-			       do_deep_csv, do_by_proc);
+			       do_deep_csv, do_by_proc, runs);
     }
   }
   return product;
@@ -163,35 +193,35 @@ double BTagWeighter::EventWeight(baby_plus &b, const vector<BTagEntry::Operating
 double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, BTagEntry::OperatingPoint op,
 				   const string &bc_full_syst, const string &udsg_full_syst,
 				   const string &bc_fast_syst, const string &udsg_fast_syst,
-				   bool do_deep_csv, bool do_by_proc) const{
+				   bool do_deep_csv, bool do_by_proc, Runs runs) const{
   return JetBTagWeight(b, ijet, vector<BTagEntry::OperatingPoint>{op},
 		       bc_full_syst, udsg_full_syst,
 		       bc_fast_syst, udsg_fast_syst,
-		       do_deep_csv, do_by_proc);
+		       do_deep_csv, do_by_proc, runs);
 }
 
 double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, BTagEntry::OperatingPoint op,
 				   const string &bc_full_syst, const string &udsg_full_syst,
-				   bool do_deep_csv, bool do_by_proc) const{
+				   bool do_deep_csv, bool do_by_proc, Runs runs) const{
   return JetBTagWeight(b, ijet, vector<BTagEntry::OperatingPoint>{op},
 		       bc_full_syst, udsg_full_syst,
 		       "central", "central",
-		       do_deep_csv, do_by_proc);
+		       do_deep_csv, do_by_proc, runs);
 }
 
 double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, const vector<BTagEntry::OperatingPoint> &ops,
 				   const string &bc_full_syst, const string &udsg_full_syst,
-				   bool do_deep_csv, bool do_by_proc) const{
+				   bool do_deep_csv, bool do_by_proc, Runs runs) const{
   return JetBTagWeight(b, ijet, ops,
 		       bc_full_syst, udsg_full_syst,
 		       "central", "central",
-		       do_deep_csv, do_by_proc);
+		       do_deep_csv, do_by_proc, runs);
 }
 
 double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, const vector<BTagEntry::OperatingPoint> &ops,
 				   const string &bc_full_syst, const string &udsg_full_syst,
 				   const string &bc_fast_syst, const string &udsg_fast_syst,
-				   bool do_deep_csv, bool do_by_proc) const{
+				   bool do_deep_csv, bool do_by_proc, Runs runs) const{
   // procedure from https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1a_Event_reweighting_using_scale
   int hadronFlavour = abs(b.jets_hflavor().at(ijet));
   BTagEntry::JetFlavor flav;
@@ -230,8 +260,22 @@ double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, const vector<BTagE
   for (unsigned iop(0); iop<opcuts.size(); iop++) 
     if (csv>opcuts[iop]) tag = iop;
 
-  const map<BTagEntry::OperatingPoint, unique_ptr<BTagCalibrationReader> > *ireaders_full = &readers_full_;
-  if (do_deep_csv) ireaders_full = &readers_deep_full_;
+  const map<BTagEntry::OperatingPoint, unique_ptr<BTagCalibrationReader> > *ireaders_full = nullptr;
+  switch(runs){
+  case Runs::all:
+    ireaders_full = do_deep_csv ? &readers_deep_full_ : &readers_full_;
+    break;
+  case Runs::BtoF:
+    ireaders_full = do_deep_csv ? &readers_deep_full_bf_ : &readers_full_bf_;
+    break;
+  case Runs::GtoH:
+    ireaders_full = do_deep_csv ? &readers_deep_full_gh_ : &readers_full_gh_;
+    break;
+  default:
+    ERROR(("Invalid run list: "+to_string(static_cast<unsigned>(runs))));
+    break;
+  }
+
   const map<BTagEntry::OperatingPoint, unique_ptr<BTagCalibrationReader> > *ireaders_fast = &readers_fast_;
   if (do_deep_csv) ireaders_fast = &readers_deep_fast_;
 
@@ -252,7 +296,9 @@ double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, const vector<BTagE
   }
 
   double eff1_fs(eff1/sf1_fs), eff2_fs(eff2/sf2_fs);
-  return (sf1*sf1_fs*eff1_fs-sf2*sf2_fs*eff2_fs)/(eff1_fs-eff2_fs);  
+  double result = (sf1*sf1_fs*eff1_fs-sf2*sf2_fs*eff2_fs)/(eff1_fs-eff2_fs);
+  if(isnan(result) || isinf(result)) result = 1.;
+  return result;
 }
 
 double BTagWeighter::GetMCTagEfficiency(int pdgId, float pT, float eta,
