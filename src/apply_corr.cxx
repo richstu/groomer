@@ -5,6 +5,7 @@
 #include "baby_plus.hpp"
 #include "baby_corr.hpp"
 #include "utilities.hpp"
+#include "hig_utils.hpp"
 #include "cross_sections.hpp"
 
 #include "TError.h"
@@ -48,6 +49,11 @@ int main(int argc, char *argv[]){
     b.GetEntry(entry);
     if (entry%100000==0) {
       cout<<"Processing event: "<<entry<<endl;
+    }
+
+    if (b.type() == 106e3) {
+      b.out_eff_trig() = hig_utils::eff_higtrig(b);
+      b.out_mgluino() = hig_utils::mchi(b);
     }
 
     b.out_baseline() = b.pass_ra2_badmu() && b.met()/b.met_calo()<5
@@ -144,7 +150,7 @@ int main(int argc, char *argv[]){
 
       for (unsigned i(0); i<b.sys_mur().size(); i++) {
         b.out_sys_pu()[i]                      *= c.sys_pu()[i];
-        b.out_sys_pdf()[i]                     *= c.sys_pdf()[i];
+        // b.out_sys_pdf()[i]                     *= c.sys_pdf()[i];
 
         b.out_sys_bctag_loose()[i]             *= c.sys_bctag_loose()[i];
         b.out_sys_bctag_loose_deep()[i]        *= c.sys_bctag_loose_deep()[i];
