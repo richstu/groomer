@@ -26,6 +26,7 @@ namespace hig_utils{
 
   int mchi(baby_plus &b);
   float eff_higtrig(baby_plus &b);
+  float effunc_higtrig(baby_plus &b);
 
 }
 

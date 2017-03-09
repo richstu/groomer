@@ -51,8 +51,14 @@ int main(int argc, char *argv[]){
       cout<<"Processing event: "<<entry<<endl;
     }
 
-    if (b.type() == 106e3) {
+    if (b.type() == 106e3) { // TCHiHH
+      // trigger efficiency and uncertainty
       b.out_eff_trig() = hig_utils::eff_higtrig(b);
+      float effunc = hig_utils::effunc_higtrig(b);
+      b.out_sys_trig();
+      b.out_sys_trig().at(0) = 1+effunc;
+      b.out_sys_trig().at(1) = 1-effunc;
+      // fix mass point branch
       b.out_mgluino() = hig_utils::mchi(b);
     }
 
