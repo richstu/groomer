@@ -6,13 +6,13 @@ from ROOT import TChain
 import string
 from pprint import pprint
 
-infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unprocessed/'
+infolder  = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/reweighted/'
 outfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/unskimmed/'
 corrfolder = '/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/'
 quick = True
 # leave as empty list to run over all input files in the infolder
 # wanted_samples = ['TTJets_HT']
-wanted_samples = ['']
+wanted_samples = []
 
 njobs = 50
 
