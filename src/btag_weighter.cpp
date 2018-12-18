@@ -20,16 +20,10 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
   calib_full_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_B_H.csv")),
   calib_full_bf_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_B_F.csv")),
   calib_full_gh_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_G_H.csv")),
-  calib_full_b_(new BTagCalibration("csvv2", "data/RunB.csv")),
-  calib_full_cd_(new BTagCalibration("csvv2", "data/RunCD.csv")),
-  calib_full_ef_(new BTagCalibration("csvv2", "data/RunEF.csv")),
   calib_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_csvv2_ttbar_26_1_2017.csv")),
   readers_full_(),
   readers_full_bf_(),
   readers_full_gh_(),
-  readers_full_b_(),
-  readers_full_cd_(),
-  readers_full_ef_(),
   readers_fast_(),
   btag_efficiencies_(op_pts_.size()),
   btag_efficiencies_proc_(op_pts_.size()),
@@ -75,21 +69,6 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
     readers_full_gh_.at(op)->load(*calib_full_gh_, BTagEntry::FLAV_UDSG, "incl");
     readers_full_gh_.at(op)->load(*calib_full_gh_, BTagEntry::FLAV_C, "comb");
     readers_full_gh_.at(op)->load(*calib_full_gh_, BTagEntry::FLAV_B, "comb");
-
-    readers_full_b_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
-    readers_full_b_.at(op)->load(*calib_full_b_, BTagEntry::FLAV_UDSG, "incl");
-    readers_full_b_.at(op)->load(*calib_full_b_, BTagEntry::FLAV_C, "comb");
-    readers_full_b_.at(op)->load(*calib_full_b_, BTagEntry::FLAV_B, "comb");
-
-    readers_full_cd_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
-    readers_full_cd_.at(op)->load(*calib_full_cd_, BTagEntry::FLAV_UDSG, "incl");
-    readers_full_cd_.at(op)->load(*calib_full_cd_, BTagEntry::FLAV_C, "comb");
-    readers_full_cd_.at(op)->load(*calib_full_cd_, BTagEntry::FLAV_B, "comb");
-
-    readers_full_ef_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
-    readers_full_ef_.at(op)->load(*calib_full_ef_, BTagEntry::FLAV_UDSG, "incl");
-    readers_full_ef_.at(op)->load(*calib_full_ef_, BTagEntry::FLAV_C, "comb");
-    readers_full_ef_.at(op)->load(*calib_full_ef_, BTagEntry::FLAV_B, "comb");
 
     readers_deep_full_[op] = MakeUnique<BTagCalibrationReader>(op, "central", vector<string>{"up", "down"});
     readers_deep_full_.at(op)->load(*calib_deep_full_, BTagEntry::FLAV_UDSG, "incl");
@@ -291,18 +270,6 @@ double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, const vector<BTagE
     break;
   case Runs::GtoH:
     ireaders_full = do_deep_csv ? &readers_deep_full_gh_ : &readers_full_gh_;
-    break;
-  case Runs::B:
-    if(do_deep_csv) cout<<"ERROR DeepCSV has not been implemented for this run range"<<endl;
-    ireaders_full = &readers_full_b_;
-    break;
-  case Runs::CtoD:
-    if(do_deep_csv) cout<<"ERROR DeepCSV has not been implemented for this run range"<<endl;
-    ireaders_full = &readers_full_cd_;
-    break;
-  case Runs::EtoF:
-    if(do_deep_csv) cout<<"ERROR DeepCSV has not been implemented for this run range"<<endl;
-    ireaders_full = &readers_full_ef_;
     break;
   default:
     ERROR(("Invalid run list: "+to_string(static_cast<unsigned>(runs))));

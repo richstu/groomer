@@ -98,11 +98,6 @@ int main(int argc, char *argv[]){
     //-----------------------------------
     b.out_w_pu()                   *= c.w_pu();
     b.out_w_btag()                 *= c.w_btag();
-    b.out_w_btag_bf()              *= c.w_btag_bf();
-    b.out_w_btag_gh()              *= c.w_btag_gh();
-    b.out_w_btag_b()               *= c.w_btag_b();
-    b.out_w_btag_cd()              *= c.w_btag_cd();
-    b.out_w_btag_ef()              *= c.w_btag_ef();
     b.out_w_btag_proc()            *= c.w_btag_proc();
     b.out_w_btag_deep()            *= c.w_btag_deep();
     b.out_w_btag_deep_proc()       *= c.w_btag_deep_proc();
@@ -110,26 +105,14 @@ int main(int argc, char *argv[]){
     b.out_w_bhig()                 *= c.w_bhig();
     b.out_w_bhig_proc()            *= c.w_bhig_proc();
     b.out_w_bhig_deep()            *= c.w_bhig_deep();
-    b.out_w_bhig_deep_bf()         *= c.w_bhig_deep_bf();
-    b.out_w_bhig_deep_gh()         *= c.w_bhig_deep_gh();
     b.out_w_bhig_deep_proc()       *= c.w_bhig_deep_proc();
     
     for (unsigned i(0); i<2; i++) {
       b.out_sys_bctag()[i]                   *= c.sys_bctag()[i];
-      b.out_sys_bctag_bf()[i]                *= c.sys_bctag_bf()[i];
-      b.out_sys_bctag_gh()[i]                *= c.sys_bctag_gh()[i];
-      b.out_sys_bctag_b()[i]                 *= c.sys_bctag_b()[i];
-      b.out_sys_bctag_cd()[i]                *= c.sys_bctag_cd()[i];
-      b.out_sys_bctag_ef()[i]                *= c.sys_bctag_ef()[i];
       b.out_sys_bctag_proc()[i]              *= c.sys_bctag_proc()[i];
       b.out_sys_bctag_deep()[i]              *= c.sys_bctag_deep()[i];
       b.out_sys_bctag_deep_proc()[i]         *= c.sys_bctag_deep_proc()[i];
       b.out_sys_udsgtag()[i]                 *= c.sys_udsgtag()[i];
-      b.out_sys_udsgtag_bf()[i]              *= c.sys_udsgtag_bf()[i];
-      b.out_sys_udsgtag_gh()[i]              *= c.sys_udsgtag_gh()[i];
-      b.out_sys_udsgtag_b()[i]               *= c.sys_udsgtag_b()[i];
-      b.out_sys_udsgtag_cd()[i]              *= c.sys_udsgtag_cd()[i];
-      b.out_sys_udsgtag_ef()[i]              *= c.sys_udsgtag_ef()[i];
       b.out_sys_udsgtag_proc()[i]            *= c.sys_udsgtag_proc()[i];
       b.out_sys_udsgtag_deep()[i]            *= c.sys_udsgtag_deep()[i];
       b.out_sys_udsgtag_deep_proc()[i]       *= c.sys_udsgtag_deep_proc()[i];
@@ -137,14 +120,10 @@ int main(int argc, char *argv[]){
       b.out_sys_bchig()[i]                   *= c.sys_bchig()[i];
       b.out_sys_bchig_proc()[i]              *= c.sys_bchig_proc()[i];
       b.out_sys_bchig_deep()[i]              *= c.sys_bchig_deep()[i];
-      b.out_sys_bchig_deep_bf()[i]              *= c.sys_bchig_deep_bf()[i];
-      b.out_sys_bchig_deep_gh()[i]              *= c.sys_bchig_deep_gh()[i];
       b.out_sys_bchig_deep_proc()[i]         *= c.sys_bchig_deep_proc()[i];
       b.out_sys_udsghig()[i]                 *= c.sys_udsghig()[i];
       b.out_sys_udsghig_proc()[i]            *= c.sys_udsghig_proc()[i];
       b.out_sys_udsghig_deep()[i]            *= c.sys_udsghig_deep()[i];
-      b.out_sys_udsghig_deep_bf()[i]            *= c.sys_udsghig_deep_bf()[i];
-      b.out_sys_udsghig_deep_gh()[i]            *= c.sys_udsghig_deep_gh()[i];
       b.out_sys_udsghig_deep_proc()[i]       *= c.sys_udsghig_deep_proc()[i];
 
       if (isSignal) { // yes, this ignores the fullsim points
@@ -165,18 +144,8 @@ int main(int argc, char *argv[]){
 
     if (!quick) {
       b.out_w_btag_loose()           *= c.w_btag_loose();
-      b.out_w_btag_bf_loose()        *= c.w_btag_bf_loose();
-      b.out_w_btag_gh_loose()        *= c.w_btag_gh_loose();
-      b.out_w_btag_b_loose()         *= c.w_btag_b_loose();
-      b.out_w_btag_cd_loose()        *= c.w_btag_cd_loose();
-      b.out_w_btag_ef_loose()        *= c.w_btag_ef_loose();
       b.out_w_btag_loose_deep()      *= c.w_btag_loose_deep();
       b.out_w_btag_tight()           *= c.w_btag_tight();
-      b.out_w_btag_bf_tight()        *= c.w_btag_bf_tight();
-      b.out_w_btag_gh_tight()        *= c.w_btag_gh_tight();
-      b.out_w_btag_b_tight()         *= c.w_btag_b_tight();
-      b.out_w_btag_cd_tight()        *= c.w_btag_cd_tight();
-      b.out_w_btag_ef_tight()        *= c.w_btag_ef_tight();
       b.out_w_btag_tight_deep()      *= c.w_btag_tight_deep();
       b.out_w_btag_loose_proc()      *= c.w_btag_loose_proc();
       b.out_w_btag_loose_deep_proc() *= c.w_btag_loose_deep_proc();
@@ -190,32 +159,12 @@ int main(int argc, char *argv[]){
         // b.out_sys_pdf()[i]                     *= c.sys_pdf()[i];
 
         b.out_sys_bctag_loose()[i]             *= c.sys_bctag_loose()[i];
-	b.out_sys_bctag_bf_loose()[i]          *= c.sys_bctag_bf_loose()[i];
-	b.out_sys_bctag_gh_loose()[i]          *= c.sys_bctag_gh_loose()[i];
-	b.out_sys_bctag_b_loose()[i]           *= c.sys_bctag_b_loose()[i];
-	b.out_sys_bctag_cd_loose()[i]          *= c.sys_bctag_cd_loose()[i];
-	b.out_sys_bctag_ef_loose()[i]          *= c.sys_bctag_ef_loose()[i];
         b.out_sys_bctag_loose_deep()[i]        *= c.sys_bctag_loose_deep()[i];
         b.out_sys_udsgtag_loose()[i]           *= c.sys_udsgtag_loose()[i];
-	b.out_sys_udsgtag_bf_loose()[i]        *= c.sys_udsgtag_bf_loose()[i];
-	b.out_sys_udsgtag_gh_loose()[i]        *= c.sys_udsgtag_gh_loose()[i];
-	b.out_sys_udsgtag_b_loose()[i]         *= c.sys_udsgtag_b_loose()[i];
-	b.out_sys_udsgtag_cd_loose()[i]        *= c.sys_udsgtag_cd_loose()[i];
-	b.out_sys_udsgtag_ef_loose()[i]        *= c.sys_udsgtag_ef_loose()[i];
         b.out_sys_udsgtag_loose_deep()[i]      *= c.sys_udsgtag_loose_deep()[i];
         b.out_sys_bctag_tight()[i]             *= c.sys_bctag_tight()[i];
-	b.out_sys_bctag_bf_tight()[i]          *= c.sys_bctag_bf_tight()[i];
-	b.out_sys_bctag_gh_tight()[i]          *= c.sys_bctag_gh_tight()[i];
-	b.out_sys_bctag_b_tight()[i]           *= c.sys_bctag_b_tight()[i];
-	b.out_sys_bctag_cd_tight()[i]          *= c.sys_bctag_cd_tight()[i];
-	b.out_sys_bctag_ef_tight()[i]          *= c.sys_bctag_ef_tight()[i];
         b.out_sys_bctag_tight_deep()[i]        *= c.sys_bctag_tight_deep()[i];
         b.out_sys_udsgtag_tight()[i]           *= c.sys_udsgtag_tight()[i];
-	b.out_sys_udsgtag_bf_tight()[i]        *= c.sys_udsgtag_bf_tight()[i];
-	b.out_sys_udsgtag_gh_tight()[i]        *= c.sys_udsgtag_gh_tight()[i];
-	b.out_sys_udsgtag_b_tight()[i]         *= c.sys_udsgtag_b_tight()[i];
-	b.out_sys_udsgtag_cd_tight()[i]        *= c.sys_udsgtag_cd_tight()[i];
-	b.out_sys_udsgtag_ef_tight()[i]        *= c.sys_udsgtag_ef_tight()[i];
         b.out_sys_udsgtag_tight_deep()[i]      *= c.sys_udsgtag_tight_deep()[i];
         b.out_sys_bctag_loose_proc()[i]        *= c.sys_bctag_loose_proc()[i];
         b.out_sys_bctag_loose_deep_proc()[i]   *= c.sys_bctag_loose_deep_proc()[i];

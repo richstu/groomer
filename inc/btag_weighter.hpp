@@ -12,7 +12,7 @@
 
 class BTagWeighter{
 public:
-  enum class Runs{all, BtoF, GtoH, B, CtoD, EtoF };
+  enum class Runs{all, BtoF, GtoH};
 
   explicit BTagWeighter(std::string proc,
                         bool is_fast_sim = false,
@@ -64,16 +64,10 @@ private:
   std::unique_ptr<BTagCalibration> calib_full_;
   std::unique_ptr<BTagCalibration> calib_full_bf_;
   std::unique_ptr<BTagCalibration> calib_full_gh_;
-  std::unique_ptr<BTagCalibration> calib_full_b_;
-  std::unique_ptr<BTagCalibration> calib_full_cd_;
-  std::unique_ptr<BTagCalibration> calib_full_ef_;
   std::unique_ptr<BTagCalibration> calib_fast_;
   std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_full_;
   std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_full_bf_;
   std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_full_gh_;
-  std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_full_b_;
-  std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_full_cd_;
-  std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_full_ef_;
   std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_fast_;
   std::vector<TH3D> btag_efficiencies_;
   std::vector<TH3D> btag_efficiencies_proc_;
