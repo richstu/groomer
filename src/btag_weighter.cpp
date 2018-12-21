@@ -27,7 +27,7 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
   readers_fast_(),
   btag_efficiencies_(op_pts_.size()),
   btag_efficiencies_proc_(op_pts_.size()),
-  calib_deep_full_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_H.csv")),
+  calib_deep_full_(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_V3_B_F.csv")),
   calib_deep_full_bf_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_F.csv")),
   calib_deep_full_gh_(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_G_H.csv")),
   calib_deep_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv")),

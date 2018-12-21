@@ -1,12 +1,6 @@
 bool baseline
-float w_btag_bf
-float w_btag_gh
 float w_bhig_deep_bf
 float w_bhig_deep_gh
-std::vector<float> sys_bctag_bf
-std::vector<float> sys_bctag_gh
-std::vector<float> sys_udsgtag_bf
-std::vector<float> sys_udsgtag_gh
 std::vector<float> sys_bchig_deep_bf
 std::vector<float> sys_bchig_deep_gh
 std::vector<float> sys_udsghig_deep_bf

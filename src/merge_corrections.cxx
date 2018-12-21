@@ -14,22 +14,10 @@ void CopySize(const vector<T> &in, vector<U> &out){
 }
 
 void Initialize(baby_corr &in, baby_corr &out){
-  out.out_w_bhig() = 0.;
   out.out_w_bhig_deep() = 0.;
-  out.out_w_bhig_deep_proc() = 0.;
-  out.out_w_bhig_proc() = 0.;
-  out.out_w_btag() = 0.;
   out.out_w_btag_deep() = 0.;
-  out.out_w_btag_deep_proc() = 0.;
-  out.out_w_btag_loose() = 0.;
   out.out_w_btag_loose_deep() = 0.;
-  out.out_w_btag_loose_deep_proc() = 0.;
-  out.out_w_btag_loose_proc() = 0.;
-  out.out_w_btag_proc() = 0.;
-  out.out_w_btag_tight() = 0.;
   out.out_w_btag_tight_deep() = 0.;
-  out.out_w_btag_tight_deep_proc() = 0.;
-  out.out_w_btag_tight_proc() = 0.;
   out.out_w_fs_lep() = 0.;
   out.out_w_isr() = 0.;
   out.out_w_lep() = 0.;
@@ -39,55 +27,27 @@ void Initialize(baby_corr &in, baby_corr &out){
 
   out.out_neff() = 0.;
 
-  CopySize(in.sys_bchig(), out.out_sys_bchig());
-  CopySize(in.sys_bchig_deep(), out.out_sys_bchig_deep());
-  CopySize(in.sys_bchig_deep_proc(), out.out_sys_bchig_deep_proc());
-  CopySize(in.sys_bchig_proc(), out.out_sys_bchig_proc());
-  CopySize(in.sys_bctag(), out.out_sys_bctag());
-  CopySize(in.sys_bctag_deep(), out.out_sys_bctag_deep());
-  CopySize(in.sys_bctag_deep_proc(), out.out_sys_bctag_deep_proc());
-  CopySize(in.sys_bctag_loose(), out.out_sys_bctag_loose());
-  CopySize(in.sys_bctag_loose_deep(), out.out_sys_bctag_loose_deep());
-  CopySize(in.sys_bctag_loose_deep_proc(), out.out_sys_bctag_loose_deep_proc());
-  CopySize(in.sys_bctag_loose_proc(), out.out_sys_bctag_loose_proc());
-  CopySize(in.sys_bctag_proc(), out.out_sys_bctag_proc());
-  CopySize(in.sys_bctag_tight(), out.out_sys_bctag_tight());
-  CopySize(in.sys_bctag_tight_deep(), out.out_sys_bctag_tight_deep());
-  CopySize(in.sys_bctag_tight_deep_proc(), out.out_sys_bctag_tight_deep_proc());
-  CopySize(in.sys_bctag_tight_proc(), out.out_sys_bctag_tight_proc());
-  CopySize(in.sys_fs_bchig(), out.out_sys_fs_bchig());
-  CopySize(in.sys_fs_bchig_deep(), out.out_sys_fs_bchig_deep());
-  CopySize(in.sys_fs_bctag(), out.out_sys_fs_bctag());
-  CopySize(in.sys_fs_bctag_deep(), out.out_sys_fs_bctag_deep());
-  CopySize(in.sys_fs_lep(), out.out_sys_fs_lep());
-  CopySize(in.sys_fs_udsghig(), out.out_sys_fs_udsghig());
-  CopySize(in.sys_fs_udsghig_deep(), out.out_sys_fs_udsghig_deep());
-  CopySize(in.sys_fs_udsgtag(), out.out_sys_fs_udsgtag());
-  CopySize(in.sys_fs_udsgtag_deep(), out.out_sys_fs_udsgtag_deep());
-  CopySize(in.sys_isr(), out.out_sys_isr());
-  CopySize(in.sys_lep(), out.out_sys_lep());
-  CopySize(in.sys_muf(), out.out_sys_muf());
-  CopySize(in.sys_mur(), out.out_sys_mur());
-  CopySize(in.sys_murf(), out.out_sys_murf());
-  CopySize(in.sys_pdf(), out.out_sys_pdf());
-  CopySize(in.sys_pu(), out.out_sys_pu());
-  CopySize(in.sys_udsghig(), out.out_sys_udsghig());
-  CopySize(in.sys_udsghig_deep(), out.out_sys_udsghig_deep());
-  CopySize(in.sys_udsghig_deep_proc(), out.out_sys_udsghig_deep_proc());
-  CopySize(in.sys_udsghig_proc(), out.out_sys_udsghig_proc());
-  CopySize(in.sys_udsgtag(), out.out_sys_udsgtag());
-  CopySize(in.sys_udsgtag_deep(), out.out_sys_udsgtag_deep());
-  CopySize(in.sys_udsgtag_deep_proc(), out.out_sys_udsgtag_deep_proc());
-  CopySize(in.sys_udsgtag_loose(), out.out_sys_udsgtag_loose());
+  CopySize(in.sys_bchig_deep(),         out.out_sys_bchig_deep());
+  CopySize(in.sys_bctag_deep(),         out.out_sys_bctag_deep());
+  CopySize(in.sys_bctag_loose_deep(),   out.out_sys_bctag_loose_deep());
+  CopySize(in.sys_bctag_tight_deep(),   out.out_sys_bctag_tight_deep());
+  CopySize(in.sys_fs_bchig_deep(),      out.out_sys_fs_bchig_deep());
+  CopySize(in.sys_fs_bctag_deep(),      out.out_sys_fs_bctag_deep());
+  CopySize(in.sys_fs_lep(),             out.out_sys_fs_lep());
+  CopySize(in.sys_fs_udsghig_deep(),    out.out_sys_fs_udsghig_deep());
+  CopySize(in.sys_fs_udsgtag_deep(),    out.out_sys_fs_udsgtag_deep());
+  CopySize(in.sys_isr(),                out.out_sys_isr());
+  CopySize(in.sys_lep(),                out.out_sys_lep());
+  CopySize(in.sys_muf(),                out.out_sys_muf());
+  CopySize(in.sys_mur(),                out.out_sys_mur());
+  CopySize(in.sys_murf(),               out.out_sys_murf());
+  CopySize(in.sys_pdf(),                out.out_sys_pdf());
+  CopySize(in.sys_pu(),                 out.out_sys_pu());
+  CopySize(in.sys_udsghig_deep(),       out.out_sys_udsghig_deep());
+  CopySize(in.sys_udsgtag_deep(),       out.out_sys_udsgtag_deep());
   CopySize(in.sys_udsgtag_loose_deep(), out.out_sys_udsgtag_loose_deep());
-  CopySize(in.sys_udsgtag_loose_deep_proc(), out.out_sys_udsgtag_loose_deep_proc());
-  CopySize(in.sys_udsgtag_loose_proc(), out.out_sys_udsgtag_loose_proc());
-  CopySize(in.sys_udsgtag_proc(), out.out_sys_udsgtag_proc());
-  CopySize(in.sys_udsgtag_tight(), out.out_sys_udsgtag_tight());
   CopySize(in.sys_udsgtag_tight_deep(), out.out_sys_udsgtag_tight_deep());
-  CopySize(in.sys_udsgtag_tight_deep_proc(), out.out_sys_udsgtag_tight_deep_proc());
-  CopySize(in.sys_udsgtag_tight_proc(), out.out_sys_udsgtag_tight_proc());
-  CopySize(in.w_pdf(), out.out_w_pdf());
+  CopySize(in.w_pdf(),                  out.out_w_pdf());
 }
 
 template<typename T, typename U>
@@ -104,77 +64,37 @@ void AddEntry(baby_corr &in, baby_corr &out){
   out.out_tot_weight_l0() += in.tot_weight_l0();
   out.out_tot_weight_l1() += in.tot_weight_l1();
 
-  out.out_w_bhig() += in.w_bhig();
-  out.out_w_bhig_deep() += in.w_bhig_deep();
-  out.out_w_bhig_deep_proc() += in.w_bhig_deep_proc();
-  out.out_w_bhig_proc() += in.w_bhig_proc();
-  out.out_w_btag() += in.w_btag();
-  out.out_w_btag_deep() += in.w_btag_deep();
-  out.out_w_btag_deep_proc() += in.w_btag_deep_proc();
-  out.out_w_btag_loose() += in.w_btag_loose();
+  out.out_w_bhig_deep()       += in.w_bhig_deep();
+  out.out_w_btag_deep()       += in.w_btag_deep();
   out.out_w_btag_loose_deep() += in.w_btag_loose_deep();
-  out.out_w_btag_loose_deep_proc() += in.w_btag_loose_deep_proc();
-  out.out_w_btag_loose_proc() += in.w_btag_loose_proc();
-  out.out_w_btag_proc() += in.w_btag_proc();
-  out.out_w_btag_tight() += in.w_btag_tight();
   out.out_w_btag_tight_deep() += in.w_btag_tight_deep();
-  out.out_w_btag_tight_deep_proc() += in.w_btag_tight_deep_proc();
-  out.out_w_btag_tight_proc() += in.w_btag_tight_proc();
-  out.out_w_fs_lep() += in.w_fs_lep();
-  out.out_w_isr() += in.w_isr();
-  out.out_w_lep() += in.w_lep();
-  out.out_w_pu() += in.w_pu();
-  out.out_weight() += in.weight();
+  out.out_w_fs_lep()          += in.w_fs_lep();
+  out.out_w_isr()             += in.w_isr();
+  out.out_w_lep()             += in.w_lep();
+  out.out_w_pu()              += in.w_pu();
+  out.out_weight()            += in.weight();
 
-  VecAdd(in.sys_bchig(), out.out_sys_bchig());
-  VecAdd(in.sys_bchig_deep(), out.out_sys_bchig_deep());
-  VecAdd(in.sys_bchig_deep_proc(), out.out_sys_bchig_deep_proc());
-  VecAdd(in.sys_bchig_proc(), out.out_sys_bchig_proc());
-  VecAdd(in.sys_bctag(), out.out_sys_bctag());
-  VecAdd(in.sys_bctag_deep(), out.out_sys_bctag_deep());
-  VecAdd(in.sys_bctag_deep_proc(), out.out_sys_bctag_deep_proc());
-  VecAdd(in.sys_bctag_loose(), out.out_sys_bctag_loose());
-  VecAdd(in.sys_bctag_loose_deep(), out.out_sys_bctag_loose_deep());
-  VecAdd(in.sys_bctag_loose_deep_proc(), out.out_sys_bctag_loose_deep_proc());
-  VecAdd(in.sys_bctag_loose_proc(), out.out_sys_bctag_loose_proc());
-  VecAdd(in.sys_bctag_proc(), out.out_sys_bctag_proc());
-  VecAdd(in.sys_bctag_tight(), out.out_sys_bctag_tight());
-  VecAdd(in.sys_bctag_tight_deep(), out.out_sys_bctag_tight_deep());
-  VecAdd(in.sys_bctag_tight_deep_proc(), out.out_sys_bctag_tight_deep_proc());
-  VecAdd(in.sys_bctag_tight_proc(), out.out_sys_bctag_tight_proc());
-  VecAdd(in.sys_fs_bchig(), out.out_sys_fs_bchig());
-  VecAdd(in.sys_fs_bchig_deep(), out.out_sys_fs_bchig_deep());
-  VecAdd(in.sys_fs_bctag(), out.out_sys_fs_bctag());
-  VecAdd(in.sys_fs_bctag_deep(), out.out_sys_fs_bctag_deep());
-  VecAdd(in.sys_fs_lep(), out.out_sys_fs_lep());
-  VecAdd(in.sys_fs_udsghig(), out.out_sys_fs_udsghig());
-  VecAdd(in.sys_fs_udsghig_deep(), out.out_sys_fs_udsghig_deep());
-  VecAdd(in.sys_fs_udsgtag(), out.out_sys_fs_udsgtag());
-  VecAdd(in.sys_fs_udsgtag_deep(), out.out_sys_fs_udsgtag_deep());
-  VecAdd(in.sys_isr(), out.out_sys_isr());
-  VecAdd(in.sys_lep(), out.out_sys_lep());
-  VecAdd(in.sys_muf(), out.out_sys_muf());
-  VecAdd(in.sys_mur(), out.out_sys_mur());
-  VecAdd(in.sys_murf(), out.out_sys_murf());
-  VecAdd(in.sys_pdf(), out.out_sys_pdf());
-  VecAdd(in.sys_pu(), out.out_sys_pu());
-  VecAdd(in.sys_udsghig(), out.out_sys_udsghig());
-  VecAdd(in.sys_udsghig_deep(), out.out_sys_udsghig_deep());
-  VecAdd(in.sys_udsghig_deep_proc(), out.out_sys_udsghig_deep_proc());
-  VecAdd(in.sys_udsghig_proc(), out.out_sys_udsghig_proc());
-  VecAdd(in.sys_udsgtag(), out.out_sys_udsgtag());
-  VecAdd(in.sys_udsgtag_deep(), out.out_sys_udsgtag_deep());
-  VecAdd(in.sys_udsgtag_deep_proc(), out.out_sys_udsgtag_deep_proc());
-  VecAdd(in.sys_udsgtag_loose(), out.out_sys_udsgtag_loose());
+  VecAdd(in.sys_bchig_deep(),         out.out_sys_bchig_deep());
+  VecAdd(in.sys_bctag_deep(),         out.out_sys_bctag_deep());
+  VecAdd(in.sys_bctag_loose_deep(),   out.out_sys_bctag_loose_deep());
+  VecAdd(in.sys_bctag_tight_deep(),   out.out_sys_bctag_tight_deep());
+  VecAdd(in.sys_fs_bchig_deep(),      out.out_sys_fs_bchig_deep());
+  VecAdd(in.sys_fs_bctag_deep(),      out.out_sys_fs_bctag_deep());
+  VecAdd(in.sys_fs_lep(),             out.out_sys_fs_lep());
+  VecAdd(in.sys_fs_udsghig_deep(),    out.out_sys_fs_udsghig_deep());
+  VecAdd(in.sys_fs_udsgtag_deep(),    out.out_sys_fs_udsgtag_deep());
+  VecAdd(in.sys_isr(),                out.out_sys_isr());
+  VecAdd(in.sys_lep(),                out.out_sys_lep());
+  VecAdd(in.sys_muf(),                out.out_sys_muf());
+  VecAdd(in.sys_mur(),                out.out_sys_mur());
+  VecAdd(in.sys_murf(),               out.out_sys_murf());
+  VecAdd(in.sys_pdf(),                out.out_sys_pdf());
+  VecAdd(in.sys_pu(),                 out.out_sys_pu());
+  VecAdd(in.sys_udsghig_deep(),       out.out_sys_udsghig_deep());
+  VecAdd(in.sys_udsgtag_deep(),       out.out_sys_udsgtag_deep());
   VecAdd(in.sys_udsgtag_loose_deep(), out.out_sys_udsgtag_loose_deep());
-  VecAdd(in.sys_udsgtag_loose_deep_proc(), out.out_sys_udsgtag_loose_deep_proc());
-  VecAdd(in.sys_udsgtag_loose_proc(), out.out_sys_udsgtag_loose_proc());
-  VecAdd(in.sys_udsgtag_proc(), out.out_sys_udsgtag_proc());
-  VecAdd(in.sys_udsgtag_tight(), out.out_sys_udsgtag_tight());
   VecAdd(in.sys_udsgtag_tight_deep(), out.out_sys_udsgtag_tight_deep());
-  VecAdd(in.sys_udsgtag_tight_deep_proc(), out.out_sys_udsgtag_tight_deep_proc());
-  VecAdd(in.sys_udsgtag_tight_proc(), out.out_sys_udsgtag_tight_proc());
-  VecAdd(in.w_pdf(), out.out_w_pdf());
+  VecAdd(in.w_pdf(),                  out.out_w_pdf());
 }
 
 int GetGluinoMass(const string &path){
@@ -267,77 +187,37 @@ void Normalize(baby_corr &out){
 
   Normalize(out.out_w_pu(), nent);
 
-  Normalize(out.out_w_btag(), nent);
-  Normalize(out.out_w_btag_proc(), nent);
   Normalize(out.out_w_btag_deep(), nent);
-  Normalize(out.out_w_btag_deep_proc(), nent);
 
-  Normalize(out.out_w_bhig(), nent);
-  Normalize(out.out_w_bhig_proc(), nent);
   Normalize(out.out_w_bhig_deep(), nent);
-  Normalize(out.out_w_bhig_deep_proc(), nent);
 
-  Normalize(out.out_sys_bctag(), nent);
-  Normalize(out.out_sys_bctag_proc(), nent);
   Normalize(out.out_sys_bctag_deep(), nent);
-  Normalize(out.out_sys_bctag_deep_proc(), nent);
-  Normalize(out.out_sys_udsgtag(), nent);
-  Normalize(out.out_sys_udsgtag_proc(), nent);
   Normalize(out.out_sys_udsgtag_deep(), nent);
-  Normalize(out.out_sys_udsgtag_deep_proc(), nent);
 
-  Normalize(out.out_sys_bchig(), nent);
-  Normalize(out.out_sys_bchig_proc(), nent);
   Normalize(out.out_sys_bchig_deep(), nent);
-  Normalize(out.out_sys_bchig_deep_proc(), nent);
-  Normalize(out.out_sys_udsghig(), nent);
-  Normalize(out.out_sys_udsghig_proc(), nent);
   Normalize(out.out_sys_udsghig_deep(), nent);
-  Normalize(out.out_sys_udsghig_deep_proc(), nent);
 
   Normalize(out.out_sys_mur(), nent);
   Normalize(out.out_sys_muf(), nent);
   Normalize(out.out_sys_murf(), nent);
 
-  Normalize(out.out_sys_fs_bctag(), nent);
   Normalize(out.out_sys_fs_bctag_deep(), nent);
-  Normalize(out.out_sys_fs_udsgtag(), nent);
   Normalize(out.out_sys_fs_udsgtag_deep(), nent);
-  Normalize(out.out_sys_fs_bchig(), nent);
   Normalize(out.out_sys_fs_bchig_deep(), nent);
-  Normalize(out.out_sys_fs_udsghig(), nent);
   Normalize(out.out_sys_fs_udsghig_deep(), nent);
 
-  Normalize(out.out_w_btag_loose(), nent);
   Normalize(out.out_w_btag_loose_deep(), nent);
-  Normalize(out.out_w_btag_tight(), nent);
   Normalize(out.out_w_btag_tight_deep(), nent);
-  Normalize(out.out_w_btag_loose_proc(), nent);
-  Normalize(out.out_w_btag_loose_deep_proc(), nent);
-  Normalize(out.out_w_btag_tight_proc(), nent);
-  Normalize(out.out_w_btag_tight_deep_proc(), nent);
 
   Normalize(out.out_w_pdf(), nent);
 
   Normalize(out.out_sys_pu(), nent);
   Normalize(out.out_sys_pdf(), nent);
 
-  Normalize(out.out_sys_bctag_loose(), nent);
   Normalize(out.out_sys_bctag_loose_deep(), nent);
-  Normalize(out.out_sys_udsgtag_loose(), nent);
   Normalize(out.out_sys_udsgtag_loose_deep(), nent);
-  Normalize(out.out_sys_bctag_tight(), nent);
   Normalize(out.out_sys_bctag_tight_deep(), nent);
-  Normalize(out.out_sys_udsgtag_tight(), nent);
   Normalize(out.out_sys_udsgtag_tight_deep(), nent);
-  Normalize(out.out_sys_bctag_loose_proc(), nent);
-  Normalize(out.out_sys_bctag_loose_deep_proc(), nent);
-  Normalize(out.out_sys_udsgtag_loose_proc(), nent);
-  Normalize(out.out_sys_udsgtag_loose_deep_proc(), nent);
-  Normalize(out.out_sys_bctag_tight_proc(), nent);
-  Normalize(out.out_sys_bctag_tight_deep_proc(), nent);
-  Normalize(out.out_sys_udsgtag_tight_proc(), nent);
-  Normalize(out.out_sys_udsgtag_tight_deep_proc(), nent);
 }
 
 int main(int argc, char *argv[]){

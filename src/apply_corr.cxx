@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
 
     b.out_weight() = c.weight() *b.out_w_lumi() 
                      *b.out_w_lep() *b.out_w_fs_lep() //post-corr values in order for 0l to be correct
-                     *b.w_btag() *b.w_isr() *b.eff_jetid();
+                     *b.w_btag_deep() *b.w_isr() *b.eff_jetid() *b.w_pu();
     
     b.out_w_isr() = c.w_isr()*b.w_isr();
     for (unsigned i(0); i<b.sys_isr().size(); i++) 
@@ -97,60 +97,32 @@ int main(int argc, char *argv[]){
     //      Cookie-cutter variables
     //-----------------------------------
     b.out_w_pu()                   *= c.w_pu();
-    b.out_w_btag()                 *= c.w_btag();
-    b.out_w_btag_proc()            *= c.w_btag_proc();
     b.out_w_btag_deep()            *= c.w_btag_deep();
-    b.out_w_btag_deep_proc()       *= c.w_btag_deep_proc();
 
-    b.out_w_bhig()                 *= c.w_bhig();
-    b.out_w_bhig_proc()            *= c.w_bhig_proc();
     b.out_w_bhig_deep()            *= c.w_bhig_deep();
-    b.out_w_bhig_deep_proc()       *= c.w_bhig_deep_proc();
     
     for (unsigned i(0); i<2; i++) {
-      b.out_sys_bctag()[i]                   *= c.sys_bctag()[i];
-      b.out_sys_bctag_proc()[i]              *= c.sys_bctag_proc()[i];
       b.out_sys_bctag_deep()[i]              *= c.sys_bctag_deep()[i];
-      b.out_sys_bctag_deep_proc()[i]         *= c.sys_bctag_deep_proc()[i];
-      b.out_sys_udsgtag()[i]                 *= c.sys_udsgtag()[i];
-      b.out_sys_udsgtag_proc()[i]            *= c.sys_udsgtag_proc()[i];
       b.out_sys_udsgtag_deep()[i]            *= c.sys_udsgtag_deep()[i];
-      b.out_sys_udsgtag_deep_proc()[i]       *= c.sys_udsgtag_deep_proc()[i];
         
-      b.out_sys_bchig()[i]                   *= c.sys_bchig()[i];
-      b.out_sys_bchig_proc()[i]              *= c.sys_bchig_proc()[i];
       b.out_sys_bchig_deep()[i]              *= c.sys_bchig_deep()[i];
-      b.out_sys_bchig_deep_proc()[i]         *= c.sys_bchig_deep_proc()[i];
-      b.out_sys_udsghig()[i]                 *= c.sys_udsghig()[i];
-      b.out_sys_udsghig_proc()[i]            *= c.sys_udsghig_proc()[i];
       b.out_sys_udsghig_deep()[i]            *= c.sys_udsghig_deep()[i];
-      b.out_sys_udsghig_deep_proc()[i]       *= c.sys_udsghig_deep_proc()[i];
 
       if (isSignal) { // yes, this ignores the fullsim points
         b.out_sys_mur()[i]                     *= c.sys_mur()[i];
         b.out_sys_muf()[i]                     *= c.sys_muf()[i];
         b.out_sys_murf()[i]                    *= c.sys_murf()[i];
 
-        b.out_sys_fs_bctag()[i]              *= c.sys_fs_bctag()[i];
         b.out_sys_fs_bctag_deep()[i]         *= c.sys_fs_bctag_deep()[i];
-        b.out_sys_fs_udsgtag()[i]            *= c.sys_fs_udsgtag()[i];
         b.out_sys_fs_udsgtag_deep()[i]       *= c.sys_fs_udsgtag_deep()[i];
-        b.out_sys_fs_bchig()[i]              *= c.sys_fs_bchig()[i];
         b.out_sys_fs_bchig_deep()[i]         *= c.sys_fs_bchig_deep()[i];
-        b.out_sys_fs_udsghig()[i]            *= c.sys_fs_udsghig()[i];
         b.out_sys_fs_udsghig_deep()[i]       *= c.sys_fs_udsghig_deep()[i];
       }
     }
 
     if (!quick) {
-      b.out_w_btag_loose()           *= c.w_btag_loose();
       b.out_w_btag_loose_deep()      *= c.w_btag_loose_deep();
-      b.out_w_btag_tight()           *= c.w_btag_tight();
       b.out_w_btag_tight_deep()      *= c.w_btag_tight_deep();
-      b.out_w_btag_loose_proc()      *= c.w_btag_loose_proc();
-      b.out_w_btag_loose_deep_proc() *= c.w_btag_loose_deep_proc();
-      b.out_w_btag_tight_proc()      *= c.w_btag_tight_proc();
-      b.out_w_btag_tight_deep_proc() *= c.w_btag_tight_deep_proc();
 
       for (unsigned i(0); i<b.w_pdf().size(); i++) b.out_w_pdf()[i] *= c.w_pdf()[i];
 
@@ -158,22 +130,10 @@ int main(int argc, char *argv[]){
         b.out_sys_pu()[i]                      *= c.sys_pu()[i];
         // b.out_sys_pdf()[i]                     *= c.sys_pdf()[i];
 
-        b.out_sys_bctag_loose()[i]             *= c.sys_bctag_loose()[i];
         b.out_sys_bctag_loose_deep()[i]        *= c.sys_bctag_loose_deep()[i];
-        b.out_sys_udsgtag_loose()[i]           *= c.sys_udsgtag_loose()[i];
         b.out_sys_udsgtag_loose_deep()[i]      *= c.sys_udsgtag_loose_deep()[i];
-        b.out_sys_bctag_tight()[i]             *= c.sys_bctag_tight()[i];
         b.out_sys_bctag_tight_deep()[i]        *= c.sys_bctag_tight_deep()[i];
-        b.out_sys_udsgtag_tight()[i]           *= c.sys_udsgtag_tight()[i];
         b.out_sys_udsgtag_tight_deep()[i]      *= c.sys_udsgtag_tight_deep()[i];
-        b.out_sys_bctag_loose_proc()[i]        *= c.sys_bctag_loose_proc()[i];
-        b.out_sys_bctag_loose_deep_proc()[i]   *= c.sys_bctag_loose_deep_proc()[i];
-        b.out_sys_udsgtag_loose_proc()[i]      *= c.sys_udsgtag_loose_proc()[i];
-        b.out_sys_udsgtag_loose_deep_proc()[i] *= c.sys_udsgtag_loose_deep_proc()[i];
-        b.out_sys_bctag_tight_proc()[i]        *= c.sys_bctag_tight_proc()[i];
-        b.out_sys_bctag_tight_deep_proc()[i]   *= c.sys_bctag_tight_deep_proc()[i];
-        b.out_sys_udsgtag_tight_proc()[i]      *= c.sys_udsgtag_tight_proc()[i];
-        b.out_sys_udsgtag_tight_deep_proc()[i] *= c.sys_udsgtag_tight_deep_proc()[i];
       } // loop over 2 sys
     } // if quick
     
