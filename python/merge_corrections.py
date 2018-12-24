@@ -22,6 +22,7 @@ def getTag(path):
     tag = path.split("/")[-1]
     tag = tag.split("RunIISpring16MiniAODv2")[0]
     tag = tag.split("RunIISummer16MiniAODv2")[0]
+    tag = tag.split("RunIIFall17MiniAODv2")[0]
     tag = tag.replace("fullbaby_","")
     tag = tag.replace("mergedbaby_","")
     tag = tag.strip("_")
@@ -53,9 +54,9 @@ def mergeCorrections(input_dir, output_dir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Merges multiple sum-of-weights files into one corrections file per tag.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("input_dir", default="/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/sum_of_weights/",
+    parser.add_argument("input_dir", default="/net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/sum_of_weights/",
                         help="Directory from which to read sum-of-weights files")
-    parser.add_argument("output_dir", default="/net/cms29/cms29r0/babymaker/babies/2017_01_27/mc/corrections/",
+    parser.add_argument("output_dir", default="/net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/corrections/",
                         help="Directory in which to store corrections files")
     args = parser.parse_args()
 

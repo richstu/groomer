@@ -12,7 +12,6 @@
 
 class BTagWeighter{
 public:
-  enum class Runs{all, BtoF, GtoH};
 
   explicit BTagWeighter(std::string proc,
                         bool is_fast_sim = false,
@@ -21,38 +20,38 @@ public:
   double EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
 		     const std::string &bc_full_syst, const std::string &udsg_full_syst,
 		     const std::string &bc_fast_syst, const std::string &udsg_fast_syst,
-		     bool do_deep_csv, bool do_by_proc, Runs runs = Runs::all) const;
+		     bool do_deep_csv, bool do_by_proc) const;
 
   double EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
 		     const std::string &bc_full_syst, const std::string &udsg_full_syst,
-		     bool do_deep_csv, bool do_by_proc, Runs runs = Runs::all) const;
+		     bool do_deep_csv, bool do_by_proc) const;
 
   double EventWeight(baby_plus &b, const std::vector<BTagEntry::OperatingPoint> &ops,
 		     const std::string &bc_full_syst, const std::string &udsg_full_syst,
-		     bool do_deep_csv, bool do_by_proc, Runs runs = Runs::all) const;
+		     bool do_deep_csv, bool do_by_proc) const;
 
   double EventWeight(baby_plus &b, const std::vector<BTagEntry::OperatingPoint> &ops,
 		     const std::string &bc_full_syst, const std::string &udsg_full_syst,
 		     const std::string &bc_fast_syst, const std::string &udsg_fast_syst,
-		     bool do_deep_csv, bool do_by_proc, Runs runs = Runs::all) const;
+		     bool do_deep_csv, bool do_by_proc) const;
 
   double JetBTagWeight(baby_plus &b, std::size_t ijet, BTagEntry::OperatingPoint op,
 		       const std::string &bc_full_syst, const std::string &udsg_full_syst,
 		       const std::string &bc_fast_syst, const std::string &udsg_fast_syst,
-		       bool do_deep_csv, bool do_by_proc, Runs runs = Runs::all) const;
+		       bool do_deep_csv, bool do_by_proc) const;
 
   double JetBTagWeight(baby_plus &b, std::size_t ijet, BTagEntry::OperatingPoint op,
 		       const std::string &bc_full_syst, const std::string &udsg_full_syst,
-		       bool do_deep_csv, bool do_by_proc, Runs runs = Runs::all) const;
+		       bool do_deep_csv, bool do_by_proc) const;
 
   double JetBTagWeight(baby_plus &b, std::size_t ijet, const std::vector<BTagEntry::OperatingPoint> &ops,
 		       const std::string &bc_full_syst, const std::string &udsg_full_syst,
-		       bool do_deep_csv, bool do_by_proc, Runs runs = Runs::all) const;
+		       bool do_deep_csv, bool do_by_proc) const;
 
   double JetBTagWeight(baby_plus &b, std::size_t ijet, const std::vector<BTagEntry::OperatingPoint> &ops,
 		       const std::string &bc_full_syst, const std::string &udsg_full_syst,
 		       const std::string &bc_fast_syst, const std::string &udsg_fast_syst,
-		       bool do_deep_csv, bool do_by_proc, Runs runs = Runs::all) const;
+		       bool do_deep_csv, bool do_by_proc) const;
 
 private:
   double GetMCTagEfficiency(int pdgId, float pT, float eta,
@@ -62,23 +61,15 @@ private:
   static const std::vector<BTagEntry::JetFlavor> flavors_;
 
   std::unique_ptr<BTagCalibration> calib_full_;
-  std::unique_ptr<BTagCalibration> calib_full_bf_;
-  std::unique_ptr<BTagCalibration> calib_full_gh_;
   std::unique_ptr<BTagCalibration> calib_fast_;
   std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_full_;
-  std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_full_bf_;
-  std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_full_gh_;
   std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_fast_;
   std::vector<TH3D> btag_efficiencies_;
   std::vector<TH3D> btag_efficiencies_proc_;
 
   std::unique_ptr<BTagCalibration> calib_deep_full_;
-  std::unique_ptr<BTagCalibration> calib_deep_full_bf_;
-  std::unique_ptr<BTagCalibration> calib_deep_full_gh_;
   std::unique_ptr<BTagCalibration> calib_deep_fast_;
   std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_deep_full_;
-  std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_deep_full_bf_;
-  std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_deep_full_gh_;
   std::map<BTagEntry::OperatingPoint, std::unique_ptr<BTagCalibrationReader> > readers_deep_fast_;
   std::vector<TH3D> btag_efficiencies_deep_;
   std::vector<TH3D> btag_efficiencies_deep_proc_;

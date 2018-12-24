@@ -83,11 +83,6 @@ int main(int argc, char *argv[]){
   c.out_sys_bctag_tight_deep().resize(2,0);
   c.out_sys_udsgtag_tight_deep().resize(2,0);
 
-  c.out_sys_bchig_deep_bf().resize(2,0);
-  c.out_sys_bchig_deep_gh().resize(2,0);
-  c.out_sys_udsghig_deep_bf().resize(2,0);
-  c.out_sys_udsghig_deep_gh().resize(2,0);
-
   // quantities to keep track of;
   int neff(0);
   double wgt(0);
@@ -108,16 +103,11 @@ int main(int argc, char *argv[]){
 
   for(long entry(0); entry<c.out_nent(); ++entry){
     b.GetEntry(entry);
-    b.out_sys_bchig_deep_bf().resize(2,0);
-    b.out_sys_bchig_deep_gh().resize(2,0);
-    b.out_sys_udsghig_deep_bf().resize(2,0);
-    b.out_sys_udsghig_deep_gh().resize(2,0);
-
     if (entry%100000==0 || entry == c.out_nent()-1) {
       cout<<"Processing event: "<<entry<<endl;
     }
 
-    float w_btag_deep = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, false, false) : b.w_btag_deep();
+    float w_btag_deep = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, true, false) : b.w_btag_deep();
     float w_lep(1.), w_fs_lep(1.);
     vector<float> sys_lep(2,1.), sys_fs_lep(2,1.);
     if(fix_lep_wgt){
@@ -170,17 +160,11 @@ int main(int argc, char *argv[]){
 
     double tmp = 0.;
     
-    tmp = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, true, false)        : b.w_btag_deep();
-    c.out_w_btag_deep()+= tmp; b.out_w_btag_deep() = tmp;
+    c.out_w_btag_deep()+= w_btag_deep; b.out_w_btag_deep() = w_btag_deep;
 
     tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, true, false)        : b.w_bhig_deep();
     c.out_w_bhig_deep()+= tmp; b.out_w_bhig_deep() = tmp;
     
-    tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, true, false, BTagWeighter::Runs::BtoF) : 1.;
-    c.out_w_bhig_deep_bf()+= tmp; b.out_w_bhig_deep_bf() = tmp;
-    tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, ctr, true, false, BTagWeighter::Runs::GtoH) : 1.;
-    c.out_w_bhig_deep_gh()+= tmp; b.out_w_bhig_deep_gh() = tmp;
-
     for(size_t i = 0; i<2; ++i){
       tmp = fix_b_wgt ? btw.EventWeight(b, op_med, i==0 ? vup : vdown, ctr, true, false)        : b.sys_bctag_deep().at(i);
       c.out_sys_bctag_deep().at(i)+= tmp; b.out_sys_bctag_deep().at(i) = tmp;
@@ -191,15 +175,6 @@ int main(int argc, char *argv[]){
       c.out_sys_bchig_deep().at(i)+= tmp; b.out_sys_bchig_deep().at(i) = tmp;
       tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, true, false)        : b.sys_udsghig_deep().at(i);
       c.out_sys_udsghig_deep().at(i)+= tmp; b.out_sys_udsghig_deep().at(i) = tmp;
-
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, true, false, BTagWeighter::Runs::BtoF) : 1.;
-      c.out_sys_bchig_deep_bf().at(i)+= tmp; b.out_sys_bchig_deep_bf().at(i) = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, i==0 ? vup : vdown, ctr, true, false, BTagWeighter::Runs::GtoH) : 1.;
-      c.out_sys_bchig_deep_gh().at(i)+= tmp; b.out_sys_bchig_deep_gh().at(i) = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, true, false, BTagWeighter::Runs::BtoF) : 1.;
-      c.out_sys_udsghig_deep_bf().at(i)+= tmp; b.out_sys_udsghig_deep_bf().at(i) = tmp;
-      tmp = fix_b_wgt ? btw.EventWeight(b, op_all, ctr, i==0 ? vup : vdown, true, false, BTagWeighter::Runs::GtoH) : 1.;
-      c.out_sys_udsghig_deep_gh().at(i)+= tmp; b.out_sys_udsghig_deep_gh().at(i) = tmp;
 
       if(isSignal){ // yes, this ignores the fullsim points
         c.out_sys_mur().at(i)             += b.sys_mur().at(i);

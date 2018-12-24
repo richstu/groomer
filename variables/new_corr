@@ -3,9 +3,3 @@ int nent
 int nent_zlep
 float tot_weight_l0
 float tot_weight_l1
-float w_bhig_deep_bf
-float w_bhig_deep_gh
-std::vector<float> sys_bchig_deep_bf
-std::vector<float> sys_bchig_deep_gh
-std::vector<float> sys_udsghig_deep_bf
-std::vector<float> sys_udsghig_deep_gh
