@@ -7,138 +7,230 @@ using namespace std;
 
 namespace xsec{
 
-  float crossSection(const TString &file){
+  float crossSection(const TString &file, bool is2016){
     float xsec(999999.), Htobb(0.5824);
 
-    if(file.Contains("SMS-T1qqqq_mGluino-1000_mLSP-800_Tune")) xsec = 0.325388;
-    if(file.Contains("SMS-T1qqqq_mGluino-1400_mLSP-100_Tune")) xsec = 0.0252977;
-    if(file.Contains("SMS-T1tttt_mGluino-1200_mLSP-800_Tune")) xsec = 0.0856418;
-    if(file.Contains("SMS-T1tttt_mGluino-1500_mLSP-100_Tune")) xsec = 0.0141903;
-    if(file.Contains("SMS-T1tttt_mGluino-2000_mLSP-100_Tune")) xsec = 0.000981077;
-    if(file.Contains("SMS-T2tt_mStop-225_mLSP-50_Tune")) xsec = 36.3818;
-    if(file.Contains("SMS-T2tt_mStop-425_mLSP-325_Tune")) xsec = 1.31169;
-    if(file.Contains("SMS-T2tt_mStop-850_mLSP-100_Tune")) xsec = 0.0189612;
-
-    if(file.Contains("RPV") && file.Contains("1000"))  xsec = 0.325388;
-    if(file.Contains("RPV") && file.Contains("1100"))  xsec = 0.163491;
-    if(file.Contains("RPV") && file.Contains("1200"))  xsec = 0.0856418;
-    if(file.Contains("RPV") && file.Contains("1300"))  xsec = 0.0460525;
-    if(file.Contains("RPV") && file.Contains("1400"))  xsec = 0.0252977;
+    if (is2016) {
+        if(file.Contains("SMS-T1tttt_mGluino-1200_mLSP-800_Tune")) xsec = 0.0985;
+        if(file.Contains("SMS-T1tttt_mGluino-2000_mLSP-100_Tune")) xsec = 0.00101;
+        
+        if(file.Contains("RPV") && file.Contains("1000"))  xsec = 0.325388;
+        if(file.Contains("RPV") && file.Contains("1100"))  xsec = 0.163491;
+        if(file.Contains("RPV") && file.Contains("1200"))  xsec = 0.0856418;
+        if(file.Contains("RPV") && file.Contains("1300"))  xsec = 0.0460525;
+        if(file.Contains("RPV") && file.Contains("1400"))  xsec = 0.0252977;
 
 
-    //  Cross-section taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
-    // Alternative option: https://twiki.cern.ch/twiki/bin/view/Sandbox/FullNNLOcrossSections#Top_cross_section_for_13_TeV
-    if(file.Contains("TTJets_Tune") || file.Contains("TT_"))  xsec = 815.96;
-    if(file.Contains("TTJets_HT")){//LO cross sections with k-factor of 1.625 already applied
-      if(file.Contains("2500toInf")) xsec = 0.0023234211;
-      if(file.Contains("1200to2500")) xsec = 0.194972521;
-      if(file.Contains("800to1200")) xsec = 1.07722318;
-      if(file.Contains("600to800")) xsec = 2.61537118;
+        //  Cross-section taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
+        // Alternative option: https://twiki.cern.ch/twiki/bin/view/Sandbox/FullNNLOcrossSections#Top_cross_section_for_13_TeV
+        if(file.Contains("TTJets_Tune") || file.Contains("TT_"))  xsec = 815.96;
+        if(file.Contains("TTJets_HT")){//LO cross sections with k-factor of 1.625 already applied
+          if(file.Contains("2500toInf")) xsec = 0.0023234211;
+          if(file.Contains("1200to2500")) xsec = 0.194972521;
+          if(file.Contains("800to1200")) xsec = 1.07722318;
+          if(file.Contains("600to800")) xsec = 2.61537118;
+
+        }
+        // The efficiency of the mtt>1000 cut is taken from sigma(mtt>1000)/sigma(inclusive) from mcm
+        double mtt_1000_eff=(11.16/670.3);
+        if(file.Contains("TTJets_Mtt-1000toInf")) xsec = 815.96*mtt_1000_eff;
+
+        if(file.Contains("TTJets_DiLept") || file.Contains("TTTo2L2Nu")) xsec = 85.66; // (3*0.108)^2*815.96
+        if(file.Contains("TTJets_SingleLept")) xsec = 178.7; //(1- ((1-3*0.108)^2+(3*0.108)^2))*815.96*0.5 per half
+        if(file.Contains("TTToSemiLeptonic")) xsec = 357.4;
+        
+        if(file.Contains("TTJets_DiLept_genMET-150")) xsec = 0.06392*85.66; // filter_eff*(3*0.108)^2*815.96
+        if(file.Contains("TTJets_SingleLept") && file.Contains("genMET-150")) xsec = 0.05217*178.7; //filter_eff*(1- ((1-3*0.108)^2+(3*0.108)^2))*815.96*0.5 per half
+
+        // cross sections from mcm
+        if(file.Contains("TTG")) xsec = 3.697;                
+        if(file.Contains("TTTT_Tune")) xsec = 0.009103;
+        // mcm cross section times the same kfactors used for leptonic samples
+        if(file.Contains("WJetsToQQ_HT-600ToInf")) xsec = 95.14*1.21;
+        if(file.Contains("ZJetsToQQ_HT600toInf")) xsec = 5.67*1.23;
+        
+        // From https://cms-pdmv.cern.ch/mcm
+        // k-factors from https://mangano.web.cern.ch/mangano/public/MECCA/samples_50ns_miniaod.txt
+        // k-factors are ratio of https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
+        // NLO/NNLO cross-sections to that of an inclusive sample in mcm at lower order (LO/NLO)
+
+        if(file.Contains("WJetsToLNu_Tune")) xsec=61526.7; //NNLO from Lesya's summary table 
+
+        //cross-section per slice changed due to change in genHT definition
+        if(file.Contains("WJetsToLNu_HT-70To100"))  xsec = 1372.*1.21; 
+        if(file.Contains("WJetsToLNu_HT-100To200"))  xsec = 1347.*1.21; 
+        if(file.Contains("WJetsToLNu_HT-200To400"))  xsec = 360.*1.21;
+        if(file.Contains("WJetsToLNu_HT-400To600"))  xsec = 48.98*1.21;
+        if(file.Contains("WJetsToLNu_HT-600ToInf"))  xsec = 18.77*1.21;
+        if(file.Contains("WJetsToLNu_HT-600To800"))  xsec = 12.05*1.21;
+        if(file.Contains("WJetsToLNu_HT-800To1200"))  xsec = 5.501*1.21;
+        if(file.Contains("WJetsToLNu_HT-1200To2500"))  xsec = 1.329*1.21;
+        if(file.Contains("WJetsToLNu_HT-2500ToInf"))  xsec = 0.03216*1.21;
+
+        //updated 02-2019 with XSDB
+        if(file.Contains("QCD_HT100to200_Tune")) xsec = 28060000;
+        if(file.Contains("QCD_HT200to300_Tune"))   xsec = 1710000;
+        if(file.Contains("QCD_HT300to500_Tune"))   xsec = 347500;
+        if(file.Contains("QCD_HT500to700_Tune"))   xsec = 32060;
+        if(file.Contains("QCD_HT700to1000_Tune"))  xsec = 6829;
+        if(file.Contains("QCD_HT1000to1500_Tune")) xsec = 1207;
+        if(file.Contains("QCD_HT1500to2000_Tune")) xsec = 120.0;
+        if(file.Contains("QCD_HT2000toInf_Tune"))  xsec = 25.25;
+
+        // Cross sections from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec
+        // multiplied by BF(W->mu,e,tau) = 0.324
+        if (file.Contains("ST_s-channel_4f_leptonDecays"))     xsec = 3.34;
+        if (file.Contains("ST_t-channel_antitop_4f_inclusiveDecays")) xsec = 80.95;
+        if (file.Contains("ST_t-channel_top_4f_inclusiveDecays")) xsec = 136.02;
+        if (file.Contains("ST_tW_antitop_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543;
+        if (file.Contains("ST_tW_top_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543; 
+
+        if(file.Contains("DYJetsToLL_M-10to50_Tune")) xsec = 18610*1.23;
+        if(file.Contains("DYJetsToLL_M-50_Tune"))     xsec = 4895*1.23;
+
+        if(file.Contains("DYJetsToLL_M-50_HT-70to100"))    xsec = 175.3*1.23;
+        if(file.Contains("DYJetsToLL_M-50_HT-100to200"))    xsec = 139.4*1.23;
+        if(file.Contains("DYJetsToLL_M-50_HT-200to400"))    xsec = 42.75*1.23;
+        if(file.Contains("DYJetsToLL_M-50_HT-400to600"))    xsec = 5.497*1.23;
+        if(file.Contains("DYJetsToLL_M-50_HT-600to800"))    xsec = 1.363*1.23;
+        if(file.Contains("DYJetsToLL_M-50_HT-800to1200"))    xsec = 0.6759*1.23;
+        if(file.Contains("DYJetsToLL_M-50_HT-1200to2500"))    xsec = 0.116*1.23;
+        if(file.Contains("DYJetsToLL_M-50_HT-2500toInf"))    xsec = 0.002592*1.23;
+        if(file.Contains("DYJetsToLL_M-50_HT-600toInf"))    xsec = 2.21*1.23;
+
+        if(file.Contains("ZJetsToNuNu_HT-100To200"))  xsec = 280.35*1.27;
+        if(file.Contains("ZJetsToNuNu_HT-200To400"))  xsec = 77.67*1.27;
+        if(file.Contains("ZJetsToNuNu_HT-400To600"))  xsec = 10.73*1.27;
+        if(file.Contains("ZJetsToNuNu_HT-600To800"))  xsec = 2.536*1.27;
+        if(file.Contains("ZJetsToNuNu_HT-800To1200"))  xsec = 1.161*1.27;
+        if(file.Contains("ZJetsToNuNu_HT-1200To2500"))  xsec = 0.2824*1.27;
+        if(file.Contains("ZJetsToNuNu_HT-2500ToInf"))  xsec = 0.006459*1.27;
+        if(file.Contains("ZJetsToNuNu_HT-600ToInf"))  xsec = 3.986*1.27;
+
+        if(file.Contains("TTZToQQ"))                xsec = 0.5297;
+        if(file.Contains("TTZToLLNuNu_M-10"))       xsec = 0.2529;
+        if(file.Contains("TTWJetsToQQ"))            xsec = 0.4062;
+        if(file.Contains("TTWJetsToLNu"))           xsec = 0.2043;
+       
+        //https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Diboson
+        if(file.Contains("WWTo2L2Nu"))   xsec = 12.178; //NNLO
+        if(file.Contains("WWToLNuQQ"))   xsec = 49.997; //NNLO
+        if(file.Contains("ttHTobb_M125"))   xsec = 0.2934;
+
+        if(file.Contains("WZTo1L3Nu"))   xsec = 3.05;
+        if(file.Contains("WZTo1L1Nu2Q"))   xsec = 10.96;
+        if(file.Contains("WZTo2L2Q"))   xsec = 5.595;
+        if(file.Contains("WZTo3LNu"))   xsec = 4.42965;
+        if(file.Contains("VVTo2L2Nu"))   xsec = 11.95;
+        if(file.Contains("ZZ_Tune"))   xsec = 16.523;
+
+        // Calculated at 13 TeV in
+        // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV
+        // Higgs branching ratios from
+        // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR
+        if(file.Contains("ZH_HToBB_ZToLL_M-125"))      xsec = 0.883*Htobb*0.033658;
+        if(file.Contains("ZH_HToBB_ZToNuNu_M-125"))    xsec = 0.883*Htobb*0.2;
+        if(file.Contains("WH_HToBB_WToLNu_M-125"))     xsec = 1.373*Htobb*(0.1071+0.1063+0.1138);
+        if(file.Contains("ZH_HToBB_ZToNuNu_M125"))    xsec = 0.883*Htobb*0.2;
+        if(file.Contains("WH_HToBB_WToLNu_M125"))     xsec = 1.373*Htobb*(0.1071+0.1063+0.1138);
+    } else {
+        if(file.Contains("SMS-T1tttt_mGluino-1200_mLSP-800_Tune")) xsec = 0.0985;
+        if(file.Contains("SMS-T1tttt_mGluino-2000_mLSP-100_Tune")) xsec = 0.00101;
+
+        //  Cross-section taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
+        // Alternative option: https://twiki.cern.ch/twiki/bin/view/Sandbox/FullNNLOcrossSections#Top_cross_section_for_13_TeV
+        if(file.Contains("TTJets_Tune") || file.Contains("TT_"))  xsec = 815.96;
+
+        if(file.Contains("TTJets_DiLept") || file.Contains("TTTo2L2Nu")) xsec = 85.66; // (3*0.108)^2*815.96
+        if(file.Contains("TTJets_SingleLept")) xsec = 178.7; //(1- ((1-3*0.108)^2+(3*0.108)^2))*815.96*0.5 per half
+        
+        if(file.Contains("TTJets_DiLept_genMET-150")) xsec = 0.0676543*85.66; // filter_eff*(3*0.108)^2*815.96
+        if(file.Contains("TTJets_SingleLept") && file.Contains("genMET-150")) xsec = 0.0568246*178.7; //filter_eff*(1- ((1-3*0.108)^2+(3*0.108)^2))*815.96*0.5 per half
+
+        // from cross XSDB
+        if(file.Contains("TTG")) xsec = 4.078;                
+        if(file.Contains("TTTT_Tune")) xsec = 0.008213;
+        
+        // From https://cms-pdmv.cern.ch/mcm
+        // k-factors from https://mangano.web.cern.ch/mangano/public/MECCA/samples_50ns_miniaod.txt
+        // k-factors are ratio of https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
+        // NLO/NNLO cross-sections to that of an inclusive sample in mcm at lower order (LO/NLO)
+
+        if(file.Contains("WJetsToLNu_Tune")) xsec=20508.9*3; //NNLO from Lesya's summary table 
+
+        //cross-section per slice based on inclusive sample, roughly 10% higher than 2016, less in extreme tail
+        if(file.Contains("WJetsToLNu_HT-100To200"))  xsec = 0.0262096*20508.9*3;
+        if(file.Contains("WJetsToLNu_HT-200To400"))  xsec = 0.00772818*20508.9*3;
+        if(file.Contains("WJetsToLNu_HT-400To600"))  xsec = 0.00109366*20508.9*3;
+        if(file.Contains("WJetsToLNu_HT-600To800"))  xsec = 0.000272388*20508.9*3;
+        if(file.Contains("WJetsToLNu_HT-800To1200"))  xsec = 0.000122233*20508.9*3;
+        if(file.Contains("WJetsToLNu_HT-1200To2500"))  xsec = 2.71060e-5*20508.9*3;
+        if(file.Contains("WJetsToLNu_HT-2500ToInf"))  xsec = 3.94174e-07*20508.9*3;
+
+        if(file.Contains("QCD_HT100to200_Tune")) xsec = 23700000;
+        if(file.Contains("QCD_HT200to300_Tune"))   xsec = 1547000;
+        if(file.Contains("QCD_HT300to500_Tune"))   xsec = 322600;
+        if(file.Contains("QCD_HT500to700_Tune"))   xsec = 29980;
+        if(file.Contains("QCD_HT700to1000_Tune"))  xsec = 6334;
+        if(file.Contains("QCD_HT1000to1500_Tune")) xsec = 1088;
+        if(file.Contains("QCD_HT1500to2000_Tune")) xsec = 99.11;
+        if(file.Contains("QCD_HT2000toInf_Tune"))  xsec = 20.23;
+
+        // Cross sections from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec
+        // multiplied by BF(W->mu,e,tau) = 0.324
+        if (file.Contains("ST_s-channel_4f_leptonDecays"))     xsec = 3.34;
+        if (file.Contains("ST_t-channel_antitop_4f_inclusiveDecays")) xsec = 80.95;
+        if (file.Contains("ST_t-channel_top_4f_inclusiveDecays")) xsec = 136.02;
+        if (file.Contains("ST_tW_antitop_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543;
+        if (file.Contains("ST_tW_top_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543; 
+
+        if(file.Contains("DYJetsToLL_M-50_Tune"))     xsec = 2075.14*3;
+
+        if(file.Contains("DYJetsToLL_M-50_HT-100to200"))    xsec = 0.0302083*2075.14*3;
+        if(file.Contains("DYJetsToLL_M-50_HT-200to400"))    xsec = 0.00907651*2075.14*3;
+        if(file.Contains("DYJetsToLL_M-50_HT-400to600"))    xsec = 0.00129238*2075.14*3;
+        if(file.Contains("DYJetsToLL_M-50_HT-600to800"))    xsec = 0.000316039*2075.14*3;
+        if(file.Contains("DYJetsToLL_M-50_HT-800to1200"))    xsec = 0.000137432*2075.14*3;
+        if(file.Contains("DYJetsToLL_M-50_HT-1200to2500"))    xsec = 3.09368e-05*2075.14*3;
+        if(file.Contains("DYJetsToLL_M-50_HT-2500toInf"))    xsec = 4.39860e-07*2075.14*3;
+
+        // k-factor from DYJets 1.165
+        if(file.Contains("ZJetsToNuNu_HT-100To200"))  xsec = 302.8*1.165;
+        if(file.Contains("ZJetsToNuNu_HT-200To400"))  xsec = 92.59*1.165;
+        if(file.Contains("ZJetsToNuNu_HT-400To600"))  xsec = 13.18*1.165;
+        if(file.Contains("ZJetsToNuNu_HT-600To800"))  xsec = 3.257*1.165;
+        if(file.Contains("ZJetsToNuNu_HT-800To1200"))  xsec = 1.49*1.165;
+        if(file.Contains("ZJetsToNuNu_HT-1200To2500"))  xsec = 0.3419*1.165;
+        if(file.Contains("ZJetsToNuNu_HT-2500ToInf"))  xsec = 0.005146*1.165;
+
+        if(file.Contains("TTZToQQ"))                xsec = 0.5104;
+        if(file.Contains("TTZToLLNuNu_M-10"))       xsec = 0.2432;
+        if(file.Contains("TTWJetsToQQ"))            xsec = 0.4316;
+        if(file.Contains("TTWJetsToLNu"))           xsec = 0.2149;
+       
+        // https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Diboson
+        if(file.Contains("WWTo2L2Nu"))   xsec = 12.178; //NNLO
+        if(file.Contains("WWToLNuQQ"))   xsec = 49.997; //NNLO
+        if(file.Contains("ttHTobb_M125"))   xsec = 0.2934;
+
+        if(file.Contains("WZTo1L3Nu"))   xsec = 3.05;
+        if(file.Contains("WZTo1L1Nu2Q"))   xsec = 10.73;
+        if(file.Contains("WZTo2L2Q"))   xsec = 5.606;
+        if(file.Contains("WZTo3LNu"))   xsec = 4.42965;
+        if(file.Contains("VVTo2L2Nu"))   xsec = 11.95;
+        if(file.Contains("ZZ_Tune"))   xsec = 16.523; //from twiki NLO
+
+        // Calculated at 13 TeV in
+        // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV
+        // Higgs branching ratios from
+        // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR
+        if(file.Contains("ZH_HToBB_ZToLL_M-125"))      xsec = 0.883*Htobb*0.033658;
+        if(file.Contains("ZH_HToBB_ZToNuNu_M-125"))    xsec = 0.883*Htobb*0.2;
+        if(file.Contains("WH_HToBB_WToLNu_M-125"))     xsec = 1.373*Htobb*(0.1071+0.1063+0.1138);
+        if(file.Contains("ZH_HToBB_ZToNuNu_M125"))    xsec = 0.883*Htobb*0.2;
+        if(file.Contains("WH_HToBB_WToLNu_M125"))     xsec = 1.373*Htobb*(0.1071+0.1063+0.1138);
 
     }
-    // The efficiency of the mtt>1000 cut is taken from sigma(mtt>1000)/sigma(inclusive) from mcm
-    double mtt_1000_eff=(11.16/670.3);
-    if(file.Contains("TTJets_Mtt-1000toInf")) xsec = 815.96*mtt_1000_eff;
-
-    if(file.Contains("TTJets_DiLept") || file.Contains("TTTo2L2Nu")) xsec = 85.66; // (3*0.108)^2*815.96
-    if(file.Contains("TTJets_SingleLept")) xsec = 178.7; //(1- ((1-3*0.108)^2+(3*0.108)^2))*815.96*0.5 per half
-    if(file.Contains("TTToSemiLeptonic")) xsec = 357.4;
-    
-    if(file.Contains("TTJets_DiLept_genMET-150")) xsec = 0.06392*85.66; // filter_eff*(3*0.108)^2*815.96
-    if(file.Contains("TTJets_SingleLept") && file.Contains("genMET-150")) xsec = 0.05217*178.7; //filter_eff*(1- ((1-3*0.108)^2+(3*0.108)^2))*815.96*0.5 per half
-
-    // cross sections from mcm
-    if(file.Contains("TTG")) xsec = 3.697;                
-    if(file.Contains("TTTT_Tune")) xsec = 0.009103;
-    // mcm cross section times the same kfactors used for leptonic samples
-    if(file.Contains("WJetsToQQ_HT-600ToInf")) xsec = 95.14*1.21;
-    if(file.Contains("ZJetsToQQ_HT600toInf")) xsec = 5.67*1.23;
-    
-    // From https://cms-pdmv.cern.ch/mcm
-    // k-factors from https://mangano.web.cern.ch/mangano/public/MECCA/samples_50ns_miniaod.txt
-    // k-factors are ratio of https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
-    // NLO/NNLO cross-sections to that of an inclusive sample in mcm at lower order (LO/NLO)
-
-    if(file.Contains("WJetsToLNu_Tune")) xsec=61526.7; //NNLO from Lesya's summary table 
-
-    //cross-section per slice changed due to change in genHT definition
-    if(file.Contains("WJetsToLNu_HT-70To100"))  xsec = 1372.*1.21; 
-    if(file.Contains("WJetsToLNu_HT-100To200"))  xsec = 1347.*1.21; 
-    if(file.Contains("WJetsToLNu_HT-200To400"))  xsec = 360.*1.21;
-    if(file.Contains("WJetsToLNu_HT-400To600"))  xsec = 48.98*1.21;
-    if(file.Contains("WJetsToLNu_HT-600ToInf"))  xsec = 18.77*1.21;
-    if(file.Contains("WJetsToLNu_HT-600To800"))  xsec = 12.05*1.21;
-    if(file.Contains("WJetsToLNu_HT-800To1200"))  xsec = 5.501*1.21;
-    if(file.Contains("WJetsToLNu_HT-1200To2500"))  xsec = 1.329*1.21;
-    if(file.Contains("WJetsToLNu_HT-2500ToInf"))  xsec = 0.03216*1.21;
-
-    if(file.Contains("QCD_HT50to100_Tune")) xsec = 1; // not in MCM, need to derive
-    if(file.Contains("QCD_HT100to200_Tune")) xsec = 27540000;
-    if(file.Contains("QCD_HT200to300_Tune"))   xsec = 1735000;
-    if(file.Contains("QCD_HT300to500_Tune"))   xsec = 366800;
-    if(file.Contains("QCD_HT500to700_Tune"))   xsec = 29370;
-    if(file.Contains("QCD_HT700to1000_Tune"))  xsec = 6524;
-    if(file.Contains("QCD_HT1000to1500_Tune")) xsec = 1064;
-    if(file.Contains("QCD_HT1500to2000_Tune")) xsec = 121.5;
-    if(file.Contains("QCD_HT2000toInf_Tune"))  xsec = 25.42;
-
-    // Cross sections from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec
-    // multiplied by BF(W->mu,e,tau) = 0.324
-    if (file.Contains("ST_s-channel_4f_leptonDecays"))     xsec = 3.34;
-    if (file.Contains("ST_t-channel_antitop_4f_inclusiveDecays")) xsec = 80.95;
-    if (file.Contains("ST_t-channel_top_4f_inclusiveDecays")) xsec = 136.02;
-    if (file.Contains("ST_tW_antitop_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543;
-    if (file.Contains("ST_tW_top_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543; 
-
-    if(file.Contains("DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV")) xsec = 18610*1.23;
-    if(file.Contains("DYJetsToLL_M-50_TuneCUETP8M1_13TeV"))     xsec = 4895*1.23;
-
-    if(file.Contains("DYJetsToLL_M-50_HT-70to100"))    xsec = 175.3*1.23;
-    if(file.Contains("DYJetsToLL_M-50_HT-100to200"))    xsec = 139.4*1.23;
-    if(file.Contains("DYJetsToLL_M-50_HT-200to400"))    xsec = 42.75*1.23;
-    if(file.Contains("DYJetsToLL_M-50_HT-400to600"))    xsec = 5.497*1.23;
-    if(file.Contains("DYJetsToLL_M-50_HT-600to800"))    xsec = 1.363*1.23;
-    if(file.Contains("DYJetsToLL_M-50_HT-800to1200"))    xsec = 0.6759*1.23;
-    if(file.Contains("DYJetsToLL_M-50_HT-1200to2500"))    xsec = 0.116*1.23;
-    if(file.Contains("DYJetsToLL_M-50_HT-2500toInf"))    xsec = 0.002592*1.23;
-    if(file.Contains("DYJetsToLL_M-50_HT-600toInf"))    xsec = 2.21*1.23;
-
-    if(file.Contains("ZJetsToNuNu_HT-100To200"))  xsec = 280.35*1.27;
-    if(file.Contains("ZJetsToNuNu_HT-200To400"))  xsec = 77.67*1.27;
-    if(file.Contains("ZJetsToNuNu_HT-400To600"))  xsec = 10.73*1.27;
-    if(file.Contains("ZJetsToNuNu_HT-600To800"))  xsec = 2.536*1.27;
-    if(file.Contains("ZJetsToNuNu_HT-800To1200"))  xsec = 1.161*1.27;
-    if(file.Contains("ZJetsToNuNu_HT-1200To2500"))  xsec = 0.2824*1.27;
-    if(file.Contains("ZJetsToNuNu_HT-2500ToInf"))  xsec = 0.006459*1.27;
-    if(file.Contains("ZJetsToNuNu_HT-600ToInf"))  xsec = 3.986*1.27;
-
-    if(file.Contains("TTZToQQ"))                xsec = 0.5297;
-    if(file.Contains("TTZToLLNuNu_M-10"))       xsec = 0.2529;
-    if(file.Contains("TTWJetsToQQ"))            xsec = 0.4062;
-    if(file.Contains("TTWJetsToLNu"))           xsec = 0.2043;
-   
-    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Diboson
-    if(file.Contains("WWTo2L2Nu"))   xsec = 12.178; //NNLO
-    if(file.Contains("WWToLNuQQ"))   xsec = 49.997; //NNLO
-    if(file.Contains("ttHTobb_M125"))   xsec = 0.2934;
-
-    if(file.Contains("WZTo1L3Nu"))   xsec = 3.05;
-    if(file.Contains("WZTo1L1Nu2Q"))   xsec = 10.96;
-    if(file.Contains("WZTo2L2Q"))   xsec = 5.595;
-    if(file.Contains("WZTo3LNu"))   xsec = 4.42965;
-    if(file.Contains("VVTo2L2Nu"))   xsec = 11.95;
-    if(file.Contains("ZZ_Tune"))   xsec = 16.523;
-
-    // Calculated at 13 TeV in
-    // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt1314TeV
-    // Higgs branching ratios from
-    // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBR
-    if(file.Contains("ZH_HToBB_ZToLL_M-125"))      xsec = 0.883*Htobb*0.033658;
-    if(file.Contains("ZH_HToBB_ZToNuNu_M-125"))    xsec = 0.883*Htobb*0.2;
-    if(file.Contains("WH_HToBB_WToLNu_M-125"))     xsec = 1.373*Htobb*(0.1071+0.1063+0.1138);
-    if(file.Contains("ZH_HToBB_ZToNuNu_M125"))    xsec = 0.883*Htobb*0.2;
-    if(file.Contains("WH_HToBB_WToLNu_M125"))     xsec = 1.373*Htobb*(0.1071+0.1063+0.1138);
-
     if(xsec<=0) std::cout<<"BABYMAKER: Cross section not found for "<<file<<std::endl;
 
     return xsec;

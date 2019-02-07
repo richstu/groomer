@@ -7,7 +7,7 @@
 
 namespace xsec{
 
-  float crossSection(const TString &file);
+  float crossSection(const TString &file, bool is2016);
   void signalCrossSection(int glu_mass, double &xsec, double &xsec_unc);
   void stopCrossSection(int stop_mass, double &xsec, double &xsec_unc);
   void higgsinoCrossSection(int hig_mass, double &xsec, double &xsec_unc);

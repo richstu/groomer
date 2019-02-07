@@ -118,7 +118,7 @@ void FixLumi(baby_corr &out, const string &out_path){
       xsec::stopCrossSection(mglu, xsec, exsec);
     }
   }else{
-    xsec = xsec::crossSection(out_path);
+    xsec = xsec::crossSection(out_path, Contains(out_path,"RunIISummer16"));  
   }
 
   out.out_w_lumi() = xsec*lumi/out.out_neff();
