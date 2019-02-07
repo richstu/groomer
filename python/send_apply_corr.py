@@ -6,9 +6,9 @@ from ROOT import TChain
 import string
 from pprint import pprint
 
-infolder  =  '/net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/reweighted/'
-outfolder =  '/net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/unskimmed/'
-corrfolder = '/net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/corrections/'
+infolder  =  '/homes/adorsett/CMSSW_8_0_26_patch1/src/groomer/reweighted/'
+outfolder =  '/homes/adorsett/CMSSW_8_0_26_patch1/src/groomer/unskimmed/'
+corrfolder = '/homes/adorsett/CMSSW_8_0_26_patch1/src/groomer/corrections/'
 quick = False
 # leave as empty list to run over all input files in the infolder
 # wanted_samples = ['TTJets_HT']
@@ -22,6 +22,7 @@ def getTag(file):
   tag = tag.split("RunIISpring16MiniAODv2")[0]
   tag = tag.split("RunIISummer16MiniAODv2")[0]
   tag = tag.split("RunIIFall17MiniAODv2")[0]
+  tag = tag.split("RunIISummer16MiniAODv3")[0]
   tag = tag.replace("fullbaby_","")
   tag = tag.rstrip("_")
   return tag

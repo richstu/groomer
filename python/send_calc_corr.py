@@ -17,7 +17,7 @@ def ensureDir(path):
         if not os.path.isdir(path):
             raise
 
-def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs):
+def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs, keep_lep, keep_b):
     in_dir = fullPath(in_dir)
     out_dir = fullPath(out_dir)
     wgt_dir = fullPath(wgt_dir)
@@ -61,6 +61,10 @@ def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs):
                 command = "{} -f {} -c {} -o {}".format(exe_path,f,wgt_dir,out_dir)
                 if quick:
                     command += " --quick"
+                if keep_lep:
+                    command += " --keep_lep_wgt"
+                if keep_b:
+                    command += " --keep_b_wgt"
                 print("", file=run_file)
                 print("echo Starting to process file {} of {}".format(i+1, len(job_files)), file=run_file)
                 print(command, file=run_file)
@@ -75,15 +79,19 @@ def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Submits batch jobs to apply new SFs and compute sum-of-weights",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-i","--in_dir", default="/net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/unprocessed/",
+    parser.add_argument("-i","--in_dir", default="/net/cms2/cms2r0/babymaker/babies/2019_01_11/mc/unprocessed/",
                         help="Directory containing babies with old SFs and non-renormalized weights")
-    parser.add_argument("-o","--out_dir", default="/net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/reweighted/",
+    parser.add_argument("-o","--out_dir", default="/net/cms2/cms2r0/babymaker/babies/2019_01_11/mc/reweighted/",
                         help="Directory in which to store reweighted/modified babies")
-    parser.add_argument("-w","--wgt_dir", default="/net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/sum_of_weights/",
+    parser.add_argument("-w","--wgt_dir", default="/net/cms2/cms2r0/babymaker/babies/2019_01_11/mc/sum_of_weights/",
                         help="Directory in which to store sum-of-weights files for renormalization step.")
+    parser.add_argument("-l","--keep_lep", action="store_true",
+                        help="Use existing lepton weights/systematics instead of applying new SFs")
+    parser.add_argument("-b","--keep_b", action="store_true",
+                        help="Use existing b-tag weights/systematics instead of applying new SFs")
     parser.add_argument("-q","--quick", action="store_true",
                         help="Run in quick mode, only adjusting some weights")
     parser.add_argument("-n","--njobs", type=int, default=50, help="Number of jobs to submit")
     args = parser.parse_args()
 
-    sendCalcCorr(args.in_dir, args.out_dir, args.wgt_dir, args.quick, args.njobs)
+    sendCalcCorr(args.in_dir, args.out_dir, args.wgt_dir, args.quick, args.njobs, args.keep_lep, args.keep_b)

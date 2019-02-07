@@ -21,7 +21,7 @@ namespace {
   string out_dir = "";
   bool quick = false;
   bool fix_b_wgt = true;
-  bool fix_lep_wgt = false;
+  bool fix_lep_wgt = true;
 }
 
 void GetOptions(int argc, char *argv[]);
