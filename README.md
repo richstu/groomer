@@ -10,6 +10,8 @@ Utility package for post-processing ntuples produced by babymaker.
     * Update SFs for leptons for 2017 and 2018 FastSim
     * ISR weights for 2017 and 2018 FastSim
 
+N.B. When adding new SF files, check that the axis assignment match what is assumed in the code!! They change from POG to POG and year to year...
+
 ### Interactive test
 
 Follow these steps to test the code on a single file. Example given for a file from 2017 MC.
@@ -52,7 +54,7 @@ Step 2. Check if there are any bad files in the unprocessed directory by chainin
 
 Step 3. Apply any SFs and sum up the weights:
     
-    ./send_calc_corr.py \
+    ./python/send_calc_corr.py \
     --in_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/unprocessed/ \
     --wgt_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/sum_of_weights/ \
     --out_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/reweighted/ \
@@ -75,7 +77,7 @@ This step runs interactively since it should be about a minute. Check that the n
 
 Step 6. Apply the renormalization weights from found in step 3:
 
-    ./send_apply_corr.py \
+    ./python/send_apply_corr.py \
     --in_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/reweighted/ \
     --corr_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/corrections/ \
     --out_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/unskimmed/ \

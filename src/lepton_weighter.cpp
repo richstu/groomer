@@ -144,7 +144,7 @@ LeptonWeighter::LeptonWeighter(int year){
     in_full_mu_vtx_ = "TnP_NUM_MediumIP2D_DENOM_LooseID_VAR_map_pt_eta.root";  hist_full_mu_vtx_ = "SF";
     in_full_el_med_ = "sf_full_electron_ID_and_iso_25_01_2017.root";  hist_full_el_med_ = "GsfElectronToCutBasedSpring15M";
     in_full_el_iso_ = "sf_full_electron_ID_and_iso_25_01_2017.root";  hist_full_el_iso_ = "MVAVLooseElectronToMini";
-    in_full_el_trk_ = "egammaEffi_EGM2D.root";  hist_full_el_trk_ = "EGamma_SF2D";
+    in_full_el_trk_ = "egammaEffi_EGM2D_ETge20_recoSF2016_19_02_09.root";  hist_full_el_trk_ = "EGamma_SF2D";
     in_fast_mu_med_ = "sf_fast_muon_medium.root";  hist_fast_mu_med_ = "histo2D";
     in_fast_mu_iso_ = "sf_fast_muon_iso.root";  hist_fast_mu_iso_ = "histo2D";
     in_fast_el_mediso_ = "sf_fast_electron_mediumiso.root";  hist_fast_el_mediso_ = "histo2D";
@@ -155,7 +155,7 @@ LeptonWeighter::LeptonWeighter(int year){
     in_full_mu_vtx_ = "n/a";  hist_full_mu_vtx_ = "n/a"; // not needed for 2017
     in_full_el_med_ = "ElectronScaleFactors_Run2017.root";  hist_full_el_med_ = "Run2017_CutBasedMediumNoIso94XV2";
     in_full_el_iso_ = "ElectronScaleFactors_Run2017.root";  hist_full_el_iso_ = "Run2017_MVAVLooseTightIP2DMini";
-    in_full_el_trk_ = "egammaEffi_EGM2D_low.root";  hist_full_el_trk_ = "EGamma_SF2D";
+    in_full_el_trk_ = "egammaEffi_EGM2D_ETge20_recoSF2017_19_02_09.root";  hist_full_el_trk_ = "EGamma_SF2D";
     in_fast_mu_med_ = "sf_fast_muon_medium.root";  hist_fast_mu_med_ = "histo2D"; // *TBD*
     in_fast_mu_iso_ = "sf_fast_muon_iso.root";  hist_fast_mu_iso_ = "histo2D"; // *TBD*
     in_fast_el_mediso_ = "sf_fast_electron_mediumiso.root";  hist_fast_el_mediso_ = "histo2D"; // *TBD*
@@ -166,7 +166,7 @@ LeptonWeighter::LeptonWeighter(int year){
     in_full_mu_vtx_ = "n/a";  hist_full_mu_vtx_ = "n/a"; // *TBD*
     in_full_el_med_ = "ElectronScaleFactors_Run2017.root";  hist_full_el_med_ = "Run2017_CutBasedMediumNoIso94XV2"; // *TBD*
     in_full_el_iso_ = "ElectronScaleFactors_Run2017.root";  hist_full_el_iso_ = "Run2017_MVAVLooseTightIP2DMini"; // *TBD*
-    in_full_el_trk_ = "egammaEffi_EGM2D_low.root";  hist_full_el_trk_ = "EGamma_SF2D"; // *TBD*
+    in_full_el_trk_ = "egammaEffi_EGM2D_ETge20_recoSF2018_19_02_09.root";  hist_full_el_trk_ = "EGamma_SF2D";
     in_fast_mu_med_ = "sf_fast_muon_medium.root";  hist_fast_mu_med_ = "histo2D"; // *TBD*
     in_fast_mu_iso_ = "sf_fast_muon_iso.root";  hist_fast_mu_iso_ = "histo2D"; // *TBD*
     in_fast_el_mediso_ = "sf_fast_electron_mediumiso.root";  hist_fast_el_mediso_ = "histo2D"; // *TBD*
@@ -232,7 +232,7 @@ std::pair<double, double> LeptonWeighter::GetMuonScaleFactor(baby_plus &b, size_
   vector<pair<double, double> > sfs{
     GetSF(sf_full_muon_medium_, pt, abseta, false),
       make_pair(1., 0.03),//Systematic uncertainty
-      GetSF(sf_full_muon_iso_, pt, abseta, false),
+      GetSF(sf_full_muon_iso_, pt, eta, false),
       make_pair(1., 0.03),//Systematic uncertainty
       };
   if (in_full_mu_vtx_!="n/a") {
@@ -250,10 +250,10 @@ std::pair<double, double> LeptonWeighter::GetElectronScaleFactor(baby_plus &b, s
   //3% tracking systematic below 20 GeV
   double pt = b.els_scpt().at(iel);
   double eta = b.els_sceta().at(iel);
-  double abseta = fabs(eta);
+  // double abseta = fabs(eta);
   vector<pair<double, double> > sfs{
-    GetSF(sf_full_electron_medium_, pt, abseta),
-      GetSF(sf_full_electron_iso_, pt, abseta),
+    GetSF(sf_full_electron_medium_, eta, pt),
+      GetSF(sf_full_electron_iso_, eta, pt),
       GetSF(sf_full_electron_tracking_, eta, pt),//Axes swapped, asymmetric in eta
       make_pair(1., pt<20. || pt >80. ? 0.01 : 0.)//Systematic uncertainty
       };

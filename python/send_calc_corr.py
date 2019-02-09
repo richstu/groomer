@@ -17,7 +17,7 @@ def ensureDir(path):
         if not os.path.isdir(path):
             raise
 
-def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs, year, keep_lep, keep_b, fastsim):
+def sendCalcCorr(in_dir, out_dir, wgt_dir, num_jobs, year, keep_lep, keep_b, fastsim):
     in_dir = fullPath(in_dir)
     out_dir = fullPath(out_dir)
     wgt_dir = fullPath(wgt_dir)
