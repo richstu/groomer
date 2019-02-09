@@ -16,26 +16,41 @@ namespace{
   }
 }
 
-BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
-  calib_full_(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_B_H.csv")),
-  calib_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_csvv2_ttbar_26_1_2017.csv")),
-  readers_full_(),
-  readers_fast_(),
-  btag_efficiencies_(op_pts_.size()),
-  btag_efficiencies_proc_(op_pts_.size()),
-  calib_deep_full_(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_V3_B_F.csv")),
-  calib_deep_fast_(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv")),
-  readers_deep_full_(),
-  readers_deep_fast_(),
-  btag_efficiencies_deep_(op_pts_.size()),
-  btag_efficiencies_deep_proc_(op_pts_.size()),
-  csv_loose_(is_cmssw_7 ? 0.605 : 0.5426),
-  csv_medium_(is_cmssw_7 ? 0.890 : 0.8484),
-  csv_tight_(is_cmssw_7 ? 0.970 : 0.9535),
-  deep_csv_loose_(is_cmssw_7 ? 0. : 0.2219),
-  deep_csv_medium_(is_cmssw_7 ? 0. : 0.6324),
-  deep_csv_tight_(is_cmssw_7 ? 0. : 0.8958),
+BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, int year):
   is_fast_sim_(is_fast_sim){
+
+  // currently not in use...
+  btag_efficiencies_ = vector<TH3D>(); btag_efficiencies_.resize(op_pts_.size());
+  btag_efficiencies_proc_ = vector<TH3D>(); btag_efficiencies_proc_.resize(op_pts_.size());
+  calib_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2", "data/CSVv2_Moriond17_B_H.csv"));
+  calib_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/fastsim_csvv2_ttbar_26_1_2017.csv"));
+  csv_loose_ = 0.;
+  csv_medium_ = 0.;
+  csv_tight_ = 0.;
+
+  // setup SFs and WPs depending on the year
+  btag_efficiencies_deep_ = vector<TH3D>(); btag_efficiencies_deep_.resize(op_pts_.size());
+  btag_efficiencies_deep_proc_ = vector<TH3D>(); btag_efficiencies_deep_proc_.resize(op_pts_.size());
+  if (year==2016) {
+    calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_H.csv"));
+    calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv"));
+    deep_csv_loose_ = 0.2219;
+    deep_csv_medium_ = 0.6324;
+    deep_csv_tight_ = 0.8958;
+  } else if (year==2017) {
+    calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_V3_B_F.csv"));
+    calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv")); // *TBD*
+    deep_csv_loose_ = 0.1522;
+    deep_csv_medium_ = 0.4941;
+    deep_csv_tight_ = 0.8001;
+  } else {
+    calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_V3_B_F.csv")); // *TBD*
+    calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv")); // *TBD*
+    deep_csv_loose_ = 0.1241;
+    deep_csv_medium_ = 0.4184;
+    deep_csv_tight_ = 0.7527;
+  }
+
   if(proc != "tt" && proc != "qcd" && proc != "wjets"){
     ERROR("Process "+proc+" not found. Valid processes are tt, qcd, and wjets.");
   }
@@ -99,101 +114,101 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, bool is_cmssw_7):
 }
 
 double BTagWeighter::EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
-				 const string &bc_full_syst, const string &udsg_full_syst,
-				 const string &bc_fast_syst, const string &udsg_fast_syst,
-				 bool do_deep_csv, bool do_by_proc) const{
+                                 const string &bc_full_syst, const string &udsg_full_syst,
+                                 const string &bc_fast_syst, const string &udsg_fast_syst,
+                                 bool do_deep_csv, bool do_by_proc) const{
   double product = 1.;
   auto n_jets = b.jets_islep().size();
   for(size_t i = 0; i < n_jets; ++i){
     if(!b.jets_islep().at(i)){
       product *= JetBTagWeight(b, i, op,
-			       bc_full_syst, udsg_full_syst,
-			       bc_fast_syst, udsg_fast_syst,
-			       do_deep_csv, do_by_proc);
+                               bc_full_syst, udsg_full_syst,
+                               bc_fast_syst, udsg_fast_syst,
+                               do_deep_csv, do_by_proc);
     }
   }
   return product;
 }
 
 double BTagWeighter::EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
-				 const string &bc_full_syst, const string &udsg_full_syst,
-				 bool do_deep_csv, bool do_by_proc) const{
+                                 const string &bc_full_syst, const string &udsg_full_syst,
+                                 bool do_deep_csv, bool do_by_proc) const{
   double product = 1.;
   auto n_jets = b.jets_islep().size();
   for(size_t i = 0; i < n_jets; ++i){
     if(!b.jets_islep().at(i)){
       product *= JetBTagWeight(b, i, op,
-			       bc_full_syst, udsg_full_syst,
-			       do_deep_csv, do_by_proc);
+                               bc_full_syst, udsg_full_syst,
+                               do_deep_csv, do_by_proc);
     }
   }
   return product;
 }
 
 double BTagWeighter::EventWeight(baby_plus &b, const vector<BTagEntry::OperatingPoint> &ops,
-				 const string &bc_full_syst, const string &udsg_full_syst,
-				 bool do_deep_csv, bool do_by_proc) const{
+                                 const string &bc_full_syst, const string &udsg_full_syst,
+                                 bool do_deep_csv, bool do_by_proc) const{
   double product = 1.;
   auto n_jets = b.jets_islep().size();
   for(size_t i = 0; i < n_jets; ++i){
     if(!b.jets_islep().at(i)){
       product *= JetBTagWeight(b, i, ops,
-			       bc_full_syst, udsg_full_syst,
-			       do_deep_csv, do_by_proc);
+                               bc_full_syst, udsg_full_syst,
+                               do_deep_csv, do_by_proc);
     }
   }
   return product;
 }
 
 double BTagWeighter::EventWeight(baby_plus &b, const vector<BTagEntry::OperatingPoint> &ops,
-				 const string &bc_full_syst, const string &udsg_full_syst,
-				 const string &bc_fast_syst, const string &udsg_fast_syst,
-				 bool do_deep_csv, bool do_by_proc) const{
+                                 const string &bc_full_syst, const string &udsg_full_syst,
+                                 const string &bc_fast_syst, const string &udsg_fast_syst,
+                                 bool do_deep_csv, bool do_by_proc) const{
   double product = 1.;
   auto n_jets = b.jets_islep().size();
   for(size_t i = 0; i < n_jets; ++i){
     if(!b.jets_islep().at(i)){
       product *= JetBTagWeight(b, i, ops,
-			       bc_full_syst, udsg_full_syst,
-			       bc_fast_syst, udsg_fast_syst,
-			       do_deep_csv, do_by_proc);
+                               bc_full_syst, udsg_full_syst,
+                               bc_fast_syst, udsg_fast_syst,
+                               do_deep_csv, do_by_proc);
     }
   }
   return product;
 }
 
 double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, BTagEntry::OperatingPoint op,
-				   const string &bc_full_syst, const string &udsg_full_syst,
-				   const string &bc_fast_syst, const string &udsg_fast_syst,
-				   bool do_deep_csv, bool do_by_proc) const{
+                                   const string &bc_full_syst, const string &udsg_full_syst,
+                                   const string &bc_fast_syst, const string &udsg_fast_syst,
+                                   bool do_deep_csv, bool do_by_proc) const{
   return JetBTagWeight(b, ijet, vector<BTagEntry::OperatingPoint>{op},
-		       bc_full_syst, udsg_full_syst,
-		       bc_fast_syst, udsg_fast_syst,
-		       do_deep_csv, do_by_proc);
+                       bc_full_syst, udsg_full_syst,
+                       bc_fast_syst, udsg_fast_syst,
+                       do_deep_csv, do_by_proc);
 }
 
 double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, BTagEntry::OperatingPoint op,
-				   const string &bc_full_syst, const string &udsg_full_syst,
-				   bool do_deep_csv, bool do_by_proc) const{
+                                   const string &bc_full_syst, const string &udsg_full_syst,
+                                   bool do_deep_csv, bool do_by_proc) const{
   return JetBTagWeight(b, ijet, vector<BTagEntry::OperatingPoint>{op},
-		       bc_full_syst, udsg_full_syst,
-		       "central", "central",
-		       do_deep_csv, do_by_proc);
+                       bc_full_syst, udsg_full_syst,
+                       "central", "central",
+                       do_deep_csv, do_by_proc);
 }
 
 double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, const vector<BTagEntry::OperatingPoint> &ops,
-				   const string &bc_full_syst, const string &udsg_full_syst,
-				   bool do_deep_csv, bool do_by_proc) const{
+                                   const string &bc_full_syst, const string &udsg_full_syst,
+                                   bool do_deep_csv, bool do_by_proc) const{
   return JetBTagWeight(b, ijet, ops,
-		       bc_full_syst, udsg_full_syst,
-		       "central", "central",
-		       do_deep_csv, do_by_proc);
+                       bc_full_syst, udsg_full_syst,
+                       "central", "central",
+                       do_deep_csv, do_by_proc);
 }
 
 double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, const vector<BTagEntry::OperatingPoint> &ops,
-				   const string &bc_full_syst, const string &udsg_full_syst,
-				   const string &bc_fast_syst, const string &udsg_fast_syst,
-				   bool do_deep_csv, bool do_by_proc) const{
+                                   const string &bc_full_syst, const string &udsg_full_syst,
+                                   const string &bc_fast_syst, const string &udsg_fast_syst,
+                                   bool do_deep_csv, bool do_by_proc) const{
   // procedure from https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1a_Event_reweighting_using_scale
   int hadronFlavour = abs(b.jets_hflavor().at(ijet));
   BTagEntry::JetFlavor flav;
@@ -264,7 +279,7 @@ double BTagWeighter::JetBTagWeight(baby_plus &b, size_t ijet, const vector<BTagE
 }
 
 double BTagWeighter::GetMCTagEfficiency(int pdgId, float pT, float eta,
-					BTagEntry::OperatingPoint op, bool do_deep_csv, bool do_by_proc) const{
+                                        BTagEntry::OperatingPoint op, bool do_deep_csv, bool do_by_proc) const{
   size_t rdr_idx = distance(op_pts_.cbegin(), find(op_pts_.cbegin(), op_pts_.cend(), op));
   pdgId = abs(pdgId);
   if(pdgId != 4 && pdgId != 5){

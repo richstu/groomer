@@ -30,21 +30,21 @@ def getTag(path):
     tag = tag.split("__")[0]
     return tag
 
-def mergeCorrections(input_dir, output_dir):
-    input_dir = fullPath(input_dir)
-    output_dir = fullPath(output_dir)
+def mergeCorrections(wgt_dir, corr_dir):
+    wgt_dir = fullPath(wgt_dir)
+    corr_dir = fullPath(corr_dir)
 
-    ensureDir(output_dir)
+    ensureDir(corr_dir)
     
-    input_files = [os.path.join(input_dir,f) for f in os.listdir(input_dir)
-                   if os.path.isfile(os.path.join(input_dir, f))
+    input_files = [os.path.join(wgt_dir,f) for f in os.listdir(wgt_dir)
+                   if os.path.isfile(os.path.join(wgt_dir, f))
                    and os.path.splitext(f)[1] == ".root"]
 
     tags = list(set([getTag(f) for f in input_files]))
 
     for i in range(len(tags)):
         tag = tags[i]
-        output_file = os.path.join(output_dir, "corr_"+tag+".root")
+        output_file = os.path.join(corr_dir, "corr_"+tag+".root")
         command = ["run/merge_corrections.exe", output_file]
         for f in input_files:
             if tag in f:
@@ -55,10 +55,10 @@ def mergeCorrections(input_dir, output_dir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Merges multiple sum-of-weights files into one corrections file per tag.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("input_dir", default="/homes/adorsett/CMSSW_8_0_26_patch1/src/groomer/sum_of_weights/",
+    parser.add_argument("-w", "--wgt_dir", default="/homes/adorsett/CMSSW_8_0_26_patch1/src/groomer/sum_of_weights/",
                         help="Directory from which to read sum-of-weights files")
-    parser.add_argument("output_dir", default="/homes/adorsett/CMSSW_8_0_26_patch1/src/groomer/corrections/",
+    parser.add_argument("-c", "--corr_dir", default="/homes/adorsett/CMSSW_8_0_26_patch1/src/groomer/corrections/",
                         help="Directory in which to store corrections files")
     args = parser.parse_args()
 
-    mergeCorrections(args.input_dir, args.output_dir)
+    mergeCorrections(args.wgt_dir, args.corr_dir)

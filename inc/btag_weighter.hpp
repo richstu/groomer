@@ -15,7 +15,7 @@ public:
 
   explicit BTagWeighter(std::string proc,
                         bool is_fast_sim = false,
-			bool is_cmssw_7 = false);
+			int year = 2016);
 
   double EventWeight(baby_plus &b, BTagEntry::OperatingPoint op,
 		     const std::string &bc_full_syst, const std::string &udsg_full_syst,

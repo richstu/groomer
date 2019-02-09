@@ -17,7 +17,7 @@ def ensureDir(path):
         if not os.path.isdir(path):
             raise
 
-def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs, keep_lep, keep_b):
+def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs, year, keep_lep, keep_b, fastsim):
     in_dir = fullPath(in_dir)
     out_dir = fullPath(out_dir)
     wgt_dir = fullPath(wgt_dir)
@@ -35,9 +35,9 @@ def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs, keep_lep, keep_b):
     if num_jobs < 1:
         num_jobs = 1
 
-    in_files = [ os.path.join(in_dir,f) for f in os.listdir(in_dir)
-                 if os.path.isfile(os.path.join(in_dir,f))
-                 and os.path.splitext(f)[1] == ".root" ]
+    in_files = [ os.path.join(in_dir,ifile) for ifile in os.listdir(in_dir)
+                 if os.path.isfile(os.path.join(in_dir,ifile))
+                 and os.path.splitext(ifile)[1] == ".root" ]
     in_files = numpy.array_split(numpy.array(in_files), num_jobs)
 
     num_submitted = 0
@@ -57,14 +57,14 @@ def sendCalcCorr(in_dir, out_dir, wgt_dir, quick, num_jobs, keep_lep, keep_b):
             print("eval `scramv1 runtime -sh`", file=run_file)
             print("cd $DIRECTORY", file=run_file)
             for i in range(len(job_files)):
-                f = job_files[i]
-                command = "{} -f {} -c {} -o {}".format(exe_path,f,wgt_dir,out_dir)
-                if quick:
-                    command += " --quick"
+                ifile = job_files[i]
+                command = "{} -i {} -w {} -o {} -y {}".format(exe_path,ifile,wgt_dir,out_dir, year)
                 if keep_lep:
                     command += " --keep_lep_wgt"
                 if keep_b:
                     command += " --keep_b_wgt"
+                if fastsim:
+                    command += " --fastsim"
                 print("", file=run_file)
                 print("echo Starting to process file {} of {}".format(i+1, len(job_files)), file=run_file)
                 print(command, file=run_file)
@@ -89,9 +89,10 @@ if __name__ == "__main__":
                         help="Use existing lepton weights/systematics instead of applying new SFs")
     parser.add_argument("-b","--keep_b", action="store_true",
                         help="Use existing b-tag weights/systematics instead of applying new SFs")
-    parser.add_argument("-q","--quick", action="store_true",
-                        help="Run in quick mode, only adjusting some weights")
+    parser.add_argument("-f","--fastsim", action="store_true",
+                        help="Use when running on FastSim samples.")
+    parser.add_argument("-y","--year", type=int, default=2016, help="Sample year.")
     parser.add_argument("-n","--njobs", type=int, default=50, help="Number of jobs to submit")
     args = parser.parse_args()
 
-    sendCalcCorr(args.in_dir, args.out_dir, args.wgt_dir, args.quick, args.njobs, args.keep_lep, args.keep_b)
+    sendCalcCorr(args.in_dir, args.out_dir, args.wgt_dir, args.njobs, args.year, args.keep_lep, args.keep_b, args.fastsim)
