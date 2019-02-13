@@ -30,7 +30,7 @@ Step 2. Apply any SFs and sum up the weights:
 
 Step 3. Merge weights and calculate normalization corrections:
 
-    ./python/merge_corrections.py --wgt_dir out/sum_of_weights/ --corr_dir out/corrections/
+    ./python/merge_corrections.py --year 2017 --wgt_dir out/sum_of_weights/ --corr_dir out/corrections/
 
 Step 4. Apply the renormalization weights from found in step 3:
 
@@ -70,6 +70,7 @@ Step 4. Check that correct number of files were written to the `reweighted` and 
 Step 5. Calculate the renormalization weights from the sums found in step 1:
 
     ./python/merge_corrections.py \
+    --year $YYYY \
     --wgt_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/sum_of_weights/ \
     --corr_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/corrections/
 

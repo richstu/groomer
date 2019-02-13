@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, sys, subprocess
+import os, sys, subprocess, argparse
 from shutil import copyfile
 from glob import glob
 from ROOT import TChain
@@ -61,12 +61,12 @@ for x in glob(args.in_dir+"*.root"):
   infiles.append(x)
 infiles = sorted(infiles)
 
-splitting = len(infiles)/njobs 
-if (len(infiles)%njobs!=0): splitting += 1
+splitting = len(infiles)/args.njobs 
+if (len(infiles)%args.njobs!=0): splitting += 1
 
 os.system("JobSetup.csh")
 done = False
-for ijob in range(njobs):
+for ijob in range(args.njobs):
   exename = runfolder+"/apply_corr_"+str(ijob)+".sh"
   fexe = open(exename,"w")
   os.system("chmod u+x "+exename)
@@ -81,7 +81,7 @@ for ijob in range(njobs):
     outfile = infile.split('/')[-1]
     outfile = args.out_dir+outfile.replace(".root","_renorm.root")
     corrfile = args.corr_dir + "corr_" + getTag(infile) +".root"
-    execmd = "\n./run/apply_corr.exe -i "+infile+" -c "+corrfile+" -o "+outfile+" -y "+args.year
+    execmd = "\n./run/apply_corr.exe -i "+infile+" -c "+corrfile+" -o "+outfile+" -y "+str(args.year)
     if (args.fastsim):
       execmd += " --fastsim"
     execmd += '\n'

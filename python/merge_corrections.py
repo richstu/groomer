@@ -30,7 +30,7 @@ def getTag(path):
     tag = tag.split("__")[0]
     return tag
 
-def mergeCorrections(wgt_dir, corr_dir):
+def mergeCorrections(wgt_dir, corr_dir, year):
     wgt_dir = fullPath(wgt_dir)
     corr_dir = fullPath(corr_dir)
 
@@ -45,7 +45,7 @@ def mergeCorrections(wgt_dir, corr_dir):
     for i in range(len(tags)):
         tag = tags[i]
         output_file = os.path.join(corr_dir, "corr_"+tag+".root")
-        command = ["run/merge_corrections.exe", output_file]
+        command = ["run/merge_corrections.exe", str(year), output_file]
         for f in input_files:
             if tag in f:
                 command.append(f)
@@ -59,6 +59,8 @@ if __name__ == "__main__":
                         help="Directory from which to read sum-of-weights files")
     parser.add_argument("-c", "--corr_dir", default="/homes/adorsett/CMSSW_8_0_26_patch1/src/groomer/corrections/",
                         help="Directory in which to store corrections files")
+    parser.add_argument("-y","--year", type=int, default=2016, help="Sample year.")
+
     args = parser.parse_args()
 
-    mergeCorrections(args.wgt_dir, args.corr_dir)
+    mergeCorrections(args.wgt_dir, args.corr_dir, args.year)

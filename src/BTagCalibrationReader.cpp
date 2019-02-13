@@ -62,7 +62,7 @@ BTagCalibrationReader::BTagCalibrationReaderImpl::BTagCalibrationReaderImpl(
     if (otherSysTypeReaders_.count(ost)) {
       ERROR(("BTagCalibrationReader: Every otherSysType should only be given once. Duplicate: "+ost));
     }
-    otherSysTypeReaders_[ost] = std::auto_ptr<BTagCalibrationReaderImpl>(
+    otherSysTypeReaders_[ost] = std::shared_ptr<BTagCalibrationReaderImpl>(
         new BTagCalibrationReaderImpl(op, ost)
     );
   }

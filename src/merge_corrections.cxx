@@ -105,7 +105,7 @@ int GetGluinoMass(const string &path){
   return stoi(mass_string);
 }
 
-void FixLumi(baby_corr &out, const string &out_path){
+void FixLumi(baby_corr &out, const string &out_path, int year){
   double xsec(0.); const float lumi = 1000.;
   if (Contains(out_path, "SMS")){
     double exsec(0.);
@@ -118,17 +118,17 @@ void FixLumi(baby_corr &out, const string &out_path){
       xsec::stopCrossSection(mglu, xsec, exsec);
     }
   }else{
-    xsec = xsec::crossSection(out_path, Contains(out_path,"RunIISummer16"));  
+    xsec = xsec::crossSection(out_path, (year==2016));  
   }
 
   out.out_w_lumi() = xsec*lumi/out.out_neff();
 }
 
-void FixISR(baby_corr &out, const string &out_path){
+void FixISR(baby_corr &out, const string &out_path, int year){
   double corr_w_isr(1.);
   vector<double> corr_sys_isr(2,1.);
   double tot_w_isr = out.out_w_isr();
-  if(Contains(out_path,"TTJets_HT") || Contains(out_path,"genMET-150")){
+  if(year==2016 && (Contains(out_path,"TTJets_HT") || Contains(out_path,"genMET-150"))){
     // in this case take correction from inclusive since should not norm. to unity
     corr_w_isr = 1/1.013;
     corr_sys_isr[0] = 1/1.065;
@@ -227,8 +227,9 @@ int main(int argc, char *argv[]){
     return 1;
   }
 
-  string output_path = argv[1];
-  vector<string> input_paths(argv+2, argv+argc);
+  int year = atoi(argv[1]);
+  string output_path = argv[2];
+  vector<string> input_paths(argv+3, argv+argc);
 
   baby_corr out("", output_path.c_str());
   baby_corr in(input_paths.front().c_str());
@@ -249,8 +250,8 @@ int main(int argc, char *argv[]){
     AddEntry(in, out);
   }
 
-  FixLumi(out, output_path);
-  FixISR(out, output_path);
+  FixLumi(out, output_path, year);
+  FixISR(out, output_path, year);
   Fix0L(out);
 
   Normalize(out);
