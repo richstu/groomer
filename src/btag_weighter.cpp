@@ -31,31 +31,35 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, int year):
   // setup SFs and WPs depending on the year
   btag_efficiencies_deep_ = vector<TH3D>(); btag_efficiencies_deep_.resize(op_pts_.size());
   btag_efficiencies_deep_proc_ = vector<TH3D>(); btag_efficiencies_deep_proc_.resize(op_pts_.size());
+  TString beff_file = "";
   if (year==2016) {
     calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_H.csv"));
     calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv"));
     deep_csv_loose_ = 0.2219;
     deep_csv_medium_ = 0.6324;
     deep_csv_tight_ = 0.8958;
+    beff_file = "data/btagEfficiency_deep_2016.root";
   } else if (year==2017) {
     calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_V3_B_F.csv"));
     calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv")); // *TBD*
     deep_csv_loose_ = 0.1522;
     deep_csv_medium_ = 0.4941;
     deep_csv_tight_ = 0.8001;
+    beff_file = "data/btagEfficiency_deep_2017.root";
   } else {
     calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_V3_B_F.csv")); // *TBD*
     calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/fastsim_deepcsv_ttbar_26_1_2017.csv")); // *TBD*
     deep_csv_loose_ = 0.1241;
     deep_csv_medium_ = 0.4184;
     deep_csv_tight_ = 0.7527;
+    beff_file = "data/btagEfficiency_deep_2018.root";
   }
 
   if(proc != "tt" && proc != "qcd" && proc != "wjets"){
     ERROR("Process "+proc+" not found. Valid processes are tt, qcd, and wjets.");
   }
   TFile file_eff("data/btagEfficiency.root", "read");
-  TFile file_deep("data/btagEfficiency_deep.root", "read");
+  TFile file_deep(beff_file, "read");
   TFile file_proc(("data/btagEfficiency_"+proc+".root").c_str(), "read");
   TFile file_deep_proc(("data/btagEfficiency_deep_"+proc+".root").c_str(), "read");
 

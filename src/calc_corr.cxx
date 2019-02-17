@@ -58,7 +58,7 @@ int main(int argc, char *argv[]){
   if(Contains(file_name, "WJets")) proc = "wjets";
   else if(Contains(file_name, "QCD")) proc = "qcd";
   //Need to improve to handle FullSim signal points
-  BTagWeighter btw(proc, isFastSim, false);
+  BTagWeighter btw(proc, isFastSim, year);
   LeptonWeighter lw(year);
 
   baby_corr c("", corr_file);

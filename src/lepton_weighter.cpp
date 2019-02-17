@@ -142,8 +142,8 @@ LeptonWeighter::LeptonWeighter(int year){
     in_full_mu_med_ = "TnP_NUM_MediumID_DENOM_generalTracks_VAR_map_pt_eta.root";  hist_full_mu_med_ = "SF";
     in_full_mu_iso_ = "TnP_NUM_MiniIsoTight_DENOM_MediumID_VAR_map_pt_eta.root";  hist_full_mu_iso_ = "SF";
     in_full_mu_vtx_ = "TnP_NUM_MediumIP2D_DENOM_LooseID_VAR_map_pt_eta.root";  hist_full_mu_vtx_ = "SF";
-    in_full_el_med_ = "sf_full_electron_ID_and_iso_25_01_2017.root";  hist_full_el_med_ = "GsfElectronToCutBasedSpring15M";
-    in_full_el_iso_ = "sf_full_electron_ID_and_iso_25_01_2017.root";  hist_full_el_iso_ = "MVAVLooseElectronToMini";
+    in_full_el_med_ = "ElectronScaleFactors_Run2016.root";  hist_full_el_med_ = "Run2016_CutBasedMediumNoIso94XV2";
+    in_full_el_iso_ = "ElectronScaleFactors_Run2016.root";  hist_full_el_iso_ = "Run2016_Mini";
     in_full_el_trk_ = "egammaEffi_EGM2D_ETge20_recoSF2016_19_02_09.root";  hist_full_el_trk_ = "EGamma_SF2D";
     in_fast_mu_med_ = "sf_fast_muon_medium.root";  hist_fast_mu_med_ = "histo2D";
     in_fast_mu_iso_ = "sf_fast_muon_iso.root";  hist_fast_mu_iso_ = "histo2D";

@@ -128,17 +128,25 @@ void FixISR(baby_corr &out, const string &out_path, int year){
   double corr_w_isr(1.);
   vector<double> corr_sys_isr(2,1.);
   double tot_w_isr = out.out_w_isr();
-  if(year==2016 && (Contains(out_path,"TTJets_HT") || Contains(out_path,"genMET-150"))){
-    // in this case take correction from inclusive since should not norm. to unity
-    corr_w_isr = 1/1.013;
-    corr_sys_isr[0] = 1/1.065;
-    corr_sys_isr[1] = 1/0.9612;
+  if (Contains(out_path,"TTJets_HT") || Contains(out_path,"genMET-150")){
+  // in this case take correction from inclusive since should not norm. to unity
+  //values consistent within 0.001 between 2016 and 2017 amazingly...
+    if (Contains(out_path,"TTJets_DiLept")) {
+      corr_w_isr = 1/0.997;
+      corr_sys_isr[0] = 1/1.057;
+      corr_sys_isr[1] = 1/0.938;
+    } else {
+      corr_w_isr = 1/1.017;
+      corr_sys_isr[0] = 1/1.067;
+      corr_sys_isr[1] = 1/0.967;        
+    }
   }else{
     corr_w_isr = out.out_w_isr() ? out.out_nent()/out.out_w_isr() : 1.;
     for(size_t i = 0; i<out.out_sys_isr().size(); i++){
       corr_sys_isr[i] = out.out_sys_isr()[i] ? out.out_nent()/out.out_sys_isr()[i] : 1.;
     }
   }
+  
   out.out_w_isr() = corr_w_isr;
   for(size_t i = 0; i<out.out_sys_isr().size(); i++){
     out.out_sys_isr()[i] = corr_sys_isr[i];
@@ -153,7 +161,10 @@ void FixISR(baby_corr &out, const string &out_path, int year){
   if (out.out_w_fs_lep()) w_corr_l0 *= (nent-out.out_w_fs_lep())/nent_zlep;
   if(nent_zlep==0) w_corr_l0 = 1.;
   // again normalize to total w_isr, not unity
-  out.out_weight() = (tot_w_isr*corr_w_isr)/(out.out_tot_weight_l0()*w_corr_l0 + out.out_tot_weight_l1());
+  if(year==2016) 
+    out.out_weight() = (tot_w_isr*corr_w_isr)/(out.out_tot_weight_l0()*w_corr_l0 + out.out_tot_weight_l1());
+  else
+    out.out_weight() = nent/(out.out_tot_weight_l0()*w_corr_l0 + out.out_tot_weight_l1());
 }
 
 void Fix0L(baby_corr &out){
