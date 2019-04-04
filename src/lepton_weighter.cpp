@@ -160,13 +160,12 @@ LeptonWeighter::LeptonWeighter(int year){
     in_fast_mu_iso_ = "sf_fast_muon_iso.root";  hist_fast_mu_iso_ = "histo2D"; // *TBD*
     in_fast_el_mediso_ = "sf_fast_electron_mediumiso.root";  hist_fast_el_mediso_ = "histo2D"; // *TBD*
   } else {
-    // for now just copy the 2017 ones 
-    in_full_mu_med_ = "Muon_Run2017_SF_ID.root";  hist_full_mu_med_ = "NUM_MediumID_DEN_genTracks_pt_abseta"; // *TBD*
+    in_full_mu_med_ = "Muon_Run2018_SF_ID.root";  hist_full_mu_med_ = "NUM_MediumID_DEN_TrackerMuons_pt_abseta";
     in_full_mu_iso_ = "Muon_MinIso02_wrtMediumID_SF_Run2017.root";  hist_full_mu_iso_ = "TnP_MC_NUM_MiniIso02Cut_DEN_MediumID_PAR_pt_eta"; // *TBD*
-    in_full_mu_vtx_ = "n/a";  hist_full_mu_vtx_ = "n/a"; // *TBD*
-    in_full_el_med_ = "ElectronScaleFactors_Run2017.root";  hist_full_el_med_ = "Run2017_CutBasedMediumNoIso94XV2"; // *TBD*
-    in_full_el_iso_ = "ElectronScaleFactors_Run2017.root";  hist_full_el_iso_ = "Run2017_MVAVLooseTightIP2DMini"; // *TBD*
-    in_full_el_trk_ = "egammaEffi_EGM2D_ETge20_recoSF2018_19_02_09.root";  hist_full_el_trk_ = "EGamma_SF2D";
+    in_full_mu_vtx_ = "n/a";  hist_full_mu_vtx_ = "n/a"; // not needed for 2018
+    in_full_el_med_ = "ElectronScaleFactors_Run2018.root";  hist_full_el_med_ = "Run2018_CutBasedMediumNoIso94XV2";
+    in_full_el_iso_ = "ElectronScaleFactors_Run2018.root";  hist_full_el_iso_ = "Run2018_Mini";
+    in_full_el_trk_ = "egammaEffi_EGM2D_ETge10_recoSF2018_19_04_04.root";  hist_full_el_trk_ = "EGamma_SF2D";
     in_fast_mu_med_ = "sf_fast_muon_medium.root";  hist_fast_mu_med_ = "histo2D"; // *TBD*
     in_fast_mu_iso_ = "sf_fast_muon_iso.root";  hist_fast_mu_iso_ = "histo2D"; // *TBD*
     in_fast_el_mediso_ = "sf_fast_electron_mediumiso.root";  hist_fast_el_mediso_ = "histo2D"; // *TBD*
