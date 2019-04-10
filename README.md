@@ -4,11 +4,9 @@ Utility package for post-processing ntuples produced by babymaker.
 
 ### Pending updates for Full Run II dataset !!!
 
-    * Update SFs for b-tagging for 2016 and 2018 FullSim
-    * Update SFs for b-tagging for 2016 and 2018 FastSim
-    * Update SFs for leptons for 2018 FullSim 
-    * Update SFs for leptons for 2017 and 2018 FastSim
-    * ISR weights for 2017 and 2018 FastSim
+    * Update SFs for b-tagging for 2018 FastSim, depending on what we are running on, all options available
+    * Missing Iso SFs for electrons for 2017 and 2018 FastSim -> applying the 2016 instead
+    * Missing Iso SFs for muons for 2018 FullSim -> applying the 2017 instead
 
 N.B. When adding new SF files, check that the axis assignment match what is assumed in the code!! They change from POG to POG and year to year...
 
@@ -26,7 +24,7 @@ Step 2. Apply any SFs and sum up the weights:
     --in_file /net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/unprocessed/fullbaby_TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1_110.root \
     --wgt_dir out/sum_of_weights/ \
     --out_dir out/reweighted/ \
-    --year 2017
+    --year 2017 # --fastsim 
 
 Step 3. Merge weights and calculate normalization corrections:
 
@@ -38,7 +36,7 @@ Step 4. Apply the renormalization weights from found in step 3:
     --in_file out/reweighted/fullbaby_TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1_110.root \
     --corr_file out/corrections/corr_TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8.root \
     --out_file out/unskimmed/fullbaby_TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1_110_renorm.root \
-    --year 2017
+    --year 2017 # --fastsim 
 
 Step 5. Check that the output looks ok:
     * Do the weights have a mean of 1? Check by drawing "weight/w_lumi", "w_lep", "w_isr", "w_btag_deep", plus any that were changed in the code development or suspicious.
@@ -58,7 +56,7 @@ Step 3. Apply any SFs and sum up the weights:
     --in_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/unprocessed/ \
     --wgt_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/sum_of_weights/ \
     --out_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/reweighted/ \
-    --year $YYYY \
+    --year $YYYY \  # --fastsim \
     --njobs 50
 
 Use the option `--fastsim` if running on FastSim samples!
@@ -82,7 +80,7 @@ Step 6. Apply the renormalization weights from found in step 3:
     --in_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/reweighted/ \
     --corr_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/corrections/ \
     --out_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/unskimmed/ \
-    --year $YYYY \
+    --year $YYYY \  # --fastsim \
     --njobs 50
 
 Step 7. When jobs are finished, check that there is as many files in `unskimmed` as there were in `unprocessed` and that they are all good by chaining all unskimmed files together and doing GetEntries(). To skim the files use babymaker package.

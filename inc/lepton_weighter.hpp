@@ -19,27 +19,34 @@ public:
 private:
   std::string in_full_mu_med_, hist_full_mu_med_;
   std::string in_full_mu_iso_, hist_full_mu_iso_;
-  std::string in_full_mu_vtx_, hist_full_mu_vtx_;
+  std::string in_full_mu_trk_, hist_full_mu_trk_;
   std::string in_full_el_med_, hist_full_el_med_;
   std::string in_full_el_iso_, hist_full_el_iso_;
   std::string in_full_el_trk_, hist_full_el_trk_;
   std::string in_fast_mu_med_, hist_fast_mu_med_;
   std::string in_fast_mu_iso_, hist_fast_mu_iso_;
-  std::string in_fast_el_mediso_, hist_fast_el_mediso_;
+  std::string in_fast_el_med_, hist_fast_el_med_;
+  std::string in_fast_el_iso_, hist_fast_el_iso_;
 
-  TH2F sf_full_muon_medium_;
-  TH2F sf_full_muon_iso_;
-  TH2F sf_full_muon_vtx_;
-  TH2D sf_full_muon_tracking_;
+  bool do_full_el_med_, do_full_el_iso_, do_full_el_trk_;
+  bool do_full_mu_med_, do_full_mu_iso_, do_full_mu_trk_;
 
-  TH2F sf_full_electron_medium_;
-  TH2F sf_full_electron_iso_;
-  TH2F sf_full_electron_tracking_;
+  bool do_fast_el_med_, do_fast_el_iso_;
+  bool do_fast_mu_med_, do_fast_mu_iso_;
 
-  TH2D sf_fast_muon_medium_;
-  TH2D sf_fast_muon_iso_;
+  TH2F sf_full_mu_med_;
+  TH2F sf_full_mu_iso_;
+  TH2F sf_full_mu_trk_;
+
+  TH2F sf_full_el_med_;
+  TH2F sf_full_el_iso_;
+  TH2F sf_full_el_trk_;
+
+  TH2D sf_fast_mu_med_;
+  TH2D sf_fast_mu_iso_;
   
-  TH2D sf_fast_electron_mediumiso_;
+  TH2D sf_fast_el_med_;
+  TH2D sf_fast_el_iso_;
 
   std::pair<double, double> GetMuonScaleFactor(baby_plus &b, std::size_t ilep);
   std::pair<double, double> GetElectronScaleFactor(baby_plus &b, std::size_t ilep);

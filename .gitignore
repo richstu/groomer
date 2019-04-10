@@ -39,6 +39,7 @@ out/*.root
 *.tex
 *.aux
 gmon.out
+.DS_Store
 out
 /run
 logs

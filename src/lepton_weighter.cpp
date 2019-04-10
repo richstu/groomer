@@ -46,145 +46,72 @@ namespace{
     double err = hypot(a.first*b.second, b.first*a.second);
     return {sf, err};
   }
-
-//   TH2D GraphToHist(const TGraphAsymmErrors &g){
-//     struct Point{
-//       double xl, xh, y, e;
-//       Point(double xl_in, double xh_in, double y_in, double e_in):
-//         xl(xl_in),
-//         xh(xh_in),
-//         y(y_in),
-//         e(e_in){
-//       }
-//       bool operator<(const Point &p) const{
-//         return make_tuple(xl, xh, fabs(log(fabs(y))), fabs(e))
-//           <make_tuple(p.xl, p.xh, fabs(log(fabs(p.y))), fabs(p.e));
-//       }
-//     };
-//     vector<Point> bins;
-//     Double_t *x = g.GetX();
-//     Double_t *xl = g.GetEXlow();
-//     Double_t *xh = g.GetEXhigh();
-//     Double_t *y = g.GetY();
-//     Double_t *yl = g.GetEYlow();
-//     Double_t *yh = g.GetEYhigh();
-//     for(int i = 0; i < g.GetN(); ++i){
-//       bins.emplace_back(x[i]-fabs(xl[i]), x[i]+fabs(xh[i]),
-//                         y[i], max(fabs(yl[i]), fabs(yh[i])));
-//     }
-//     bool problems = true;
-//     while(problems){
-//       stable_sort(bins.begin(), bins.end());
-//       problems = false;
-//       for(auto low = bins.begin(); !problems && low != bins.end(); ++low){
-//         auto high = low;
-//         ++high;
-//         if(high == bins.end()) break;
-//         double new_y = sqrt(low->y * high->y);
-//         double top = max(low->y+low->e, high->y+high->e);
-//         double bot = min(low->y-low->e, high->y-high->e);
-//         double new_e = max(top-new_y, new_y-bot);
-//         if(low->xh < high->xl){
-//           //Gap
-//           bins.insert(high, Point(low->xh, high->xl, new_y, new_e));
-//         }else if(low->xh > high->xl){
-//           //Overlap
-//           problems = true;
-//           if(low->xh < high->xh){
-//             //Plain overlap
-//             Point new_low(low->xl, high->xl, low->y, low->e);
-//             Point new_mid(high->xl, low->xh, new_y, new_e);
-//             Point new_high(low->xh, high->xh, high->y, high->e);
-//             *low = new_low;
-//             *high = new_high;
-//             bins.insert(high, new_mid);
-//           }else if(low->xh == high->xh){
-//             //Subset -> 2 bins
-//             Point new_low(low->xl, high->xl, low->y, low->e);
-//             Point new_high(high->xl, high->xh, new_y, new_e);
-//             *low = new_low;
-//             *high = new_high;
-//           }else{
-//             //Subset -> 3 bins
-//             Point new_low(low->xl, high->xl, low->y, low->e);
-//             Point new_mid(high->xl, high->xh, new_y, new_e);
-//             Point new_high(high->xh, low->xh, low->y, low->e);
-//             *low = new_low;
-//             *high = new_high;
-//             bins.insert(high, new_mid);
-//           }
-//         }
-//       }
-//     }
-//     vector<double> bin_edges(bins.size()+1);
-//     for(size_t i = 0; i < bins.size(); ++i){
-//       bin_edges.at(i) = bins.at(i).xl;
-//     }
-//     bin_edges.back() = bins.back().xh;
-//     TH2D h(g.GetName(), (string(g.GetTitle())+";"+g.GetXaxis()->GetTitle()+";"+g.GetYaxis()->GetTitle()).c_str(),
-//            1, 0., 1.e4, bin_edges.size()-1, &bin_edges.at(0));
-//     for(int ix = 0; ix <= 2; ++ix){
-//       h.SetBinContent(ix, 0, 1.);
-//       h.SetBinError(ix, 0, 1.);
-//       h.SetBinContent(ix, h.GetNbinsY()+1, 1.);
-//       h.SetBinError(ix, h.GetNbinsY()+1, 1.);
-//       for(int iy = 1; iy <= h.GetNbinsY(); ++iy){
-//         h.SetBinContent(ix, iy, bins.at(iy-1).y);
-//         h.SetBinError(ix ,iy, bins.at(iy-1).e);
-//       }
-//     }
-//     return h;
-//   }
 }
 
 LeptonWeighter::LeptonWeighter(int year){
   if (year==2016) {
     in_full_mu_med_ = "TnP_NUM_MediumID_DENOM_generalTracks_VAR_map_pt_eta.root";  hist_full_mu_med_ = "SF";
     in_full_mu_iso_ = "TnP_NUM_MiniIsoTight_DENOM_MediumID_VAR_map_pt_eta.root";  hist_full_mu_iso_ = "SF";
-    in_full_mu_vtx_ = "TnP_NUM_MediumIP2D_DENOM_LooseID_VAR_map_pt_eta.root";  hist_full_mu_vtx_ = "SF";
+    in_full_mu_trk_ = "TnP_NUM_MediumIP2D_DENOM_LooseID_VAR_map_pt_eta.root";  hist_full_mu_trk_ = "SF";
     in_full_el_med_ = "ElectronScaleFactors_Run2016.root";  hist_full_el_med_ = "Run2016_CutBasedMediumNoIso94XV2";
     in_full_el_iso_ = "ElectronScaleFactors_Run2016.root";  hist_full_el_iso_ = "Run2016_Mini";
     in_full_el_trk_ = "egammaEffi_EGM2D_ETge20_recoSF2016_19_02_09.root";  hist_full_el_trk_ = "EGamma_SF2D";
-    in_fast_mu_med_ = "sf_fast_muon_medium.root";  hist_fast_mu_med_ = "histo2D";
-    in_fast_mu_iso_ = "sf_fast_muon_iso.root";  hist_fast_mu_iso_ = "histo2D";
-    in_fast_el_mediso_ = "sf_fast_electron_mediumiso.root";  hist_fast_el_mediso_ = "histo2D";
+
+    in_fast_mu_med_ = "sf_fast_mu_mediumID_2016.root";  hist_fast_mu_med_ = "histo2D"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_mu_iso_ = "sf_fast_mu_mini02_2016.root";  hist_fast_mu_iso_ = "histo2D"; // x-axis = pT, y-axis = abs(eta)
+
+    in_fast_el_med_ = "sf_fast_el_mediumID_2016.root";  hist_fast_el_med_ = "histo2D"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_el_iso_ = "sf_fast_el_mini01_2016.root";  hist_fast_el_iso_ = "histo2D"; // x-axis = pT, y-axis = abs(eta)
   } else if (year==2017) {
     // for fastsim just copy the 2016 ones, though not really applicable...
     in_full_mu_med_ = "Muon_Run2017_SF_ID.root";  hist_full_mu_med_ = "NUM_MediumID_DEN_genTracks_pt_abseta";
     in_full_mu_iso_ = "Muon_MinIso02_wrtMediumID_SF_Run2017.root";  hist_full_mu_iso_ = "TnP_MC_NUM_MiniIso02Cut_DEN_MediumID_PAR_pt_eta";
-    in_full_mu_vtx_ = "n/a";  hist_full_mu_vtx_ = "n/a"; // not needed for 2017
+    in_full_mu_trk_ = "";  hist_full_mu_trk_ = ""; // not needed for 2017
     in_full_el_med_ = "ElectronScaleFactors_Run2017.root";  hist_full_el_med_ = "Run2017_CutBasedMediumNoIso94XV2";
     in_full_el_iso_ = "ElectronScaleFactors_Run2017.root";  hist_full_el_iso_ = "Run2017_MVAVLooseTightIP2DMini";
     in_full_el_trk_ = "egammaEffi_EGM2D_ETge20_recoSF2017_19_02_09.root";  hist_full_el_trk_ = "EGamma_SF2D";
-    in_fast_mu_med_ = "sf_fast_muon_medium.root";  hist_fast_mu_med_ = "histo2D"; // *TBD*
-    in_fast_mu_iso_ = "sf_fast_muon_iso.root";  hist_fast_mu_iso_ = "histo2D"; // *TBD*
-    in_fast_el_mediso_ = "sf_fast_electron_mediumiso.root";  hist_fast_el_mediso_ = "histo2D"; // *TBD*
+
+    in_fast_mu_med_ = "detailed_mu_full_fast_sf_17.root";  hist_fast_mu_med_ = "miniIso02_MediumId_sf"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_mu_iso_ = "";  hist_fast_mu_iso_ = ""; // included in the ID SF above
+
+    in_fast_el_med_ = "detailed_ele_full_fast_sf_17.root";  hist_fast_el_med_ = "CutBasedMediumNoIso94XV2_sf"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_el_iso_ = "sf_fast_el_mini01_2016.root";  hist_fast_el_iso_ = "histo2D"; // these seem to be missing *TBD*
   } else {
     in_full_mu_med_ = "Muon_Run2018_SF_ID.root";  hist_full_mu_med_ = "NUM_MediumID_DEN_TrackerMuons_pt_abseta";
     in_full_mu_iso_ = "Muon_MinIso02_wrtMediumID_SF_Run2017.root";  hist_full_mu_iso_ = "TnP_MC_NUM_MiniIso02Cut_DEN_MediumID_PAR_pt_eta"; // *TBD*
-    in_full_mu_vtx_ = "n/a";  hist_full_mu_vtx_ = "n/a"; // not needed for 2018
+    in_full_mu_trk_ = "";  hist_full_mu_trk_ = ""; // not needed for 2018
     in_full_el_med_ = "ElectronScaleFactors_Run2018.root";  hist_full_el_med_ = "Run2018_CutBasedMediumNoIso94XV2";
     in_full_el_iso_ = "ElectronScaleFactors_Run2018.root";  hist_full_el_iso_ = "Run2018_Mini";
     in_full_el_trk_ = "egammaEffi_EGM2D_ETge10_recoSF2018_19_04_04.root";  hist_full_el_trk_ = "EGamma_SF2D";
-    in_fast_mu_med_ = "sf_fast_muon_medium.root";  hist_fast_mu_med_ = "histo2D"; // *TBD*
-    in_fast_mu_iso_ = "sf_fast_muon_iso.root";  hist_fast_mu_iso_ = "histo2D"; // *TBD*
-    in_fast_el_mediso_ = "sf_fast_electron_mediumiso.root";  hist_fast_el_mediso_ = "histo2D"; // *TBD*
+
+    in_fast_mu_med_ = "detailed_mu_full_fast_sf_17.root";  hist_fast_mu_med_ = "miniIso02_MediumId_sf"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_mu_iso_ = "";  hist_fast_mu_iso_ = ""; // included in the ID SF above; just copy of 2017 *TBD*
+
+    in_fast_el_med_ = "detailed_ele_full_fast_sf_18.root";  hist_fast_el_med_ = "CutBasedMediumNoIso94XV2_sf"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_el_iso_ = "sf_fast_el_mini01_2016.root";  hist_fast_el_iso_ = "histo2D"; // these seem to be missing *TBD*
   }
 
+  do_full_el_med_ = (in_full_el_med_!=""); do_full_el_iso_ = (in_full_el_iso_!=""); do_full_el_trk_ = (in_full_el_trk_!="");
+  do_full_mu_med_ = (in_full_mu_med_!=""); do_full_mu_iso_ = (in_full_mu_iso_!=""); do_full_mu_trk_ = (in_full_mu_trk_!="");
+
+  do_fast_el_med_ = (in_fast_el_med_!=""); do_fast_el_iso_ = (in_fast_el_iso_!="");
+  do_fast_mu_med_ = (in_fast_mu_med_!=""); do_fast_mu_iso_ = (in_fast_mu_iso_!="");
+
   //https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Muons_AN1
-  sf_full_muon_medium_ = LoadSF<TH2F>(in_full_mu_med_, hist_full_mu_med_);
-  sf_full_muon_iso_ = LoadSF<TH2F>(in_full_mu_iso_, hist_full_mu_iso_);
-  if (in_full_mu_vtx_!="n/a")
-    sf_full_muon_vtx_ = LoadSF<TH2F>(in_full_mu_vtx_, hist_full_mu_vtx_);
+  if (do_full_mu_med_) sf_full_mu_med_ = LoadSF<TH2F>(in_full_mu_med_, hist_full_mu_med_);
+  if (do_full_mu_iso_) sf_full_mu_iso_ = LoadSF<TH2F>(in_full_mu_iso_, hist_full_mu_iso_);
+  if (do_full_mu_trk_) sf_full_mu_trk_ = LoadSF<TH2F>(in_full_mu_trk_, hist_full_mu_trk_);
 
   //https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Electrons_AN1
-  sf_full_electron_medium_ = LoadSF<TH2F>(in_full_el_med_, hist_full_el_med_);
-  sf_full_electron_iso_ = LoadSF<TH2F>(in_full_el_iso_, hist_full_el_iso_);
-  sf_full_electron_tracking_ = LoadSF<TH2F>(in_full_el_trk_, hist_full_el_trk_);
+  if (do_full_el_med_) sf_full_el_med_ = LoadSF<TH2F>(in_full_el_med_, hist_full_el_med_);
+  if (do_full_el_iso_) sf_full_el_iso_ = LoadSF<TH2F>(in_full_el_iso_, hist_full_el_iso_);
+  if (do_full_el_trk_) sf_full_el_trk_ = LoadSF<TH2F>(in_full_el_trk_, hist_full_el_trk_);
 
-  sf_fast_muon_medium_ = LoadSF<TH2D>(in_fast_mu_med_, hist_fast_mu_med_);
-  sf_fast_muon_iso_ = LoadSF<TH2D>(in_fast_mu_iso_, hist_fast_mu_iso_);
-  sf_fast_electron_mediumiso_ = LoadSF<TH2D>(in_fast_el_mediso_, hist_fast_el_mediso_);
+  if (do_fast_mu_med_) sf_fast_mu_med_ = LoadSF<TH2D>(in_fast_mu_med_, hist_fast_mu_med_);
+  if (do_fast_mu_iso_) sf_fast_mu_iso_ = LoadSF<TH2D>(in_fast_mu_iso_, hist_fast_mu_iso_);
+
+  if (do_fast_el_med_) sf_fast_el_med_ = LoadSF<TH2D>(in_fast_el_med_, hist_fast_el_med_);
+  if (do_fast_el_iso_) sf_fast_el_iso_ = LoadSF<TH2D>(in_fast_el_iso_, hist_fast_el_iso_);
 }
 
 void LeptonWeighter::FullSim(baby_plus &b, float &w_lep, vector<float> &sys_lep){
@@ -228,14 +155,17 @@ std::pair<double, double> LeptonWeighter::GetMuonScaleFactor(baby_plus &b, size_
   double pt = b.mus_pt().at(imu);
   double eta = b.mus_eta().at(imu);
   double abseta = fabs(eta);
-  vector<pair<double, double> > sfs{
-    GetSF(sf_full_muon_medium_, pt, abseta, false),
-      make_pair(1., 0.03),//Systematic uncertainty
-      GetSF(sf_full_muon_iso_, pt, eta, false),
-      make_pair(1., 0.03),//Systematic uncertainty
-      };
-  if (in_full_mu_vtx_!="n/a") {
-    sfs.push_back(GetSF(sf_full_muon_vtx_, pt, abseta, false));
+  vector<pair<double, double> > sfs;
+  if (do_full_mu_med_) {
+    sfs.push_back(GetSF(sf_full_mu_med_, pt, abseta, false));
+    sfs.push_back(make_pair(1., 0.03));//Systematic uncertainty
+  } 
+  if (do_full_mu_iso_) {
+    sfs.push_back(GetSF(sf_full_mu_iso_, pt, eta, false));
+    sfs.push_back(make_pair(1., 0.03));//Systematic uncertainty
+  }
+  if (do_full_mu_trk_) {
+    sfs.push_back(GetSF(sf_full_mu_trk_, pt, abseta, false));
     sfs.push_back(make_pair(1., 0.03));//Systematic uncertainty
   }
   return accumulate(sfs.cbegin(), sfs.cend(), make_pair(1., 0.), MergeSF);
@@ -250,12 +180,12 @@ std::pair<double, double> LeptonWeighter::GetElectronScaleFactor(baby_plus &b, s
   double pt = b.els_scpt().at(iel);
   double eta = b.els_sceta().at(iel);
   // double abseta = fabs(eta);
-  vector<pair<double, double> > sfs{
-    GetSF(sf_full_electron_medium_, eta, pt),
-      GetSF(sf_full_electron_iso_, eta, pt),
-      GetSF(sf_full_electron_tracking_, eta, pt),//Axes swapped, asymmetric in eta
-      make_pair(1., pt<20. || pt >80. ? 0.01 : 0.)//Systematic uncertainty
-      };
+  vector<pair<double, double> > sfs;
+  //Axes swapped, asymmetric in eta
+  if (do_full_el_med_) sfs.push_back(GetSF(sf_full_el_med_, eta, pt));
+  if (do_full_el_iso_) sfs.push_back(GetSF(sf_full_el_iso_, eta, pt));
+  if (do_full_el_trk_) sfs.push_back(GetSF(sf_full_el_trk_, eta, pt));
+  sfs.push_back(make_pair(1., pt<20. || pt >80. ? 0.01 : 0.));//Systematic uncertainty
   return accumulate(sfs.cbegin(), sfs.cend(), make_pair(1., 0.), MergeSF);
 }
 
@@ -265,12 +195,15 @@ std::pair<double, double> LeptonWeighter::GetMuonScaleFactorFS(baby_plus &b, siz
   //No stat error, 2% systematic from ID, iso
   double pt = b.mus_pt().at(imu);
   double abseta = fabs(b.mus_eta().at(imu));
-  vector<pair<double, double> > sfs{
-    GetSF(sf_fast_muon_medium_, pt, abseta, false),
-      make_pair(1., 0.02),
-      GetSF(sf_fast_muon_iso_, pt, abseta, false),
-      make_pair(1., 0.02),
-      };
+  vector<pair<double, double> > sfs;
+  if (do_fast_mu_med_) {
+    sfs.push_back(GetSF(sf_fast_mu_med_, pt, abseta, false));
+    sfs.push_back(make_pair(1., 0.02));
+  }
+  if (do_fast_mu_iso_) {
+    sfs.push_back(GetSF(sf_fast_mu_iso_, pt, abseta, false));
+    sfs.push_back(make_pair(1., 0.02));
+  }
   return accumulate(sfs.cbegin(), sfs.cend(), make_pair(1., 0.), MergeSF);
 }
 
@@ -280,11 +213,15 @@ std::pair<double, double> LeptonWeighter::GetElectronScaleFactorFS(baby_plus &b,
   //No stat error, 2% systematic from ID, iso
   double pt = b.els_scpt().at(iel);
   double abseta = fabs(b.els_sceta().at(iel));
-  vector<pair<double, double> > sfs{
-    GetSF(sf_fast_electron_mediumiso_, pt, abseta, false),
-      make_pair(1., 0.02),//Systematic uncertainty
-      make_pair(1., 0.02)//Systematic uncertainty
-      };
+  vector<pair<double, double> > sfs;
+  if (do_fast_el_med_) {
+    sfs.push_back(GetSF(sf_fast_el_med_, pt, abseta, false));
+    sfs.push_back(make_pair(1., 0.02));//Systematic uncertainty
+  }
+  if (do_fast_el_iso_) {
+    sfs.push_back(GetSF(sf_fast_el_iso_, pt, abseta, false));
+    sfs.push_back(make_pair(1., 0.02));//Systematic uncertainty
+  }
   return accumulate(sfs.cbegin(), sfs.cend(), make_pair(1., 0.), MergeSF);
 }
 

@@ -130,7 +130,7 @@ int main(int argc, char *argv[]){
     const bool doProc = false;
     double w_btag_deep_ = fix_b_wgt ? btw.EventWeight(b, op_med, ctr, ctr, doDeepCSV, doProc) : b.w_btag_deep();
     if (year==2016) {
-      wgt = w_lep*(isFastSim ? w_fs_lep : 1.)*w_btag_deep_*b.w_isr()*b.w_pu();
+      wgt = w_lep*(isFastSim ? w_fs_lep : 1.)*w_btag_deep_*b.w_pu()*b.w_isr();
     } else {
       wgt = w_lep*(isFastSim ? w_fs_lep : 1.)*w_btag_deep_*b.w_pu();
       if (isFastSim)
