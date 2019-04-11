@@ -147,6 +147,9 @@ namespace xsec{
         if(file.Contains("TTJets_DiLept_genMET-150")) xsec = 0.0676543*85.66; // filter_eff*(3*0.108)^2*815.96
         if(file.Contains("TTJets_SingleLept") && file.Contains("genMET-150")) xsec = 0.0568246*178.7; //filter_eff*(1- ((1-3*0.108)^2+(3*0.108)^2))*815.96*0.5 per half
 
+        if(file.Contains("TTJets_DiLept_genMET-80")) xsec = 0.412882*85.66; // filter_eff*(3*0.108)^2*815.96
+        if(file.Contains("TTJets_SingleLept") && file.Contains("genMET-80")) xsec = 0.293137*178.7; //filter_eff*(1- ((1-3*0.108)^2+(3*0.108)^2))*815.96*0.5 per half
+
         // from cross XSDB
         if(file.Contains("TTG")) xsec = 4.078;                
         if(file.Contains("TTTT_Tune")) xsec = 0.008213;
@@ -179,8 +182,10 @@ namespace xsec{
         // Cross sections from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec
         // multiplied by BF(W->mu,e,tau) = 0.324
         if (file.Contains("ST_s-channel_4f_leptonDecays"))     xsec = 3.34;
-        if (file.Contains("ST_t-channel_antitop_4f_inclusiveDecays")) xsec = 80.95;
-        if (file.Contains("ST_t-channel_top_4f_inclusiveDecays")) xsec = 136.02;
+        if (file.Contains("ST_t-channel_antitop_4f_inclusiveDecays") ||
+            file.Contains("ST_t-channel_antitop_4f_InclusiveDecays")) xsec = 80.95;
+        if (file.Contains("ST_t-channel_top_4f_inclusiveDecays") || 
+            file.Contains("ST_t-channel_top_4f_InclusiveDecays")) xsec = 136.02;
         if (file.Contains("ST_tW_antitop_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543;
         if (file.Contains("ST_tW_top_5f_NoFullyHadronicDecays"))     xsec = 35.85*0.543; 
 
