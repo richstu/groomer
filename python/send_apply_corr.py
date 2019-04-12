@@ -27,6 +27,7 @@ def getTag(file):
   tag = tag.split("RunIISummer16MiniAODv2")[0]
   tag = tag.split("RunIIFall17MiniAODv2")[0]
   tag = tag.split("RunIISummer16MiniAODv3")[0]
+  tag = tag.split("RunIIAutumn18MiniAOD")[0]
   tag = tag.replace("fullbaby_","")
   tag = tag.rstrip("_")
   return tag
