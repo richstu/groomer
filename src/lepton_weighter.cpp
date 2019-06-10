@@ -57,13 +57,12 @@ LeptonWeighter::LeptonWeighter(int year){
     in_full_el_iso_ = "ElectronScaleFactors_Run2016.root";  hist_full_el_iso_ = "Run2016_Mini";
     in_full_el_trk_ = "egammaEffi_EGM2D_ETge20_recoSF2016_19_02_09.root";  hist_full_el_trk_ = "EGamma_SF2D";
 
-    in_fast_mu_med_ = "sf_fast_mu_mediumID_2016.root";  hist_fast_mu_med_ = "histo2D"; // x-axis = pT, y-axis = abs(eta)
-    in_fast_mu_iso_ = "sf_fast_mu_mini02_2016.root";  hist_fast_mu_iso_ = "histo2D"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_mu_med_ = "sf_fast_mu_mediumID_2016.root";  hist_fast_mu_med_ = "histo2D";
+    in_fast_mu_iso_ = "sf_fast_mu_mini02_2016.root";  hist_fast_mu_iso_ = "histo2D";
 
-    in_fast_el_med_ = "sf_fast_el_mediumID_2016.root";  hist_fast_el_med_ = "histo2D"; // x-axis = pT, y-axis = abs(eta)
-    in_fast_el_iso_ = "sf_fast_el_mini01_2016.root";  hist_fast_el_iso_ = "histo2D"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_el_med_ = "sf_fast_el_mediumID_2016.root";  hist_fast_el_med_ = "histo2D";
+    in_fast_el_iso_ = "sf_fast_el_mini01_2016.root";  hist_fast_el_iso_ = "histo2D";
   } else if (year==2017) {
-    // for fastsim just copy the 2016 ones, though not really applicable...
     in_full_mu_med_ = "Muon_Run2017_SF_ID.root";  hist_full_mu_med_ = "NUM_MediumID_DEN_genTracks_pt_abseta";
     in_full_mu_iso_ = "Muon_MinIso02_wrtMediumID_SF_Run2017.root";  hist_full_mu_iso_ = "TnP_MC_NUM_MiniIso02Cut_DEN_MediumID_PAR_pt_eta";
     in_full_mu_trk_ = "";  hist_full_mu_trk_ = ""; // not needed for 2017
@@ -71,24 +70,24 @@ LeptonWeighter::LeptonWeighter(int year){
     in_full_el_iso_ = "ElectronScaleFactors_Run2017.root";  hist_full_el_iso_ = "Run2017_MVAVLooseTightIP2DMini";
     in_full_el_trk_ = "egammaEffi_EGM2D_ETge20_recoSF2017_19_02_09.root";  hist_full_el_trk_ = "EGamma_SF2D";
 
-    in_fast_mu_med_ = "detailed_mu_full_fast_sf_17.root";  hist_fast_mu_med_ = "miniIso02_MediumId_sf"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_mu_med_ = "detailed_mu_full_fast_sf_17.root";  hist_fast_mu_med_ = "miniIso02_MediumId_sf";
     in_fast_mu_iso_ = "";  hist_fast_mu_iso_ = ""; // included in the ID SF above
 
-    in_fast_el_med_ = "detailed_ele_full_fast_sf_17.root";  hist_fast_el_med_ = "CutBasedMediumNoIso94XV2_sf"; // x-axis = pT, y-axis = abs(eta)
+    in_fast_el_med_ = "detailed_ele_full_fast_sf_17.root";  hist_fast_el_med_ = "CutBasedMediumNoIso94XV2_sf";
     in_fast_el_iso_ = "detailed_ele_full_fast_sf_17.root";  hist_fast_el_iso_ = "MVAVLooseTightIP2DMini_sf";
   } else {
     in_full_mu_med_ = "Muon_Run2018_SF_ID.root";  hist_full_mu_med_ = "NUM_MediumID_DEN_TrackerMuons_pt_abseta";
-    in_full_mu_iso_ = "Muon_MinIso02_wrtMediumID_SF_Run2017.root";  hist_full_mu_iso_ = "TnP_MC_NUM_MiniIso02Cut_DEN_MediumID_PAR_pt_eta"; // *TBD*
+    in_full_mu_iso_ = "Muon_MinIso02_wrtMediumID_SF_Run2017.root";  hist_full_mu_iso_ = "TnP_MC_NUM_MiniIso02Cut_DEN_MediumID_PAR_pt_eta"; // official recommendation is now to use 2017
     in_full_mu_trk_ = "";  hist_full_mu_trk_ = ""; // not needed for 2018
     in_full_el_med_ = "ElectronScaleFactors_Run2018.root";  hist_full_el_med_ = "Run2018_CutBasedMediumNoIso94XV2";
     in_full_el_iso_ = "ElectronScaleFactors_Run2018.root";  hist_full_el_iso_ = "Run2018_Mini";
     in_full_el_trk_ = "egammaEffi_EGM2D_ETge10_recoSF2018_19_04_04.root";  hist_full_el_trk_ = "EGamma_SF2D";
 
-    in_fast_mu_med_ = "detailed_mu_full_fast_sf_17.root";  hist_fast_mu_med_ = "miniIso02_MediumId_sf"; // x-axis = pT, y-axis = abs(eta)
-    in_fast_mu_iso_ = "";  hist_fast_mu_iso_ = ""; //just copy of 2017 *TBD*
+    in_fast_mu_med_ = "detailed_mu_full_fast_sf_18.root";  hist_fast_mu_med_ = "miniIso02_MediumId_sf";
+    in_fast_mu_iso_ = "";  hist_fast_mu_iso_ = ""; // included in the ID SF above
 
-    in_fast_el_med_ = "detailed_ele_full_fast_sf_18.root";  hist_fast_el_med_ = "CutBasedMediumNoIso94XV2_sf"; // x-axis = pT, y-axis = abs(eta)
-    in_fast_el_iso_ = "detailed_ele_full_fast_sf_18.root";  hist_fast_el_iso_ = "MVAVLooseTightIP2DMini_sf"; // these seem to be missing *TBD*
+    in_fast_el_med_ = "detailed_ele_full_fast_sf_18.root";  hist_fast_el_med_ = "CutBasedMediumNoIso94XV2_sf";
+    in_fast_el_iso_ = "detailed_ele_full_fast_sf_18.root";  hist_fast_el_iso_ = "MVAVLooseTightIP2DMini_sf";
   }
 
   do_full_el_med_ = (in_full_el_med_!=""); do_full_el_iso_ = (in_full_el_iso_!=""); do_full_el_trk_ = (in_full_el_trk_!="");
