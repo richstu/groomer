@@ -33,14 +33,14 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, int year):
   btag_efficiencies_deep_proc_ = vector<TH3D>(); btag_efficiencies_deep_proc_.resize(op_pts_.size());
   TString beff_file = "";
   if (year==2016) {
-    calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_Moriond17_B_H.csv"));
+    calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_2016LegacySF_WP_V1.csv"));
     calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/deepcsv_13TEV_16SL_18_3_2019.csv"));
     deep_csv_loose_ = 0.2219;
     deep_csv_medium_ = 0.6324;
     deep_csv_tight_ = 0.8958;
     beff_file = "data/btagEfficiency_deep_2016.root";
   } else if (year==2017) {
-    calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_V3_B_F.csv"));
+    calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_V4_B_F.csv"));
     calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/deepcsv_13TEV_17SL_18_3_2019.csv"));
     deep_csv_loose_ = 0.1522;
     deep_csv_medium_ = 0.4941;
@@ -48,7 +48,7 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, int year):
     beff_file = "data/btagEfficiency_deep_2017.root";
   } else {
     calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_102XSF_WP_V1.csv")); 
-    calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/deepcsv_13TEV_1718SLDiff_18_3_2019ExUnc.csv")); // *TBC*
+    calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/deepcsv_13TEV_18SL_7_5_2019.csv"));
     cout<<"WARNING: Using on 2017 fastsim with 2017 WP and 2018 SF! Next step, change either to 2018 FastSim or use 2017 FS with 2018 WP and then update to the other SF file!"<<endl;
     deep_csv_loose_ = 0.1241;
     deep_csv_medium_ = 0.4184;
