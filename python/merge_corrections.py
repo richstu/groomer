@@ -46,6 +46,9 @@ def mergeCorrections(wgt_dir, corr_dir, year):
     for i in range(len(tags)):
         tag = tags[i]
         output_file = os.path.join(corr_dir, "corr_"+tag+".root")
+        if os.path.exists(output_file):
+            print("Processing tag {} of {}: Output file already exists. Continue.".format(i+1,len(tags)))
+            continue
         command = ["run/merge_corrections.exe", str(year), output_file]
         for f in input_files:
             if tag in f:

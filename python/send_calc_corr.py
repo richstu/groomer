@@ -37,7 +37,8 @@ def sendCalcCorr(in_dir, out_dir, wgt_dir, num_jobs, year, keep_lep, keep_b, fas
 
     in_files = [ os.path.join(in_dir,ifile) for ifile in os.listdir(in_dir)
                  if os.path.isfile(os.path.join(in_dir,ifile))
-                 and os.path.splitext(ifile)[1] == ".root" ]
+                 and os.path.splitext(ifile)[1] == ".root" 
+                 and not os.path.exists(os.path.join(out_dir, ifile))]
     in_files = numpy.array_split(numpy.array(in_files), num_jobs)
 
     num_submitted = 0

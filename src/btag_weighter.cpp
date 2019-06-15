@@ -40,7 +40,7 @@ BTagWeighter::BTagWeighter(string proc, bool is_fast_sim, int year):
     deep_csv_tight_ = 0.8958;
     beff_file = "data/btagEfficiency_deep_2016.root";
   } else if (year==2017) {
-    calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_V4_B_F.csv"));
+    calib_deep_full_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/DeepCSV_94XSF_WP_V4_B_F.csv"));
     calib_deep_fast_ = unique_ptr<BTagCalibration>(new BTagCalibration("csvv2_deep", "data/deepcsv_13TEV_17SL_18_3_2019.csv"));
     deep_csv_loose_ = 0.1522;
     deep_csv_medium_ = 0.4941;
