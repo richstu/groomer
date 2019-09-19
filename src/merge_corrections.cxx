@@ -99,6 +99,7 @@ void AddEntry(baby_corr &in, baby_corr &out){
 
 int GetGluinoMass(const string &path){
   string key = "_mGluino-";
+  // if (Contains(path, "T2tt")) key = "_mStop-"; 
   auto pos1 = path.rfind(key)+key.size();
   auto pos2 = path.find("_", pos1);
   string mass_string = path.substr(pos1, pos2-pos1);

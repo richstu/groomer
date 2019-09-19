@@ -2,12 +2,6 @@
 
 Utility package for post-processing ntuples produced by babymaker.
 
-### Pending updates for Full Run II dataset !!!
-
-    * Update SFs for b-tagging for 2018 FastSim, depending on what we are running on, all options available
-    * Missing Iso SFs for electrons for 2017 and 2018 FastSim -> applying the 2016 instead
-    * Missing Iso SFs for muons for 2018 FullSim -> applying the 2017 instead
-
 N.B. When adding new SF files, check that the axis assignment match what is assumed in the code!! They change from POG to POG and year to year...
 
 ### Interactive test
@@ -21,10 +15,10 @@ Step 1. Make some test directories:
 Step 2. Apply any SFs and sum up the weights:
 
     ./compile.sh && ./run/calc_corr.exe \
-    --in_file /net/cms2/cms2r0/babymaker/babies/2018_12_17/mc/unprocessed/fullbaby_TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1_110.root \
+    --in_file /net/cms2/cms2r0/babymaker/babies/2019_05_18/T2tt/unprocessed/fullbaby_SMS-T2tt_mStop-375_mLSP-200_TuneCP2_13TeV-madgraphMLM-pythia8_RunIIAutumn18MiniAOD-PUFall18Fast_102X_upgrade2018_realistic_v15.root \
     --wgt_dir out/sum_of_weights/ \
     --out_dir out/reweighted/ \
-    --year 2017 # --fastsim 
+    --year 2018 --fastsim 
 
 Step 3. Merge weights and calculate normalization corrections:
 
@@ -53,11 +47,11 @@ Step 2. Check if there are any bad files in the unprocessed directory by chainin
 Step 3. Apply any SFs and sum up the weights:
     
     ./python/send_calc_corr.py \
-    --in_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/unprocessed/ \
-    --wgt_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/sum_of_weights/ \
-    --out_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/reweighted/ \
-    --year $YYYY \  # --fastsim \
-    --njobs 50
+    --in_dir /net/cms2/cms2r0/babymaker/babies/2019_07_16/T1tttt/unprocessed/ \
+    --wgt_dir /net/cms2/cms2r0/babymaker/babies/2019_07_16/T1tttt/sum_of_weights/ \
+    --out_dir /net/cms2/cms2r0/babymaker/babies/2019_07_16/T1tttt/reweighted/ \
+    --year 2016 --fastsim \
+    --njobs 30
 
 Use the option `--fastsim` if running on FastSim samples!
 
@@ -68,19 +62,19 @@ Step 4. Check that correct number of files were written to the `reweighted` and 
 Step 5. Calculate the renormalization weights from the sums found in step 1:
 
     ./python/merge_corrections.py \
-    --year $YYYY \
-    --wgt_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/sum_of_weights/ \
-    --corr_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/corrections/
+    --year 2016 \
+    --wgt_dir /net/cms2/cms2r0/babymaker/babies/2019_07_16/T1tttt/sum_of_weights/ \
+    --corr_dir /net/cms2/cms2r0/babymaker/babies/2019_07_16/T1tttt/corrections/
 
 This step runs interactively since it should be about a minute. Check that the number of files in `corrections` folder is equal to the number of samples. If not, then the `getTag` function in `merge_corrections.py` did not parse correctly the file names.
 
 Step 6. Apply the renormalization weights from found in step 3:
 
     ./python/send_apply_corr.py \
-    --in_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/reweighted/ \
-    --corr_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/corrections/ \
-    --out_dir /net/cms2/cms2r0/babymaker/babies/$YYYY_MM_DD/mc/unskimmed/ \
-    --year $YYYY \  # --fastsim \
-    --njobs 50
+    --in_dir /net/cms2/cms2r0/babymaker/babies/2019_07_16/T1tttt/reweighted/ \
+    --corr_dir /net/cms2/cms2r0/babymaker/babies/2019_07_16/T1tttt/corrections/ \
+    --out_dir /net/cms2/cms2r0/babymaker/babies/2019_07_16/T1tttt/unskimmed/ \
+    --year 2016 --fastsim \
+    --njobs 30
 
 Step 7. When jobs are finished, check that there is as many files in `unskimmed` as there were in `unprocessed` and that they are all good by chaining all unskimmed files together and doing GetEntries(). To skim the files use babymaker package.

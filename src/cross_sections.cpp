@@ -790,15 +790,43 @@ namespace xsec{
   }
 
   void stopCrossSection(int stop_mass, double &xsec, double &xsec_unc){ // approx. NNLO + NNLL
-    if(stop_mass == 175) { xsec = 146.; xsec_unc = 0.0652; return; }
-    else if(stop_mass == 275) { xsec = 15.5; xsec_unc = 0.0658; return; }
-    else if(stop_mass == 325) { xsec = 6.57; xsec_unc = 0.0671; return; }
-    else if(stop_mass == 375) { xsec = 3.06; xsec_unc = 0.0689; return; }
-    else if(stop_mass == 475) { xsec = 0.819; xsec_unc = 0.0738; return; }
-    else if(stop_mass == 575) { xsec = 0.266; xsec_unc = 0.0796; return; }
-    else if(stop_mass == 775) { xsec = 0.0403; xsec_unc = 0.0935; return; }
-    else if(stop_mass == 975) { xsec = 0.00822; xsec_unc = 0.1097; return; }
-    else if(stop_mass == 1175) { xsec = 0.00201; xsec_unc = 0.1287; return; }
+    if(stop_mass == 100)  { xsec =  0.177e4; xsec_unc = 6.77e-2; return; }
+    else if(stop_mass == 125)  { xsec =  0.697e3; xsec_unc = 6.65e-2; return; }
+    else if(stop_mass == 150)  { xsec =  0.304e3; xsec_unc = 6.57e-2; return; }
+    else if(stop_mass == 175)  { xsec =  0.146e3; xsec_unc = 6.52e-2; return; }
+    else if(stop_mass == 200)  { xsec =  0.755e2; xsec_unc = 6.5e-2; return; }
+    else if(stop_mass == 225)  { xsec =  0.420e2; xsec_unc = 6.51e-2; return; }
+    else if(stop_mass == 250)  { xsec =  0.248e2; xsec_unc = 6.54e-2; return; }
+    else if(stop_mass == 275)  { xsec =  0.155e2; xsec_unc = 6.58e-2; return; }
+    else if(stop_mass == 300)  { xsec =  0.100e2; xsec_unc = 6.65e-2; return; }
+    else if(stop_mass == 325)  { xsec =  0.657e1; xsec_unc = 6.71e-2; return; }
+    else if(stop_mass == 350)  { xsec =  0.443e1; xsec_unc = 6.79e-2; return; }
+    else if(stop_mass == 375)  { xsec =  0.306e1; xsec_unc = 6.89e-2; return; }
+    else if(stop_mass == 400)  { xsec =  0.215e1; xsec_unc = 6.99e-2; return; }
+    else if(stop_mass == 425)  { xsec =  0.154e1; xsec_unc = 7.11e-2; return; }
+    else if(stop_mass == 450)  { xsec =  0.111e1; xsec_unc = 7.25e-2; return; }
+    else if(stop_mass == 475)  { xsec =  0.819; xsec_unc = 7.38e-2; return; }
+    else if(stop_mass == 500)  { xsec =  0.609; xsec_unc = 7.53e-2; return; }
+    else if(stop_mass == 525)  { xsec =  0.458; xsec_unc = 7.67e-2; return; }
+    else if(stop_mass == 550)  { xsec =  0.347; xsec_unc = 7.81e-2; return; }
+    else if(stop_mass == 575)  { xsec =  0.266; xsec_unc = 7.96e-2; return; }
+    else if(stop_mass == 600)  { xsec =  0.205; xsec_unc = 8.12e-2; return; }
+    else if(stop_mass == 625)  { xsec =  0.160; xsec_unc = 8.28e-2; return; }
+    else if(stop_mass == 650)  { xsec =  0.125; xsec_unc = 8.45e-2; return; }
+    else if(stop_mass == 675)  { xsec =  0.987e-1; xsec_unc = 8.63e-2; return; }
+    else if(stop_mass == 700)  { xsec =  0.783e-1; xsec_unc = 8.8e-2; return; }
+    else if(stop_mass == 725)  { xsec =  0.624e-1; xsec_unc = 8.98e-2; return; }
+    else if(stop_mass == 750)  { xsec =  0.500e-1; xsec_unc = 9.16e-2; return; }
+    else if(stop_mass == 885)  { xsec =  0.164e-1; xsec_unc = 10.21e-2; return; }
+    else if(stop_mass == 950)  { xsec =  0.991e-2; xsec_unc = 10.76e-2; return; }
+    else if(stop_mass == 975)  { xsec =  0.822e-2; xsec_unc = 10.97e-2; return; }
+    else if(stop_mass == 1000)  { xsec = 0.683e-2; xsec_unc = 11.2e-2; return; }
+    else if(stop_mass == 1030)  { xsec = 0.550e-2; xsec_unc = 11.47e-2; return; }
+    else if(stop_mass == 1055)  { xsec = 0.460e-2; xsec_unc = 11.7e-2; return; }
+    else if(stop_mass == 1080)  { xsec = 0.385e-2; xsec_unc = 11.93e-2; return; }
+    else if(stop_mass == 1125)  { xsec = 0.282e-2; xsec_unc = 12.37e-2; return; }
+    else if(stop_mass == 1150)  { xsec = 0.238e-2; xsec_unc = 12.62e-2; return; }
+    else if(stop_mass == 1175)  { xsec = 0.201e-2; xsec_unc = 12.87e-2; return; }
     else { xsec = 0.; xsec_unc = 0.; }
   }
 }
