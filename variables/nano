@@ -1,0 +1,601 @@
+# See the docs for definitions:
+# https://cms-nanoaod-integration.web.cern.ch/integration/master-102X/mc102X_doc.html
+
+int run
+int luminosityBlock
+Long64_t event
+
+################ Weights ################ 
+
+# not clear if this is for medium WP??
+float btagWeight_CSVV2
+float btagWeight_DeepCSVB
+
+################ Electrons ################ 
+
+int nElectron
+# delta eta (SC,ele) with sign
+vector<float> Electron_deltaEtaSC
+vector<float> Electron_dr03EcalRecHitSumEt
+vector<float> Electron_dr03HcalDepth1TowerSumEt
+vector<float> Electron_dr03TkSumPt
+vector<float> Electron_dr03TkSumPtHEEP
+vector<float> Electron_dxy
+vector<float> Electron_dxyErr
+vector<float> Electron_dz
+vector<float> Electron_dzErr
+vector<float> Electron_eCorr
+vector<float> Electron_eInvMinusPInv
+vector<float> Electron_energyErr
+vector<float> Electron_eta
+vector<float> Electron_hoe
+vector<float> Electron_ip3d
+vector<float> Electron_jetPtRelv2
+vector<float> Electron_jetRelIso
+vector<float> Electron_mass
+vector<float> Electron_miniPFRelIso_all
+vector<float> Electron_miniPFRelIso_chg
+vector<float> Electron_mvaFall17V1Iso
+vector<float> Electron_mvaFall17V1noIso
+vector<float> Electron_mvaFall17V2Iso
+vector<float> Electron_mvaFall17V2noIso
+vector<float> Electron_pfRelIso03_all
+vector<float> Electron_pfRelIso03_chg
+vector<float> Electron_phi
+vector<float> Electron_pt
+vector<float> Electron_r9
+vector<float> Electron_sieie
+vector<float> Electron_sip3d
+vector<float> Electron_mvaTTH
+vector<int> Electron_charge
+# cut-based ID Fall17 V2 (0:fail, 1:veto, 2:loose, 3:medium, 4:tight)
+vector<int> Electron_cutBased
+vector<int> Electron_cutBased_Fall17_V1
+vector<int> Electron_jetIdx
+vector<int> Electron_pdgId
+vector<int> Electron_photonIdx
+vector<int> Electron_tightCharge
+vector<int> Electron_vidNestedWPBitmap
+vector<bool> Electron_convVeto
+vector<bool> Electron_cutBased_HEEP
+vector<bool> Electron_isPFcand
+vector<char> Electron_lostHits
+vector<bool> Electron_mvaFall17V1Iso_WP80
+vector<bool> Electron_mvaFall17V1Iso_WP90
+vector<bool> Electron_mvaFall17V1Iso_WPL
+vector<bool> Electron_mvaFall17V1noIso_WP80
+vector<bool> Electron_mvaFall17V1noIso_WP90
+vector<bool> Electron_mvaFall17V1noIso_WPL
+vector<bool> Electron_mvaFall17V2Iso_WP80
+vector<bool> Electron_mvaFall17V2Iso_WP90
+vector<bool> Electron_mvaFall17V2Iso_WPL
+vector<bool> Electron_mvaFall17V2noIso_WP80
+vector<bool> Electron_mvaFall17V2noIso_WP90
+vector<bool> Electron_mvaFall17V2noIso_WPL
+vector<char> Electron_seedGain
+vector<int> Electron_genPartIdx
+vector<char> Electron_genPartFlav
+vector<char> Electron_cleanmask
+
+################ Muons ################ 
+
+int nMuon
+vector<float> Muon_dxy
+vector<float> Muon_dxyErr
+vector<float> Muon_dz
+vector<float> Muon_dzErr
+vector<float> Muon_eta
+vector<float> Muon_ip3d
+vector<float> Muon_jetPtRelv2
+vector<float> Muon_jetRelIso
+vector<float> Muon_mass
+vector<float> Muon_miniPFRelIso_all
+vector<float> Muon_miniPFRelIso_chg
+vector<float> Muon_pfRelIso03_all
+vector<float> Muon_pfRelIso03_chg
+vector<float> Muon_pfRelIso04_all
+vector<float> Muon_phi
+vector<float> Muon_pt
+vector<float> Muon_ptErr
+vector<float> Muon_segmentComp
+vector<float> Muon_sip3d
+vector<float> Muon_softMva
+vector<float> Muon_tkRelIso
+vector<float> Muon_tunepRelPt
+vector<float> Muon_mvaLowPt
+vector<float> Muon_mvaTTH
+vector<int> Muon_charge
+vector<int> Muon_jetIdx
+vector<int> Muon_nStations
+vector<int> Muon_nTrackerLayers
+vector<int> Muon_pdgId
+vector<int> Muon_tightCharge
+vector<char> Muon_highPtId
+vector<bool> Muon_inTimeMuon
+vector<bool> Muon_isGlobal
+vector<bool> Muon_isPFcand
+vector<bool> Muon_isTracker
+vector<bool> Muon_looseId
+vector<bool> Muon_mediumId
+vector<bool> Muon_mediumPromptId
+vector<char> Muon_miniIsoId
+vector<char> Muon_multiIsoId
+vector<char> Muon_mvaId
+vector<char> Muon_pfIsoId
+vector<bool> Muon_softId
+vector<bool> Muon_softMvaId
+vector<bool> Muon_tightId
+vector<char> Muon_tkIsoId
+vector<bool> Muon_triggerIdLoose
+vector<int> Muon_genPartIdx
+vector<char> Muon_genPartFlav
+vector<char> Muon_cleanmask
+
+################ Taus ################ 
+
+int nTau
+vector<float> Tau_chargedIso
+vector<float> Tau_dxy
+vector<float> Tau_dz
+vector<float> Tau_eta
+vector<float> Tau_leadTkDeltaEta
+vector<float> Tau_leadTkDeltaPhi
+vector<float> Tau_leadTkPtOverTauPt
+vector<float> Tau_mass
+vector<float> Tau_neutralIso
+vector<float> Tau_phi
+vector<float> Tau_photonsOutsideSignalCone
+vector<float> Tau_pt
+vector<float> Tau_puCorr
+vector<float> Tau_rawAntiEle
+vector<float> Tau_rawAntiEle2018
+vector<float> Tau_rawIso
+vector<float> Tau_rawIsodR03
+vector<float> Tau_rawMVAnewDM2017v2
+vector<float> Tau_rawMVAoldDM
+vector<float> Tau_rawMVAoldDM2017v1
+vector<float> Tau_rawMVAoldDM2017v2
+vector<float> Tau_rawMVAoldDMdR032017v2
+vector<int> Tau_charge
+vector<int> Tau_decayMode
+vector<int> Tau_jetIdx
+vector<int> Tau_rawAntiEleCat
+vector<int> Tau_rawAntiEleCat2018
+vector<char> Tau_idAntiEle
+vector<char> Tau_idAntiEle2018
+vector<char> Tau_idAntiMu
+vector<bool> Tau_idDecayMode
+vector<bool> Tau_idDecayModeNewDMs
+vector<char> Tau_idMVAnewDM2017v2
+vector<char> Tau_idMVAoldDM
+vector<char> Tau_idMVAoldDM2017v1
+vector<char> Tau_idMVAoldDM2017v2
+vector<char> Tau_idMVAoldDMdR032017v2
+vector<char> Tau_cleanmask
+vector<int> Tau_genPartIdx
+vector<char> Tau_genPartFlav
+
+
+################ Isolated tracks ################ 
+
+# isolated tracks after basic selection (((pt>5 && (abs(pdgId) == 11 || abs(pdgId) == 13)) || pt > 10) && (abs(pdgId) < 15 || abs(eta) < 2.5) && abs(dxy) < 0.2 && abs(dz) < 0.1 && ((pfIsolationDR03().chargedHadronIso < 5 && pt < 25) || pfIsolationDR03().chargedHadronIso/pt < 0.2)) and lepton veto
+int nIsoTrack
+vector<float> IsoTrack_dxy
+vector<float> IsoTrack_dz
+vector<float> IsoTrack_eta
+vector<float> IsoTrack_pfRelIso03_all
+vector<float> IsoTrack_pfRelIso03_chg
+vector<float> IsoTrack_phi
+vector<float> IsoTrack_pt
+vector<float> IsoTrack_miniPFRelIso_all
+vector<float> IsoTrack_miniPFRelIso_chg
+vector<int> IsoTrack_fromPV
+vector<int> IsoTrack_pdgId
+vector<bool> IsoTrack_isHighPurityTrack
+vector<bool> IsoTrack_isPFcand
+vector<bool> IsoTrack_isFromLostTrack
+
+################ Photons ################ 
+
+int nPhoton
+vector<float> Photon_eCorr
+vector<float> Photon_energyErr
+vector<float> Photon_eta
+vector<float> Photon_hoe
+vector<float> Photon_mass
+vector<float> Photon_mvaID
+vector<float> Photon_mvaIDV1
+vector<float> Photon_pfRelIso03_all
+vector<float> Photon_pfRelIso03_chg
+vector<float> Photon_phi
+vector<float> Photon_pt
+vector<float> Photon_r9
+vector<float> Photon_sieie
+vector<int> Photon_charge
+vector<int> Photon_cutBasedBitmap
+vector<int> Photon_cutBasedV1Bitmap
+vector<int> Photon_electronIdx
+vector<int> Photon_jetIdx
+vector<int> Photon_pdgId
+vector<int> Photon_vidNestedWPBitmap
+vector<bool> Photon_electronVeto
+vector<bool> Photon_isScEtaEB
+vector<bool> Photon_isScEtaEE
+vector<bool> Photon_mvaID_WP80
+vector<bool> Photon_mvaID_WP90
+vector<bool> Photon_pixelSeed
+vector<char> Photon_seedGain
+vector<int> Photon_genPartIdx
+vector<char> Photon_genPartFlav
+vector<char> Photon_cleanmask
+
+################ AK4 Jets ################ 
+
+int nJet
+vector<float> Jet_area
+vector<float> Jet_btagCMVA
+vector<float> Jet_btagCSVV2
+vector<float> Jet_btagDeepB
+vector<float> Jet_btagDeepC
+vector<float> Jet_btagDeepFlavB
+vector<float> Jet_btagDeepFlavC
+vector<float> Jet_chEmEF
+vector<float> Jet_chHEF
+vector<float> Jet_eta
+vector<float> Jet_jercCHF
+vector<float> Jet_jercCHPUF
+vector<float> Jet_mass
+vector<float> Jet_muEF
+vector<float> Jet_muonSubtrFactor
+vector<float> Jet_neEmEF
+vector<float> Jet_neHEF
+vector<float> Jet_phi
+vector<float> Jet_pt
+vector<float> Jet_qgl
+vector<float> Jet_rawFactor
+vector<float> Jet_bRegCorr
+vector<float> Jet_bRegRes
+vector<int> Jet_electronIdx1
+vector<int> Jet_electronIdx2
+vector<int> Jet_jetId
+vector<int> Jet_muonIdx1
+vector<int> Jet_muonIdx2
+vector<int> Jet_nConstituents
+vector<int> Jet_nElectrons
+vector<int> Jet_nMuons
+vector<int> Jet_puId
+vector<int> Jet_genJetIdx
+vector<int> Jet_hadronFlavour
+vector<int> Jet_partonFlavour
+vector<char> Jet_cleanmask
+
+################ Very soft Jets ################ 
+
+# jets clustered from charged candidates compatible with primary vertex (charge()!=0 && pvAssociationQuality()>=5 && vertexRef().key()==0)
+int nSoftActivityJet
+vector<float> SoftActivityJet_eta
+vector<float> SoftActivityJet_phi
+vector<float> SoftActivityJet_pt
+vector<float> SoftActivityJetHT
+vector<float> SoftActivityJetHT10
+vector<float> SoftActivityJetHT2
+vector<float> SoftActivityJetHT5
+vector<int> SoftActivityJetNjets10
+vector<int> SoftActivityJetNjets2
+vector<int> SoftActivityJetNjets5
+
+################ AK8 Jets ################ 
+
+int nFatJet
+vector<float> FatJet_area
+vector<float> FatJet_btagCMVA
+vector<float> FatJet_btagCSVV2
+vector<float> FatJet_btagDDBvL
+vector<float> FatJet_btagDDCvB
+vector<float> FatJet_btagDDCvL
+vector<float> FatJet_btagDeepB
+vector<float> FatJet_btagHbb
+vector<float> FatJet_deepTagMD_H4qvsQCD
+vector<float> FatJet_deepTagMD_HbbvsQCD
+vector<float> FatJet_deepTagMD_TvsQCD
+vector<float> FatJet_deepTagMD_WvsQCD
+vector<float> FatJet_deepTagMD_ZHbbvsQCD
+vector<float> FatJet_deepTagMD_ZHccvsQCD
+vector<float> FatJet_deepTagMD_ZbbvsQCD
+vector<float> FatJet_deepTagMD_ZvsQCD
+vector<float> FatJet_deepTagMD_bbvsLight
+vector<float> FatJet_deepTagMD_ccvsLight
+vector<float> FatJet_deepTag_H
+vector<float> FatJet_deepTag_QCD
+vector<float> FatJet_deepTag_QCDothers
+vector<float> FatJet_deepTag_TvsQCD
+vector<float> FatJet_deepTag_WvsQCD
+vector<float> FatJet_deepTag_ZvsQCD
+vector<float> FatJet_eta
+vector<float> FatJet_mass
+vector<float> FatJet_msoftdrop
+vector<float> FatJet_n2b1
+vector<float> FatJet_n3b1
+vector<float> FatJet_phi
+vector<float> FatJet_pt
+vector<float> FatJet_rawFactor
+vector<float> FatJet_tau1
+vector<float> FatJet_tau2
+vector<float> FatJet_tau3
+vector<float> FatJet_tau4
+vector<int> FatJet_jetId
+vector<int> FatJet_subJetIdx1
+vector<int> FatJet_subJetIdx2
+
+int nSubJet
+vector<float> SubJet_btagCMVA
+vector<float> SubJet_btagCSVV2
+vector<float> SubJet_btagDeepB
+vector<float> SubJet_eta
+vector<float> SubJet_mass
+vector<float> SubJet_n2b1
+vector<float> SubJet_n3b1
+vector<float> SubJet_phi
+vector<float> SubJet_pt
+vector<float> SubJet_rawFactor
+vector<float> SubJet_tau1
+vector<float> SubJet_tau2
+vector<float> SubJet_tau3
+vector<float> SubJet_tau4
+
+################ MET ################ 
+
+float MET_MetUnclustEnUpDeltaX
+float MET_MetUnclustEnUpDeltaY
+float MET_covXX
+float MET_covXY
+float MET_covYY
+float MET_phi
+float MET_pt
+float MET_significance
+float MET_sumEt
+float CaloMET_phi
+float CaloMET_pt
+float CaloMET_sumEt
+float ChsMET_phi
+float ChsMET_pt
+float ChsMET_sumEt
+float PuppiMET_phi
+float PuppiMET_pt
+float PuppiMET_sumEt
+float RawMET_phi
+float RawMET_pt
+float RawMET_sumEt
+float TkMET_phi
+float TkMET_pt
+float TkMET_sumEt
+
+int nCorrT1METJet
+vector<float> CorrT1METJet_area
+vector<float> CorrT1METJet_eta
+vector<float> CorrT1METJet_muonSubtrFactor
+vector<float> CorrT1METJet_phi
+vector<float> CorrT1METJet_rawPt
+
+################ Generator particle record ################ 
+
+int nGenPart
+vector<float> GenPart_eta
+vector<float> GenPart_mass
+vector<float> GenPart_phi
+vector<float> GenPart_pt
+vector<int> GenPart_genPartIdxMother
+vector<int> GenPart_pdgId
+vector<int> GenPart_status
+vector<int> GenPart_statusFlags
+
+int nGenDressedLepton
+vector<float> GenDressedLepton_eta
+vector<float> GenDressedLepton_mass
+vector<float> GenDressedLepton_phi
+vector<float> GenDressedLepton_pt
+vector<int> GenDressedLepton_pdgId
+vector<bool> GenDressedLepton_hasTauAnc
+
+int nGenVisTau
+vector<float> GenVisTau_eta
+vector<float> GenVisTau_mass
+vector<float> GenVisTau_phi
+vector<float> GenVisTau_pt
+vector<int> GenVisTau_charge
+vector<int> GenVisTau_genPartIdxMother
+vector<int> GenVisTau_status
+
+int nGenJet
+vector<float> GenJet_eta
+vector<float> GenJet_mass
+vector<float> GenJet_phi
+vector<float> GenJet_pt
+vector<int> GenJet_partonFlavour
+vector<char> GenJet_hadronFlavour
+
+int nGenJetAK8
+vector<float> GenJetAK8_eta
+vector<float> GenJetAK8_mass
+vector<float> GenJetAK8_phi
+vector<float> GenJetAK8_pt
+vector<int> GenJetAK8_partonFlavour
+vector<char> GenJetAK8_hadronFlavour
+
+int nSubGenJetAK8
+vector<float> SubGenJetAK8_eta
+vector<float> SubGenJetAK8_mass
+vector<float> SubGenJetAK8_phi
+vector<float> SubGenJetAK8_pt
+
+float GenMET_phi
+float GenMET_pt
+
+float Generator_binvar
+float Generator_scalePDF
+float Generator_weight
+float Generator_x1
+float Generator_x2
+float Generator_xpdf1
+float Generator_xpdf2
+int Generator_id1
+int Generator_id2
+
+float genWeight
+int genTtbarId
+
+# not clear what this is...
+float MET_fiducialGenPhi
+float MET_fiducialGenPt
+
+################ LHE event info ################ 
+
+float LHE_HT
+float LHE_HTIncoming
+float LHE_Vpt
+char LHE_Njets
+char LHE_Nb
+char LHE_Nc
+char LHE_Nuds
+char LHE_Nglu
+char LHE_NpNLO
+char LHE_NpLO
+
+int nLHEPart
+vector<float> LHEPart_pt
+vector<float> LHEPart_eta
+vector<float> LHEPart_phi
+vector<float> LHEPart_mass
+vector<int> LHEPart_pdgId
+
+float LHEWeight_originalXWGTUP
+int nLHEPdfWeight
+vector<float> LHEPdfWeight
+int nLHEReweightingWeight
+vector<float> LHEReweightingWeight
+int nLHEScaleWeight
+vector<float> LHEScaleWeight
+int nPSWeight
+vector<float> PSWeight
+
+################ Primary vertices ################ 
+int nOtherPV
+vector<float> OtherPV_z
+
+float PV_ndof
+float PV_x
+float PV_y
+float PV_z
+float PV_chi2
+float PV_score
+int PV_npvs
+int PV_npvsGood
+
+################ Secondary vertices ################ 
+int nSV
+vector<float> SV_dlen
+vector<float> SV_dlenSig
+vector<float> SV_pAngle
+vector<float> SV_chi2
+vector<float> SV_eta
+vector<float> SV_mass
+vector<float> SV_ndof
+vector<float> SV_phi
+vector<float> SV_pt
+vector<float> SV_x
+vector<float> SV_y
+vector<float> SV_z
+
+################ Filters ################
+bool Flag_HBHENoiseFilter
+bool Flag_HBHENoiseIsoFilter
+bool Flag_CSCTightHaloFilter
+bool Flag_CSCTightHaloTrkMuUnvetoFilter
+bool Flag_CSCTightHalo2015Filter
+bool Flag_globalTightHalo2016Filter
+bool Flag_globalSuperTightHalo2016Filter
+bool Flag_HcalStripHaloFilter
+bool Flag_hcalLaserEventFilter
+bool Flag_EcalDeadCellTriggerPrimitiveFilter
+bool Flag_EcalDeadCellBoundaryEnergyFilter
+bool Flag_ecalBadCalibFilter
+bool Flag_ecalBadCalibFilterV2
+bool Flag_goodVertices
+bool Flag_eeBadScFilter
+bool Flag_ecalLaserCorrFilter
+bool Flag_trkPOGFilters
+bool Flag_chargedHadronTrackResolutionFilter
+bool Flag_muonBadTrackFilter
+bool Flag_BadChargedCandidateFilter
+bool Flag_BadPFMuonFilter
+bool Flag_BadChargedCandidateSummer16Filter
+bool Flag_BadPFMuonSummer16Filter
+bool Flag_trkPOG_manystripclus53X
+bool Flag_trkPOG_toomanystripclus53X
+bool Flag_trkPOG_logErrorTooManyClusters
+bool Flag_METFilters
+
+################ Pileup ################
+float Pileup_nTrueInt
+float Pileup_pudensity
+float Pileup_gpudensity
+int Pileup_nPU
+int Pileup_sumEOOT
+int Pileup_sumLOOT
+
+float fixedGridRhoFastjetAll
+float fixedGridRhoFastjetCentral
+float fixedGridRhoFastjetCentralCalo
+float fixedGridRhoFastjetCentralChargedPileUp
+float fixedGridRhoFastjetCentralNeutral
+
+################ Trigger related ################
+int nTrigObj
+vector<float> TrigObj_pt
+vector<float> TrigObj_eta
+vector<float> TrigObj_phi
+vector<float> TrigObj_l1pt
+vector<float> TrigObj_l1pt_2
+vector<float> TrigObj_l2pt
+vector<int> TrigObj_id
+vector<int> TrigObj_l1iso
+vector<int> TrigObj_l1charge
+vector<int> TrigObj_filterBits
+
+bool L1Reco_step
+bool L1simulation_step
+bool HLTriggerFirstPath
+bool HLTriggerFinalPath
+
+# Single lepton triggers
+bool HLT_IsoMu24 
+bool HLT_IsoMu27 
+bool HLT_Mu50 
+bool HLT_Ele27_WPTight_Gsf 
+bool HLT_Ele35_WPTight_Gsf 
+bool HLT_Ele115_CaloIdVT_GsfTrkIdT 
+
+# Lepton HT cross-triggers
+bool HLT_Mu15_IsoVVVL_PFHT450 
+bool HLT_Mu15_IsoVVVL_PFHT600 
+bool HLT_Mu50_IsoVVVL_PFHT450 
+bool HLT_Ele15_IsoVVVL_PFHT450 
+bool HLT_Ele15_IsoVVVL_PFHT600 
+bool HLT_Ele50_IsoVVVL_PFHT450 
+
+# MET triggers
+bool HLT_PFMET110_PFMHT110_IDTight 
+bool HLT_PFMET120_PFMHT120_IDTight 
+bool HLT_PFMETNoMu110_PFMHTNoMu110_IDTight 
+bool HLT_PFMETNoMu120_PFMHTNoMu120_IDTight 
+bool HLT_PFMET120_PFMHT120_IDTight_PFHT60 
+bool HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60 
+
+# Jet trigger
+bool HLT_PFJet500 
+
+# ZGamma triggers
+bool HLT_Mu17_Photon30_IsoCaloId
+bool HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ
+bool HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL
+bool HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ
